@@ -89,6 +89,48 @@
 coverage.xml
 test.txt
 ```
+    - Create pyproject.toml in project root:
+```toml
+[project]
+name = "<project-name>"
+version = "0.1.0"
+description = "<project description>"
+authors = [{name = "<author name>"}]
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = [
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
+```
   - 1.2.3 README
     - Create initial skeleton 'README.md' document in each folder
   - 1.2.4 Copy this document (governance.md) into \<project name>/governance
@@ -2719,6 +2761,7 @@ flowchart TD
 | 1.7 | 2025-11-06 | Enhanced T04 Prompt template with output format controls to constrain Domain 2 responses to code-only with minimal integration instructions |
 | 1.8 | 2025-11-11 | Added P01 initialization square to Framework Execution Flowchart |
 | 1.9 | 2025-11-11 | Added .gitignore specification to P01.2.2 |
+| 2.0 | 2025-11-11 | Added pyproject.toml skeleton to P01.2.2 |
 
 ---
 
