@@ -1,0 +1,5 @@
+# Workspace
+
+Execution space for design, change, issue, trace, and test documents.
+
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
