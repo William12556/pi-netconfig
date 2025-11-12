@@ -62,7 +62,7 @@
     - Domain 1: Follow workflow [framework execution flowchart](<#Framework execution flowchart>)
   - 1.1.11 Configuration Management
     - Domain 1: Maintains GitHub repository as authoritative source for all project artifacts
-    - Domain 1: Tags design document commits when approved as baseline for code generation
+    - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
     - Domain 1: Performs configuration audit verifying generated code matches approved design baseline commits
   - 1.1.12 Token Budget Management
     - Domain 1: Monitors token usage when communicating with Domain 2
@@ -2762,7 +2762,9 @@ flowchart TD
 | 1.8 | 2025-11-11 | Added P01 initialization square to Framework Execution Flowchart |
 | 1.9 | 2025-11-11 | Added .gitignore specification to P01.2.2 |
 | 2.0 | 2025-11-11 | Added pyproject.toml skeleton to P01.2.2 |
+| 2.1 | 2025-11-12 | Specified GitHub Desktop as tagging mechanism in P00 1.1.11 Configuration Management |
 
 ---
+[Return to Table of Contents](<#table of contents>)
 
 Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
