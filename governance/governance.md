@@ -6,7 +6,7 @@
 
 [Protocols](<#1.0 protocols>)
   - [P00: Governance (start here)](<#1.1 p00 governance (start here)>)
-  - [P01: Project Initialization](<#1.2 p01 project initialization (execute once)>)
+  - [P01: Project Initialization (Execute once)](<#1.2 p01 project initialization (execute once)>)
   - [P02: Design](<#1.3 p02 design>)
   - [P03: Change](<#1.4 p03 change>)
   - [P04: Issue](<#1.5 p04 issue>)
@@ -21,15 +21,19 @@
   - [T04: Prompt](<#2.4 t04 prompt>)
   - [T05: Test](<#2.5 t05 test>)
   
-[Framework execution flowchart](<#3.0 framework execution flowchart>)
+[Framework Execution Flowchart](<#3.0 framework execution flowchart>)
 
 [Version History](<#version history>)
+
+[Appendix A: Domain 2 Preset Specifications](<#appendix a domain 2 preset specifications>)
 
 ---
 
 ## 1.0 Protocols
 
 #### 1.1 P00 Governance (start here)
+  - 1.1.0 Prime directive
+    - Domain 1: Follow workflow [framework execution flowchart](<#3.0 framework execution flowchart>)
   - 1.1.1 Purpose
     - Python based software engineering, architecture and development
   - 1.1.2 Scope
@@ -45,7 +49,7 @@
     - Domain 1: Coordinates and controls domain 2 code generator
     - Domain 2: Does not have access to local folders and cannot save generated code
   - 1.1.7 Communication
-    - Domain 1: Uses template [T04 Prompt](<#- t04 prompt>) to create code generation or debug prompts for domain 2 based on designs, changes and issues
+    - Domain 1: Uses template [T04 Prompt](<#24 t04 prompt>) to create code generation or debug prompts for domain 2 based on designs, changes and issues
     - Domain 1: Initiates Domain 2 code generation or debugging with prompt documents
     - Domain 1 and domain2 communicate directly via MCP tools such as (health_check, list_models, get_current_model and chat_completion) provided by an MCP server such  "lmstudio-mcp" for example
     - Domain 1: Embeds complete design specifications and schema within prompt documents
@@ -58,8 +62,15 @@
     - Domain 1: Based on document class (design, change, issue, trace, test) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
     - Domain 1: Based on document class (design, change, issue, trace, test) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
     - Domain 1: Insures related documents are Obsidian cross linked
-  - 1.1.10 Prime directive
-    - Domain 1: Follow workflow [framework execution flowchart](<#Framework execution flowchart>)
+  - 1.1.10 Domain 2 Configuration
+    - Domain 1: Configures Domain 2 LM via presets for consistent output
+    - Presets define system prompts, temperature, token limits aligned with T04 template
+    - Standard presets:
+      - `Domain2-CodeGen`: Code generation (temp: 0.2)
+      - `Domain2-Debug`: Issue debugging (temp: 0.15)
+      - `Domain2-Refactor`: Code refactoring (temp: 0.25)
+    - Domain 1: References preset in T04 prompt's mcp_config.model field
+    - See [Appendix A: Domain 2 Preset Specifications](<#appendix a domain 2 preset specifications>)
   - 1.1.11 Configuration Management
     - Domain 1: Maintains GitHub repository as authoritative source for all project artifacts
     - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
@@ -139,7 +150,7 @@ exclude_lines = [
 ```text
     └── <project name>/
 		├── governance/           # Operational rules
-        │   └── governance.md 
+        │   └── governance.md
         ├── workspace/            # Execution space
         │   ├── design/
         │   ├── change/
@@ -165,8 +176,8 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.3 P02 Design
-  - 1.3.1 Domain 1: Creates master design document named \<design\>-\<0000\>-\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#- t01 design>)
-  - 1.3.2 Domain 1: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#- t01 design>)
+  - 1.3.1 Domain 1: Creates master design document named \<design\>-\<0000\>-\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#21 t01 design>)
+  - 1.3.2 Domain 1: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#21 t01 design>)
   - 1.3.3 Domain 1: Insures design element documents do not exceed domain 2 context window
   - 1.3.4 Domain 1: Insures the master  design document  is clearly designated within as the master design document.
   - 1.3.5 Design Verification
@@ -189,7 +200,7 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.4 P03 Change
-  - 1.4.1 Domain 1: Creates change documents from issue documents and human change requests using template [T02 Change](<#- t02 change>) and saves them in folder workspace/change
+  - 1.4.1 Domain 1: Creates change documents from issue documents and human change requests using template [T02 Change](<#22 t02 change>) and saves them in folder workspace/change
   - 1.4.2 Domian 1: Insures created change documents are linked to thier source issue document
   - 1.4.3 Domain 1: Updates all relevant design documents after implementation
   - 1.4.4 Domain 1: Insures all design document updates contain change references and links to their source change document
@@ -217,10 +228,10 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.5 P04 Issue
-  - 1.5.1 Domain 1: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#- t03 issue>) and saves them in folder workspace/issue
+  - 1.5.1 Domain 1: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#23 t03 issue>) and saves them in folder workspace/issue
   - 1.5.2 Domain 1: Reserved for future use
   - 1.5.3 Domain 2: Debugs issues submitted from domain 2 and returns change proposal to domain 1
-  - 1.5.4 Domain 1: Updates issue documents from bugs and  using template [T03 Issue](<#- t03 issue>) and saves them in folder workspace/issue
+  - 1.5.4 Domain 1: Updates issue documents from bugs and  using template [T03 Issue](<#23 t03 issue>) and saves them in folder workspace/issue
   - 1.5.5 Non-Conformance Reporting
     - Domain 1: Documents instances where generated code deviates from design specifications
     - Domain 1: Records deviation type, severity, affected components
@@ -232,8 +243,8 @@ exclude_lines = [
 
 [Return to Table of Contents](<#table of contents>)
 
-#### 1.6 P05 trace
-  - 1.6.1 Domain 1: Creates prompt documents from design and change documents using [T04 Prompt](<#- t04 prompt>) and saves them with the naming format prompt-\<sequence number\>-\<prompt name\>.md in folder workspace/trace
+#### 1.6 P05 Trace
+  - 1.6.1 Domain 1: Creates prompt documents from design and change documents using [T04 Prompt](<#24 t04 prompt>) and saves them with the naming format prompt-\<sequence number\>-\<prompt name\>.md in folder workspace/trace
   - 1.6.2 Traceability Verification
     - Domain 1: Verifies bidirectional links exist: requirements ↔ design ↔ code ↔ test (navigable forward and backward)
     - Domain 1: Identifies and resolves traceability gaps
@@ -245,8 +256,8 @@ exclude_lines = [
 
 [Return to Table of Contents](<#table of contents>)
 
-#### 1.7 P06 test
-  - 1.7.1 Domain 1: Creates test documents from source code generated by domain 2 using template [T05 Test](<#- t05 test>) and saves them in folder workspace/test
+#### 1.7 P06 Test
+  - 1.7.1 Domain 1: Creates test documents from source code generated by domain 2 using template [T05 Test](<#25 t05 test>) and saves them in folder workspace/test
   - 1.7.2 Test Planning
     - Domain 1: Creates comprehensive test strategy before code generation
     - Domain 1: Defines test scope, approach, resources, schedule
@@ -272,7 +283,7 @@ exclude_lines = [
 
 ## 2.0 Templates
 
-####  2.1 T01 Design
+#### 2.1 T01 Design
 ```yaml
 # T01 Design Template v1.0 - YAML Format
 # Optimized for LM code generation context efficiency
@@ -890,7 +901,7 @@ properties:
 
 [Return to Table of Contents](<#table of contents>)
 
-####  2.2 T02 Change
+#### 2.2 T02 Change
 ```yaml
 # T02 Change Template v1.0 - YAML Format
 # Optimized for LM code generation context efficiency
@@ -916,7 +927,7 @@ scope:
       change_type: ""  # add, modify, delete, refactor
   affected_designs:
     - design_ref: ""
-      sections: 
+      sections:
         - ""
   out_of_scope:
     - ""
@@ -1385,7 +1396,7 @@ properties:
 
 [Return to Table of Contents](<#table of contents>)
 
-####  2.3 T03 Issue
+#### 2.3 T03 Issue
 ```yaml
 # T03 Issue Template v1.0 - YAML Format
 # Optimized for LM code generation context efficiency
@@ -2693,7 +2704,7 @@ properties:
 
 [Return to Table of Contents](<#table of contents>)
 
-## 3.0 Framework Execution Flowchart
+## 3.0 Framework execution flowchart
 
 ```mermaid
 flowchart TD
@@ -2706,7 +2717,7 @@ flowchart TD
     
     D1_Decompose --> H2{Human: Review<br/>design elements}
     H2 -->|Revise| D1_Decompose
-    H2 -->|Approve| D1_Baseline[Domain 1: Tag baseline<br/>in GitHub]
+    H2 -->|Approve| D1_Baseline[Human: Tag baseline<br/>in GitHub]
     
     D1_Baseline --> D1_Prompt[Domain 1: Create T04 prompt<br/>with design + schema]
     
@@ -2763,8 +2774,149 @@ flowchart TD
 | 1.9 | 2025-11-11 | Added .gitignore specification to P01.2.2 |
 | 2.0 | 2025-11-11 | Added pyproject.toml skeleton to P01.2.2 |
 | 2.1 | 2025-11-12 | Specified GitHub Desktop as tagging mechanism in P00 1.1.11 Configuration Management |
+| 2.2 | 2025-11-12 | Added P00 1.1.13 Domain 2 Configuration and Appendix A: Domain 2 Preset Specifications |
 
 ---
 [Return to Table of Contents](<#table of contents>)
+
+---
+
+## Appendix A: Domain 2 Preset Specifications
+
+### A.1 Overview
+
+Domain 2 presets optimize LM Studio configuration for code generation tasks within the framework. Each preset defines system prompts and parameters aligned with governance requirements and T04 template specifications.
+
+### A.2 Domain2-CodeGen Preset
+
+**Purpose:** Production code generation from design specifications
+
+**System Prompt:**
+```
+You are an expert Python developer generating production-quality code from specifications.
+
+OUTPUT RULES:
+- Return ONLY executable code, no explanations
+- Add integration notes AFTER code (max 3 lines)
+- No markdown blocks, no preamble, no commentary
+- Format: <code>\n\nINTEGRATION: <brief instructions>
+
+CODE REQUIREMENTS:
+- Thread-safe for concurrent access
+- Comprehensive error handling with try/except blocks
+- Debug logging with traceback (import logging, traceback)
+- Professional docstrings (Google/NumPy style)
+- Type hints where applicable
+- Input validation on all functions
+
+You receive complete specifications in each request. Generate code that precisely implements the design.
+```
+
+**Parameters:**
+- Temperature: 0.2
+- Max Tokens: 4096
+- Top P: 0.95
+- Repeat Penalty: 1.1
+
+**Usage:** Reference as `Domain2-CodeGen` in T04 prompt mcp_config.model field
+
+[Return to Table of Contents](<#table of contents>)
+
+### A.3 Domain2-Debug Preset
+
+**Purpose:** Debugging and fixing code based on issue reports
+
+**System Prompt:**
+```
+You are debugging Python code based on issue reports.
+
+OUTPUT RULES:
+- Return corrected code only
+- Add brief fix summary AFTER code (max 3 lines)
+- No explanations, no markdown blocks
+- Format: <corrected_code>\n\nFIX: <brief description>
+
+DEBUG APPROACH:
+- Analyze error traces and reproduction steps
+- Preserve existing functionality not related to the issue
+- Add defensive error handling
+- Include debug logging at fix points
+- Maintain code style consistency
+
+Receive issue details with code context. Return fixed code matching the design specification.
+```
+
+**Parameters:**
+- Temperature: 0.15
+- Max Tokens: 4096
+- Top P: 0.9
+- Repeat Penalty: 1.15
+
+**Usage:** Reference as `Domain2-Debug` in T04 prompt mcp_config.model field for debugging tasks
+
+[Return to Table of Contents](<#table of contents>)
+
+### A.4 Domain2-Refactor Preset
+
+**Purpose:** Code refactoring for improved structure or performance
+
+**System Prompt:**
+```
+You are refactoring Python code for improved structure or performance.
+
+OUTPUT RULES:
+- Return refactored code only
+- Add refactor notes AFTER code (max 3 lines)
+- No explanations, no markdown blocks
+- Format: <refactored_code>\n\nREFACTOR: <brief notes>
+
+REFACTOR REQUIREMENTS:
+- Preserve all original functionality
+- Improve code organization/readability
+- Optimize performance where specified
+- Maintain or improve error handling
+- Update docstrings to match changes
+- Thread safety must not degrade
+
+Receive refactor specifications with existing code. Return improved code maintaining design compliance.
+```
+
+**Parameters:**
+- Temperature: 0.25
+- Max Tokens: 4096
+- Top P: 0.95
+- Repeat Penalty: 1.1
+
+**Usage:** Reference as `Domain2-Refactor` in T04 prompt mcp_config.model field for refactoring tasks
+
+[Return to Table of Contents](<#table of contents>)
+
+### A.5 Configuration Notes
+
+**Temperature Rationale:**
+- Low values (0.15-0.25) ensure deterministic, specification-compliant output
+- CodeGen (0.2): Balanced determinism with slight creativity for implementation choices
+- Debug (0.15): Maximum determinism for consistent bug fixes
+- Refactor (0.25): Slightly higher for alternative implementation approaches
+
+**Token Limits:**
+- 4096 tokens aligns with T04 template specification
+- Prevents context overflow during Domain 1 ↔ Domain 2 communication
+- Sufficient for typical module-level code generation
+
+**Output Constraints:**
+- System prompts enforce P00 1.1.7 requirement: Domain 2 returns code only
+- No external references (per P00 1.1.7: self-contained specifications)
+- Integration notes minimal (Domain 1 handles integration logic)
+
+**LM Studio Configuration:**
+1. Navigate to LM Studio "Presets" section
+2. Create new preset with specifications above
+3. Save with exact preset names for T04 reference
+4. Domain 1 references preset by name in T04 prompt mcp_config.model field
+
+[Return to Table of Contents](<#table of contents>)
+
+---
 
 Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
