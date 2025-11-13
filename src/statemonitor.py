@@ -3,6 +3,11 @@
 Main state machine managing service operational mode transitions between
 checking, client, and AP modes.
 
+Design: workspace/design/design-0002-statemonitor.md
+Requirements: FR-010, FR-011, FR-013, FR-020, FR-021, FR-022, FR-045
+              NFR-007 (thread safety), NFR-008 (error logging)
+Traceability: workspace/trace/trace-0001-requirements-traceability-matrix.md
+
 Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
 """
 

@@ -2,6 +2,13 @@
 
 Handles self-installation including systemd service creation, directory setup,
 and initial configuration.
+
+Design: workspace/design/design-0001-installer.md
+Requirements: FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007
+              NFR-007 (thread safety), NFR-008 (error logging)
+Traceability: workspace/trace/trace-0001-requirements-traceability-matrix.md
+
+Copyright (c) 2025 William Watson. Licensed under the MIT License.
 """
 
 import os

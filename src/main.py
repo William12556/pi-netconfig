@@ -5,6 +5,11 @@ Pi Network Configuration Tool - Service Controller
 Application entry point managing execution mode detection, installer invocation,
 logging configuration, and systemd service lifecycle.
 
+Design: workspace/design/design-0006-servicecontroller.md
+Requirements: FR-023, FR-070, FR-071, FR-072, FR-073, FR-074
+              NFR-007 (thread safety), NFR-008 (error logging)
+Traceability: workspace/trace/trace-0001-requirements-traceability-matrix.md
+
 Copyright (c) 2025 William Watson. Licensed under the MIT License.
 """
 
@@ -17,8 +22,8 @@ import traceback
 from pathlib import Path
 from typing import Optional
 
-from installer import Installer
-from state_monitor import StateMonitor
+from installer import install, InstallationDetector
+from statemonitor import StateMonitor
 
 
 # Exception hierarchy
@@ -61,7 +66,7 @@ def detect_execution_mode() -> str:
         logger.debug("Detecting execution mode")
         
         # Check if service is installed
-        service_installed = Installer.is_service_installed()
+        service_installed = InstallationDetector.is_service_installed()
         logger.debug(f"Service installed: {service_installed}")
         
         if not service_installed:
@@ -331,7 +336,7 @@ def main() -> int:
                 print("ERROR: Root privileges required for installation", file=sys.stderr)
                 return 1
             
-            success = Installer.install()
+            success = install()
             if success:
                 print("Installation successful")
                 print("Start service: sudo systemctl start pi-netconfig")

@@ -1,3 +1,15 @@
+"""APManager Module
+
+Access point creation and management for WiFi configuration interface.
+
+Design: workspace/design/design-0004-apmanager.md
+Requirements: FR-040, FR-041, FR-042, FR-043, FR-044
+              NFR-007 (thread safety), NFR-008 (error logging)
+Traceability: workspace/trace/trace-0001-requirements-traceability-matrix.md
+
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+"""
+
 import logging
 import traceback
 from subprocess import check_output, CalledProcessError

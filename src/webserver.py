@@ -4,6 +4,11 @@ WebServer Module - HTTP Configuration Interface
 Provides HTTP server on port 8080 for WiFi configuration during AP mode.
 Serves embedded HTML interface and REST API endpoints.
 
+Design: workspace/design/design-0005-webserver.md
+Requirements: FR-050, FR-051, FR-052, FR-053, FR-054, FR-055
+              NFR-007 (thread safety), NFR-008 (error logging)
+Traceability: workspace/trace/trace-0001-requirements-traceability-matrix.md
+
 Copyright (c) 2025 William Watson. Licensed under MIT License.
 """
 

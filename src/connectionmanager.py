@@ -1,3 +1,16 @@
+"""ConnectionManager Module
+
+WiFi client mode connection management including scanning, configuration, and
+connectivity testing.
+
+Design: workspace/design/design-0003-connectionmanager.md
+Requirements: FR-012, FR-030, FR-031, FR-032, FR-033, FR-034, FR-060, FR-061, FR-062
+              NFR-007 (thread safety), NFR-008 (error logging)
+Traceability: workspace/trace/trace-0001-requirements-traceability-matrix.md
+
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+"""
+
 import subprocess
 import socket
 import json
