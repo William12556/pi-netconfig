@@ -11,7 +11,7 @@ Tool manages WiFi connectivity with automatic fallback to access point mode when
 ```
 pi-netconfig/
 ├── governance/     # Operational rules
-├── workspace/      # Execution space
+├── workspace/      # Operations space
 ├── docs/           # Technical documents
 ├── src/            # Source code
 └── deprecated/     # Archive
