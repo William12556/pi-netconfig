@@ -21,8 +21,8 @@ Created: 2025 November 11
 
 **Project:** pi-netconfig  
 **Module:** ConnectionManager  
-**Version:** 1.0.0  
-**Date:** 2025-11-11  
+**Version:** 1.1.0  
+**Date:** 2025-11-12  
 **Author:** William Watson  
 **Master Design:** [design-0000-master.md](<design-0000-master.md>)
 
@@ -76,6 +76,7 @@ Created: 2025 November 11
 - Single network configuration (last successful connection only)
 - Non-blocking async operations required
 - Must handle nmcli command failures gracefully
+- Thread-safe operations (all public methods protected with lock)
 
 **Implementation:**
 - Language: Python 3.11+
@@ -152,6 +153,8 @@ class NetworkInfo:
 
 **Purpose:** Apply and persist NetworkManager configurations
 
+**Thread Safety:** All public methods protected by class-level threading.Lock to prevent race conditions during concurrent operations
+
 **Key Methods:**
 
 ```python
@@ -188,16 +191,17 @@ async def activate_connection(ssid: str) -> None
 ```python
 async def delete_connection_profile(ssid: str) -> None
 ```
-- Executes: `nmcli con delete id {ssid}`
-- Silently succeeds if profile doesn't exist
-- Raises: ConnectionManagerError on deletion failure (non-existent profiles ignored)
+- Executes: `nmcli con delete id {ssid}` with check=False
+- Gracefully handles non-existent profiles (ignores errors)
+- Only raises ConnectionManagerError on critical failures
 
 ```python
 def persist_configuration(ssid: str) -> None
 ```
 - Writes configuration to `/etc/pi-netconfig/config.json`
-- Format: `{"configured_ssid": ssid, "last_connected": ISO8601_timestamp}`
-- Creates directory if not exists
+- Format: `{"configured_ssid": ssid, "last_connected": ISO8601_timestamp, "ap_password": "piconfig123"}`
+- Creates parent directory `/etc/pi-netconfig/` if not exists using `mkdir(parents=True, exist_ok=True)`
+- Sets ap_password to default "piconfig123" (WiFi credentials managed by NetworkManager, not persisted)
 - Raises: ConnectionManagerError on file write failure
 
 ```python
@@ -246,7 +250,7 @@ class NetworkInfo:
 **Fields:**
 - `configured_ssid`: Last successfully configured network (nullable)
 - `last_connected`: ISO 8601 timestamp of last successful connection
-- `ap_password`: Access point password (default: piconfig123)
+- `ap_password`: Access point mode password (always "piconfig123", WiFi passwords not persisted)
 
 ### Validation Rules
 
@@ -430,6 +434,7 @@ class ConnectivityTestError(ConnectionManagerError):
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0.0 | 2025-11-11 | William Watson | Initial module design extracted from master |
+| 1.1.0 | 2025-11-12 | William Watson | Updated per [change-0001](<../change/change-0001-connectionmanager-defect-corrections.md>): Added thread safety requirements, corrected persist_configuration signature (removed password parameter), clarified ap_password usage, added directory creation requirement, specified graceful nmcli delete error handling |
 
 [Return to Table of Contents](<#table of contents>)
 
