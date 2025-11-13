@@ -39,17 +39,24 @@
     - Python based software engineering, architecture and development
   - 1.1.2 Scope
     - Agnostic plan, control and initiation of software generation
-  - 1.1.3 Architecture
+  - 1.1.3 Framework Application
+    - This governance framework defines the development process and workflow
+    - Domain 1/Domain 2 separation applies to software creation, not to generated application runtime
+    - Generated applications (outputs) are independent of framework architecture
+    - Framework controls: how we build software
+    - Framework does not control: how the built software operates
+    - Example: <project name> uses this framework for development but is a standalone Python application at runtime
+  - 1.1.4 Architecture
     - Domain 1: Plan and control: design, change, test and launching of code generation
     - Domain 2: Execute: code generation
-  - 1.1.4 Forbidden
+  - 1.1.5 Forbidden
     - Both domains: Unrequested creation, addition, removal or change of source code and documents is forbidden
-  - 1.1.5 Constraints
+  - 1.1.6 Constraints
     - Domain 1: Does not exceed language model token resource budget communicating with domain 2
-  - 1.1.6 Control
+  - 1.1.7 Control
     - Domain 1: Coordinates and controls domain 2 code generator
     - Domain 2: Does not have access to local folders and cannot save generated code
-  - 1.1.7 Communication
+  - 1.1.8 Communication
     - Domain 1: Uses template [T04 Prompt](<#24 t04 prompt>) to create code generation or debug prompts for domain 2 based on designs, changes and issues
     - Domain 1: Initiates Domain 2 code generation or debugging with prompt documents
     - Domain 1 and domain2 communicate directly via MCP tools such as (health_check, list_models, get_current_model and chat_completion) provided by an MCP server such  "lmstudio-mcp" for example
@@ -57,13 +64,13 @@
     - Domain 1: Ensures prompt documents are self-contained requiring no external file references
     - Domain 1: Communicates with Domain 2 via MCP tools (chat_completion)
     - Domain 2: Receives all specifications via MCP call, generates code
-  - 1.1.8 Quality
+  - 1.1.9 Quality
     - Human review and approval of design, change and initiation of code generation is required
-  - 1.1.9 Documents
+  - 1.1.10 Documents
     - Domain 1: Based on document class (design, change, issue, trace, test, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
     - Domain 1: Based on document class (design, change, issue, trace, test, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
     - Domain 1: Insures related documents are Obsidian cross linked
-  - 1.1.10 Domain 2 Configuration
+  - 1.1.11 Domain 2 Configuration
     - Domain 1: Configures Domain 2 LM via presets for consistent output
     - Presets define system prompts, temperature, token limits aligned with T04 template
     - Standard presets:
@@ -72,11 +79,11 @@
       - `Domain2-Refactor`: Code refactoring (temp: 0.25)
     - Domain 1: References preset in T04 prompt's mcp_config.model field
     - See [Appendix A: Domain 2 Preset Specifications](<#appendix a domain 2 preset specifications>)
-  - 1.1.11 Configuration Management
+  - 1.1.12 Configuration Management
     - Domain 1: Maintains GitHub repository as authoritative source for all project artifacts
     - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
     - Domain 1: Performs configuration audit verifying generated code matches approved design baseline commits
-  - 1.1.12 Token Budget Management
+  - 1.1.13 Token Budget Management
     - Domain 1: Monitors token usage when communicating with Domain 2
     - Domain 1: Ensures prompt documents remain within Domain 2 context window limits
     - Domain 1: Tracks token consumption per code generation cycle
@@ -2866,7 +2873,8 @@ flowchart TD
 | 2.4 | 2025-11-13 | Enhanced P06 Test with sections 1.7.1a (test script creation), 1.7.5-1.7.9 (test organization, isolation, mocking, regression testing, lifecycle management) |
 | 2.5 | 2025-11-13 | Added audit/ subfolder to workspace directory structure in P01.2.4 |
 | 2.6 | 2025-11-13 | Added P08 Audit protocol establishing periodic compliance verification, audit deliverable requirements, and remediation workflow |
-| 2.7 | 2025-11-13 | Added audit document class to P00 1.1.9 naming convention and updated P08 1.9.5 to use sequence numbering format |
+| 2.7 | 2025-11-13 | Added audit document class to P00 1.1.10 naming convention and updated P08 1.9.5 to use sequence numbering format |
+| 2.8 | 2025-11-13 | Added P00 1.1.3 Framework Application clarifying that Domain 1/2 separation applies to development workflow, not runtime architecture of generated applications. Renumbered subsequent P00 subsections 1.1.4-1.1.13 |
 
 ---
 [Return to Table of Contents](<#table of contents>)
