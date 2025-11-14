@@ -14,6 +14,7 @@
   - [P06: Test](<#1.7 p06 test>)
   - [P07: Quality](<#1.8 p07 quality>)
   - [P08: Audit](<#1.9 p08 audit>)
+  - [P09: Prompt](<#1.10 p09 prompt>)
   
 [Templates](<#2.0 templates>)
   - [T01: Design](<#2.1 t01 design>)
@@ -25,8 +26,6 @@
 [Framework Execution Flowchart](<#3.0 framework execution flowchart>)
 
 [Version History](<#version history>)
-
-[Appendix A: Domain 2 Preset Specifications](<#appendix a domain 2 preset specifications>)
 
 ---
 
@@ -54,39 +53,66 @@
   - 1.1.6 Constraints
     - Domain 1: Does not exceed language model token resource budget communicating with domain 2
   - 1.1.7 Control
-    - Domain 1: Coordinates and controls domain 2 code generator
-    - Domain 2: Does not have access to local folders and cannot save generated code
+    - Domain 1: Coordinates and controls Domain 2 code generator
+    - Domain 2: Has read/write access to project folders via filesystem
+    - Domain 2: Saves generated code directly to src/ per T04 specifications
   - 1.1.8 Communication
-    - Domain 1: Uses template [T04 Prompt](<#24 t04 prompt>) to create code generation or debug prompts for domain 2 based on designs, changes and issues
-    - Domain 1: Initiates Domain 2 code generation or debugging with prompt documents
-    - Domain 1 and domain2 communicate directly via MCP tools such as (health_check, list_models, get_current_model and chat_completion) provided by an MCP server such  "lmstudio-mcp" for example
+    - Domain 1: Uses template [T04 Prompt](<#2.4 t04 prompt>) to create code generation or debug prompts for Domain 2
     - Domain 1: Embeds complete design specifications and schema within prompt documents
     - Domain 1: Ensures prompt documents are self-contained requiring no external file references
-    - Domain 1: Communicates with Domain 2 via MCP tools (chat_completion)
-    - Domain 2: Receives all specifications via MCP call, generates code
+    - Domain 1: Saves T04 prompt to workspace/prompt/prompt-NNNN-<n>.md
+    - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md
+    - Domain 1: Notifies human to initiate Domain 2
+    - Human: Invokes Domain 2 with instruction document
+    - Domain 2: Reads T04 prompt from workspace/prompt/
+    - Domain 2: Generates code, saves directly to src/ per T04 specifications
+    - Domain 2: Creates completion document workspace/prompt/prompt-NNNN-completion.md
+    - Domain 1: Reads completion document, verifies SUCCESS status, proceeds with audit
   - 1.1.9 Quality
     - Human review and approval of design, change and initiation of code generation is required
+    - Domain 1: Creates instruction document after human approval
+    - Human: Invokes Domain 2 with provided command
+    - Human: Notifies Domain 1 when Domain 2 completes
+    - Domain 1: Verifies completion document exists and indicates SUCCESS before proceeding
   - 1.1.10 Documents
-    - Domain 1: Based on document class (design, change, issue, trace, test, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
-    - Domain 1: Based on document class (design, change, issue, trace, test, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
+    - Domain 1: Based on document class (design, change, issue, prompt, trace, test, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
+    - Domain 1: Based on document class (design, change, issue, prompt, trace, test, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
     - Domain 1: Insures related documents are Obsidian cross linked
-  - 1.1.11 Domain 2 Configuration
-    - Domain 1: Configures Domain 2 LM via presets for consistent output
-    - Presets define system prompts, temperature, token limits aligned with T04 template
-    - Standard presets:
-      - `Domain2-CodeGen`: Code generation (temp: 0.2)
-      - `Domain2-Debug`: Issue debugging (temp: 0.15)
-      - `Domain2-Refactor`: Code refactoring (temp: 0.25)
-    - Domain 1: References preset in T04 prompt's mcp_config.model field
-    - See [Appendix A: Domain 2 Preset Specifications](<#appendix a domain 2 preset specifications>)
+  - 1.1.11 Domain 2 Invocation Instructions
+    - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md containing:
+      - Domain 2 invocation command
+      - T04 prompt location
+      - Expected output locations (src/ paths per T04)
+      - Completion document requirements
+    - Instruction document format:
+      ```markdown
+      # Domain 2 Code Generation Instructions
+      
+      ## Invocation
+      Execute from project root:
+      ```bash
+      cd /Users/williamwatson/Documents/GitHub/pi-netconfig
+      claude code "Read and implement workspace/prompt/prompt-NNNN-<n>.md"
+      ```
+      
+      ## Expected Outputs
+      - Code files: [list from T04 deliverable.files]
+      - Location: src/
+      
+      ## Completion
+      Create workspace/prompt/prompt-NNNN-completion.md containing:
+      - Generation timestamp
+      - Files created with paths
+      - Any warnings or notes
+      - Status: SUCCESS or FAILURE
+      ```
+    - Domain 1: Provides instruction document path to human
+    - Domain 1: Waits for human confirmation of Domain 2 completion
+    - Domain 1: Verifies completion document exists and indicates SUCCESS before proceeding
   - 1.1.12 Configuration Management
     - Domain 1: Maintains GitHub repository as authoritative source for all project artifacts
     - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
     - Domain 1: Performs configuration audit verifying generated code matches approved design baseline commits
-  - 1.1.13 Token Budget Management
-    - Domain 1: Monitors token usage when communicating with Domain 2
-    - Domain 1: Ensures prompt documents remain within Domain 2 context window limits
-    - Domain 1: Tracks token consumption per code generation cycle
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -153,7 +179,9 @@ exclude_lines = [
   - 1.2.3 README
     - Create initial skeleton 'README.md' document in each folder
   - 1.2.4 Copy this document (governance.md) into \<project name>/governance
-  - 1.2.4 Project folder structure
+  - 1.2.5 Traceability Matrix 
+     - Create skeleton trace-0001-traceability-matrix.md in workspace/trace/
+  - 1.2.6 Project folder structure
     - Layout
 ```text
     └── <project name>/
@@ -163,7 +191,9 @@ exclude_lines = [
         │   ├── design/
         │   ├── change/
         │   ├── issues/
-        │   ├── trace/
+        │   ├── prompt/          # Code generation prompts
+        │   ├── trace/           # Requirements traceability
+        │   │   └── trace-0001-traceability-matrix.md
         │   ├── audit/
         │   └── test/
         │       └── result/
@@ -176,6 +206,7 @@ exclude_lines = [
             │   ├── design/
             │   ├── change/
             │   ├── issue/
+            │   ├── prompt/
             │   ├── trace/
             │   ├── audit/
             │   └── test/
@@ -187,8 +218,8 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.3 P02 Design
-  - 1.3.1 Domain 1: Creates master design document named \<design\>-\<0000\>-\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#21 t01 design>)
-  - 1.3.2 Domain 1: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#21 t01 design>)
+  - 1.3.1 Domain 1: Creates master design document named \<design\>-\<0000\>-\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#2.1 t01 design>)
+  - 1.3.2 Domain 1: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#2.1 t01 design>)
   - 1.3.3 Domain 1: Insures design element documents do not exceed domain 2 context window
   - 1.3.4 Domain 1: Insures the master  design document  is clearly designated within as the master design document.
   - 1.3.5 Design Verification
@@ -211,7 +242,7 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.4 P03 Change
-  - 1.4.1 Domain 1: Creates change documents from issue documents and human change requests using template [T02 Change](<#22 t02 change>) and saves them in folder workspace/change
+  - 1.4.1 Domain 1: Creates change documents from issue documents and human change requests using template [T02 Change](<#2.2 t02 change>) and saves them in folder workspace/change
   - 1.4.2 Domian 1: Insures created change documents are linked to thier source issue document
   - 1.4.3 Domain 1: Updates all relevant design documents after implementation
   - 1.4.4 Domain 1: Insures all design document updates contain change references and links to their source change document
@@ -239,10 +270,10 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.5 P04 Issue
-  - 1.5.1 Domain 1: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#23 t03 issue>) and saves them in folder workspace/issue
+  - 1.5.1 Domain 1: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
   - 1.5.2 Domain 1: Reserved for future use
   - 1.5.3 Domain 2: Debugs issues submitted from domain 2 and returns change proposal to domain 1
-  - 1.5.4 Domain 1: Updates issue documents from bugs and  using template [T03 Issue](<#23 t03 issue>) and saves them in folder workspace/issue
+  - 1.5.4 Domain 1: Updates issue documents from bugs and  using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
   - 1.5.5 Non-Conformance Reporting
     - Domain 1: Documents instances where generated code deviates from design specifications
     - Domain 1: Records deviation type, severity, affected components
@@ -255,7 +286,9 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.6 P05 Trace
-  - 1.6.1 Domain 1: Creates prompt documents from design and change documents using [T04 Prompt](<#24 t04 prompt>) and saves them with the naming format prompt-\<sequence number\>-\<prompt name\>.md in folder workspace/trace
+  - 1.6.1 Traceability Matrix Management
+    - Domain 1: Maintains traceability matrix in workspace/trace/trace-0001-traceability-matrix.md
+    - Domain 1: Updates matrix when requirements, designs, code, or tests modified
   - 1.6.2 Traceability Verification
     - Domain 1: Verifies bidirectional links exist: requirements ↔ design ↔ code ↔ test (navigable forward and backward)
     - Domain 1: Identifies and resolves traceability gaps
@@ -264,11 +297,21 @@ exclude_lines = [
     - Domain 1: Maintains traceability matrix linking requirements through implementation
     - Domain 1: Updates matrix when designs, code, or tests modified
     - Domain 1: Ensures orphaned requirements or implementations identified
+  - 1.6.4 Traceability Matrix Structure
+    - Domain 1: Maintains single traceability matrix in workspace/trace/trace-0001-traceability-matrix.md
+    - Required sections:
+      - Functional Requirements: ID, Requirement, Design, Code, Test, Status
+      - Non-Functional Requirements: ID, Requirement, Target, Design, Code, Test, Status
+      - Component Mapping: Component → Requirements → Design → Source → Test
+      - Design Document Cross-Reference: Design Doc → Requirements → Code → Tests
+      - Test Coverage: Test File → Requirements Verified → Code Coverage
+      - Bidirectional Navigation: Forward (Req→Design→Code→Test) and Backward (Test→Code→Design→Req)
+    - Domain 1: Updates matrix when requirements, designs, code, or tests change
 
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.7 P06 Test
-  - 1.7.1 Domain 1: Creates test documents from source code generated by domain 2 using template [T05 Test](<#25 t05 test>) and saves them in folder workspace/test
+  - 1.7.1 Domain 1: Creates test documents from source code generated by domain 2 using template [T05 Test](<#2.5 t05 test>) and saves them in folder workspace/test
   - 1.7.1a Test Script Creation
     - Domain 1: Generates executable test scripts in src/tests/
     - Domain 1: Creates unit tests for components in subdirectories (src/tests/\<component\>/)
@@ -313,7 +356,7 @@ exclude_lines = [
     - Domain 1: Archives or removes ephemeral validation scripts post-verification
     - Domain 1: Updates test documentation to reflect lifecycle status
 
-[Return to Table of Contents](\<#table of contents\>)
+[Return to Table of Contents](<#table of contents>)
 
 #### 1.8 P07 Quality
   - 1.8.1 Code Validation
@@ -321,7 +364,7 @@ exclude_lines = [
     - Domain 1: Validates against design specifications, interface contracts, data schemas
     - Domain 1: Documents validation results, discrepancies found
 
-[Return to Table of Contents](\<#table of contents\>)
+[Return to Table of Contents](<#table of contents>)
 
 #### 1.9 P08 Audit
 
@@ -335,7 +378,7 @@ exclude_lines = [
     - Human-requested: Ad-hoc audits when compliance concerns arise
     - Baseline: After initial code generation before production deployment
   - 1.9.3 Audit Scope
-    - Protocol compliance: All protocols P00-P07
+    - Protocol compliance: All protocols P00-P09
     - Document compliance: Naming, formatting, cross-linking, version histories
     - Code quality: Thread safety, error handling, documentation standards
     - Traceability: Requirement ↔ design ↔ code ↔ test linkages
@@ -372,6 +415,30 @@ exclude_lines = [
     - Domain 1: Maintains chronological audit history in workspace/audit/
     - Domain 1: Links related audits (initial → follow-up → closure)
     - Domain 1: Preserves audit reports for process improvement analysis
+
+[Return to Table of Contents](<#table of contents>)
+
+#### 1.10 P09 Prompt
+  - 1.10.1 Purpose
+    - Manage creation and lifecycle of T04 prompt documents
+    - Facilitate Domain 1 → Domain 2 code generation communication
+  - 1.10.2 Prompt Creation
+    - Domain 1: Creates prompt documents from design and change documents using [T04 Prompt](<#2.4 t04 prompt>)
+    - Domain 1: Saves prompts with naming format prompt-\<sequence number\>-\<prompt name\>.md in workspace/prompt/
+    - Domain 1: Embeds complete design specifications and schema within prompt documents
+    - Domain 1: Ensures prompt documents are self-contained requiring no external file references
+  - 1.10.3 Instruction Documents
+    - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md after human approval
+    - Domain 1: Provides instruction document path to human
+    - Instruction document contains: Domain 2 invocation command, T04 prompt location, expected output locations, completion document requirements
+  - 1.10.4 Completion Documents
+    - Domain 2: Creates completion document workspace/prompt/prompt-NNNN-completion.md
+    - Required fields: generation timestamp, files created with paths, status (SUCCESS/FAILURE), warnings/notes
+    - Domain 1: Verifies completion document exists and indicates SUCCESS before proceeding
+  - 1.10.5 Prompt Versioning
+    - Domain 1: Uses sequence numbering for prompt iterations (prompt-NNNN-1.md, prompt-NNNN-2.md)
+    - Domain 1: Links related prompts for same component/feature
+    - Domain 1: Documents rationale for prompt revisions
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -1843,7 +1910,7 @@ properties:
 #### 2.4 T04 Prompt
 ```yaml
 # T04 Prompt Template v1.0 - YAML Format
-# Optimized for Domain 1 → Domain 2 MCP communication
+# Optimized for Domain 1 → Domain 2 filesystem communication
 # Designed for minimal token usage while maintaining completeness
 
 prompt_info:
@@ -1852,20 +1919,6 @@ prompt_info:
   source_ref: ""  # design-NNNN or change-NNNN
   date: ""
   priority: ""  # critical, high, medium, low
-
-mcp_config:
-  model: ""  # Target model identifier
-  temperature: 0.2  # 0.1-0.3 for code generation
-  max_tokens: 4096
-  system_prompt: |
-    Expert Python developer. Generate production-quality code following specifications.
-    
-    OUTPUT FORMAT REQUIREMENTS:
-    - Return code only, no explanations or commentary
-    - Include brief integration instructions after code
-    - No markdown code blocks unless explicitly requested
-    - No conversational text or preamble
-    - Domain 1 handles all integration logic
 
 context:
   purpose: ""  # What this code accomplishes
@@ -1943,26 +1996,20 @@ testing:
   validation:
     - ""
 
-output_format:
-  structure: "code_only"  # code_only, code_with_comments, full_explanation
-  integration_notes: "brief"  # none, brief, detailed
-  constraints:
-    - "No explanatory prose"
-    - "No conversational preamble"
-    - "Integration instructions: 2-3 lines maximum"
-    - "Domain 1 performs integration; Domain 2 provides code only"
-
 deliverable:
   format_requirements:
-    - "Return raw code without markdown blocks"
-    - "Add integration notes after code (max 3 lines)"
-    - "No additional commentary or explanations"
-    - "Format: <code>\n\nINTEGRATION: <brief instructions>"
+    - "Save generated code directly to specified paths"
+    - "Create completion document in workspace/prompt/"
   files:
-    - path: ""
-      content: ""  # code, test, config
-  documentation:
-    - "Integration instructions only"
+    - path: "src/<component>/<file>.py"
+      content: ""
+  completion_document:
+    path: "workspace/prompt/prompt-NNNN-completion.md"
+    required_fields:
+      - "timestamp"
+      - "files_created: [paths]"
+      - "status: SUCCESS or FAILURE"
+      - "notes: [any warnings]"
 
 success_criteria:
   - ""
@@ -1983,7 +2030,6 @@ $schema: http://json-schema.org/draft-07/schema#
 type: object
 required:
   - prompt_info
-  - mcp_config
   - specification
   - design
   - deliverable
@@ -2817,14 +2863,18 @@ flowchart TD
     
     D1_Prompt --> H3{Human: Approve<br/>code generation}
     H3 -->|Revise| D1_Prompt
-    H3 -->|Approve| D1_MCP[Domain 1: Send via MCP]
+    H3 -->|Approve| D1_Instruct[Domain 1: Create<br/>instruction doc]
     
-    D1_MCP --> D2_Generate[Domain 2: Generate code]
-    D2_Generate --> D2_Return[Domain 2: Return code]
-    D2_Return --> D1_Audit[Domain 1: Config audit<br/>code vs baseline]
+    D1_Instruct --> H_Invoke[Human: Invoke Domain 2]
+    H_Invoke --> D2_Read[Domain 2: Read T04]
+    D2_Read --> D2_Generate[Domain 2: Generate code]
+    D2_Generate --> D2_Save[Domain 2: Save to src/]
+    D2_Save --> D2_Complete[Domain 2: Create<br/>completion doc]
+    D2_Complete --> H_Notify[Human: Notify Domain 1]
+    H_Notify --> D1_Verify[Domain 1: Verify<br/>completion doc]
     
-    D1_Audit --> D1_Save[Domain 1: Save code to src/]
-    D1_Save --> D1_Test_Doc[Domain 1: Create test doc T05]
+    D1_Verify --> D1_Audit[Domain 1: Config audit<br/>code vs baseline]
+    D1_Audit --> D1_Test_Doc[Domain 1: Create test doc T05]
     
     D1_Test_Doc --> D1_Execute[Domain 1: Execute tests]
     D1_Execute --> Test_Result{Tests pass?}
@@ -2833,9 +2883,7 @@ flowchart TD
     D1_Issue --> Issue_Type{Issue type?}
     
     Issue_Type -->|Bug| D1_Debug_Prompt[Domain 1: Create debug<br/>prompt T04]
-    D1_Debug_Prompt --> D1_MCP_Debug[Domain 1: Send debug<br/>via MCP]
-    D1_MCP_Debug --> D2_Debug[Domain 2: Debug/fix]
-    D2_Debug --> D2_Return
+    D1_Debug_Prompt --> H3
     
     Issue_Type -->|Design flaw| D1_Change[Domain 1: Create change T02]
     D1_Change --> H4{Human: Review<br/>change}
@@ -2854,167 +2902,32 @@ flowchart TD
 
 ## Version History
 
-| Version | Date | Description |
-|---------|------|-------------|
-| 1.0 | 2025-10-30 | Initial enumeration |
-| 1.1 | 2025-11-03 | Added T02 Change template and schema |
-| 1.2 | 2025-11-03 | Added T03 Issue template and schema |
-| 1.3 | 2025-11-03 | Added T04 Prompt template and schema |
-| 1.4 | 2025-11-06 | Integrated IEEE/ISO standards-based directives: P00 (1.1.11-1.1.12), P02 (1.3.5-1.3.8), P03 (1.4.5-1.4.9), P04 (1.5.5-1.5.6), P05 (1.6.2-1.6.3), P06 (1.7.2-1.7.4), new P07 Quality Assurance (1.8.1) |
-| 1.5 | 2025-11-06 | Added T05 Test template and schema |
-| 1.6 | 2025-11-06 | Replaced flowchart with revised version incorporating human review checkpoints, iterative cycles, and complete workflow loops |
-| 1.7 | 2025-11-06 | Enhanced T04 Prompt template with output format controls to constrain Domain 2 responses to code-only with minimal integration instructions |
-| 1.8 | 2025-11-11 | Added P01 initialization square to Framework Execution Flowchart |
-| 1.9 | 2025-11-11 | Added .gitignore specification to P01.2.2 |
-| 2.0 | 2025-11-11 | Added pyproject.toml skeleton to P01.2.2 |
-| 2.1 | 2025-11-12 | Specified GitHub Desktop as tagging mechanism in P00 1.1.11 Configuration Management |
-| 2.2 | 2025-11-12 | Added P00 1.1.13 Domain 2 Configuration and Appendix A: Domain 2 Preset Specifications |
-| 2.3 | 2025-11-13 | Added tests/ subfolder to src/ directory structure in P01.2.4 |
-| 2.4 | 2025-11-13 | Enhanced P06 Test with sections 1.7.1a (test script creation), 1.7.5-1.7.9 (test organization, isolation, mocking, regression testing, lifecycle management) |
-| 2.5 | 2025-11-13 | Added audit/ subfolder to workspace directory structure in P01.2.4 |
-| 2.6 | 2025-11-13 | Added P08 Audit protocol establishing periodic compliance verification, audit deliverable requirements, and remediation workflow |
-| 2.7 | 2025-11-13 | Added audit document class to P00 1.1.10 naming convention and updated P08 1.9.5 to use sequence numbering format |
-| 2.8 | 2025-11-13 | Added P00 1.1.3 Framework Application clarifying that Domain 1/2 separation applies to development workflow, not runtime architecture of generated applications. Renumbered subsequent P00 subsections 1.1.4-1.1.13 |
+| Version | Date       | Description                                                                                                                                                                                                         |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0     | 2025-10-30 | Initial enumeration                                                                                                                                                                                                 |
+| 1.1     | 2025-11-03 | Added T02 Change template and schema                                                                                                                                                                                |
+| 1.2     | 2025-11-03 | Added T03 Issue template and schema                                                                                                                                                                                 |
+| 1.3     | 2025-11-03 | Added T04 Prompt template and schema                                                                                                                                                                                |
+| 1.4     | 2025-11-06 | Integrated IEEE/ISO standards-based directives: P00 (1.1.11-1.1.12), P02 (1.3.5-1.3.8), P03 (1.4.5-1.4.9), P04 (1.5.5-1.5.6), P05 (1.6.2-1.6.3), P06 (1.7.2-1.7.4), new P07 Quality Assurance (1.8.1)               |
+| 1.5     | 2025-11-06 | Added T05 Test template and schema                                                                                                                                                                                  |
+| 1.6     | 2025-11-06 | Replaced flowchart with revised version incorporating human review checkpoints, iterative cycles, and complete workflow loops                                                                                       |
+| 1.7     | 2025-11-06 | Enhanced T04 Prompt template with output format controls to constrain Domain 2 responses to code-only with minimal integration instructions                                                                         |
+| 1.8     | 2025-11-11 | Added P01 initialization square to Framework Execution Flowchart                                                                                                                                                    |
+| 1.9     | 2025-11-11 | Added .gitignore specification to P01.2.2                                                                                                                                                                           |
+| 2.0     | 2025-11-11 | Added pyproject.toml skeleton to P01.2.2                                                                                                                                                                            |
+| 2.1     | 2025-11-12 | Specified GitHub Desktop as tagging mechanism in P00 1.1.11 Configuration Management                                                                                                                                |
+| 2.2     | 2025-11-12 | Added P00 1.1.13 Domain 2 Configuration and Appendix A: Domain 2 Preset Specifications                                                                                                                              |
+| 2.3     | 2025-11-13 | Added tests/ subfolder to src/ directory structure in P01.2.4                                                                                                                                                       |
+| 2.4     | 2025-11-13 | Enhanced P06 Test with sections 1.7.1a (test script creation), 1.7.5-1.7.9 (test organization, isolation, mocking, regression testing, lifecycle management)                                                        |
+| 2.5     | 2025-11-13 | Added audit/ subfolder to workspace directory structure in P01.2.4                                                                                                                                                  |
+| 2.6     | 2025-11-13 | Added P08 Audit protocol establishing periodic compliance verification, audit deliverable requirements, and remediation workflow                                                                                    |
+| 2.7     | 2025-11-13 | Added audit document class to P00 1.1.10 naming convention and updated P08 1.9.5 to use sequence numbering format                                                                                                   |
+| 2.8     | 2025-11-13 | Added P00 1.1.3 Framework Application clarifying that Domain 1/2 separation applies to development workflow, not runtime architecture of generated applications. Renumbered subsequent P00 subsections 1.1.4-1.1.13 |
+| 2.9 | 2025-11-14 | Added P01 1.2.5 traceability matrix skeleton directive and P05 1.6.4 traceability matrix structure specification. Renumbered P01 1.2.4 to 1.2.6 |
+| 3.0 | 2025-11-14 | Replaced MCP communication with filesystem communication for Domain 1↔Domain 2 (P00 1.1.7-1.1.8-1.1.9-1.1.11); removed LM Studio references; simplified T04 template; updated flowchart; deleted Appendix A |
+| 3.1 | 2025-11-14 | Added P09 Prompt protocol; separated prompt management from trace; created workspace/prompt/ folder; updated P00 1.1.10 document class list; updated P08 1.9.3 audit scope to P00-P09 |
 
 ---
-[Return to Table of Contents](<#table of contents>)
-
----
-
-## Appendix A: Domain 2 Preset Specifications
-
-### A.1 Overview
-
-Domain 2 presets optimize LM Studio configuration for code generation tasks within the framework. Each preset defines system prompts and parameters aligned with governance requirements and T04 template specifications.
-
-### A.2 Domain2-CodeGen Preset
-
-**Purpose:** Production code generation from design specifications
-
-**System Prompt:**
-```
-You are an expert Python developer generating production-quality code from specifications.
-
-OUTPUT RULES:
-- Return ONLY executable code, no explanations
-- Add integration notes AFTER code (max 3 lines)
-- No markdown blocks, no preamble, no commentary
-- Format: <code>\n\nINTEGRATION: <brief instructions>
-
-CODE REQUIREMENTS:
-- Thread-safe for concurrent access
-- Comprehensive error handling with try/except blocks
-- Debug logging with traceback (import logging, traceback)
-- Professional docstrings (Google/NumPy style)
-- Type hints where applicable
-- Input validation on all functions
-
-You receive complete specifications in each request. Generate code that precisely implements the design.
-```
-
-**Parameters:**
-- Temperature: 0.2
-- Max Tokens: 4096
-- Top P: 0.95
-- Repeat Penalty: 1.1
-
-**Usage:** Reference as `Domain2-CodeGen` in T04 prompt mcp_config.model field
-
-[Return to Table of Contents](<#table of contents>)
-
-### A.3 Domain2-Debug Preset
-
-**Purpose:** Debugging and fixing code based on issue reports
-
-**System Prompt:**
-```
-You are debugging Python code based on issue reports.
-
-OUTPUT RULES:
-- Return corrected code only
-- Add brief fix summary AFTER code (max 3 lines)
-- No explanations, no markdown blocks
-- Format: <corrected_code>\n\nFIX: <brief description>
-
-DEBUG APPROACH:
-- Analyze error traces and reproduction steps
-- Preserve existing functionality not related to the issue
-- Add defensive error handling
-- Include debug logging at fix points
-- Maintain code style consistency
-
-Receive issue details with code context. Return fixed code matching the design specification.
-```
-
-**Parameters:**
-- Temperature: 0.15
-- Max Tokens: 4096
-- Top P: 0.9
-- Repeat Penalty: 1.15
-
-**Usage:** Reference as `Domain2-Debug` in T04 prompt mcp_config.model field for debugging tasks
-
-[Return to Table of Contents](<#table of contents>)
-
-### A.4 Domain2-Refactor Preset
-
-**Purpose:** Code refactoring for improved structure or performance
-
-**System Prompt:**
-```
-You are refactoring Python code for improved structure or performance.
-
-OUTPUT RULES:
-- Return refactored code only
-- Add refactor notes AFTER code (max 3 lines)
-- No explanations, no markdown blocks
-- Format: <refactored_code>\n\nREFACTOR: <brief notes>
-
-REFACTOR REQUIREMENTS:
-- Preserve all original functionality
-- Improve code organization/readability
-- Optimize performance where specified
-- Maintain or improve error handling
-- Update docstrings to match changes
-- Thread safety must not degrade
-
-Receive refactor specifications with existing code. Return improved code maintaining design compliance.
-```
-
-**Parameters:**
-- Temperature: 0.25
-- Max Tokens: 4096
-- Top P: 0.95
-- Repeat Penalty: 1.1
-
-**Usage:** Reference as `Domain2-Refactor` in T04 prompt mcp_config.model field for refactoring tasks
-
-[Return to Table of Contents](<#table of contents>)
-
-### A.5 Configuration Notes
-
-**Temperature Rationale:**
-- Low values (0.15-0.25) ensure deterministic, specification-compliant output
-- CodeGen (0.2): Balanced determinism with slight creativity for implementation choices
-- Debug (0.15): Maximum determinism for consistent bug fixes
-- Refactor (0.25): Slightly higher for alternative implementation approaches
-
-**Token Limits:**
-- 4096 tokens aligns with T04 template specification
-- Prevents context overflow during Domain 1 ↔ Domain 2 communication
-- Sufficient for typical module-level code generation
-
-**Output Constraints:**
-- System prompts enforce P00 1.1.7 requirement: Domain 2 returns code only
-- No external references (per P00 1.1.7: self-contained specifications)
-- Integration notes minimal (Domain 1 handles integration logic)
-
-**LM Studio Configuration:**
-1. Navigate to LM Studio "Presets" section
-2. Create new preset with specifications above
-3. Save with exact preset names for T04 reference
-4. Domain 1 references preset by name in T04 prompt mcp_config.model field
-
 [Return to Table of Contents](<#table of contents>)
 
 ---
