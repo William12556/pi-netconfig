@@ -1,12 +1,16 @@
-"""Unit tests for installer module.
+"""
+Unit tests for installer.py module
 
-Tests installation detection, systemd integration, and error handling.
+Test Specification: workspace/test/test-0002-installer.md
+Requirements: FR-001 through FR-007
+Coverage Target: 80%
 """
 
 import pytest
 from unittest.mock import Mock, patch, mock_open, MagicMock
 from pathlib import Path
 import subprocess
+from tempfile import TemporaryDirectory
 
 import sys
 import os

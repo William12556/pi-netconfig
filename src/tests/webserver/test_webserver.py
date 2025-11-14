@@ -1,6 +1,9 @@
-"""Unit tests for webserver module.
+"""
+Unit tests for webserver.py module
 
-Tests HTTP server, request handlers, and API endpoints.
+Test Specification: workspace/test/test-0005-webserver.md
+Requirements: FR-050 through FR-055
+Coverage Target: 80%
 """
 
 import pytest

@@ -1,6 +1,9 @@
-"""Unit tests for statemonitor module.
+"""
+Unit tests for statemonitor.py module
 
-Tests state machine transitions, monitoring loop, and component coordination.
+Test Specification: workspace/test/test-0003-statemonitor.md
+Requirements: FR-010, FR-011, FR-013, FR-020, FR-021, FR-022, FR-045
+Coverage Target: 80%
 """
 
 import pytest

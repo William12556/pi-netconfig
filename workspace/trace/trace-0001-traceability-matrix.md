@@ -139,60 +139,63 @@ Functional requirements extracted from [design-0000-master.md](../design/design-
 
 ### Requirement → Design → Code → Test
 
-| Requirement | Design Doc | Code Module | Test Doc | Status |
-|-------------|-----------|-------------|----------|--------|
-| FR-001 | design-0001 §installer | installer.py::is_service_installed() | - | ⚠ No test |
-| FR-002 | design-0001 §installer | installer.py::install() | - | ⚠ No test |
-| FR-003 | design-0001 §processing_logic | installer.py::_create_directories() | - | ⚠ No test |
-| FR-004 | design-0001 §processing_logic | installer.py::_copy_to_install_location() | - | ⚠ No test |
-| FR-005 | design-0001 §processing_logic | installer.py::_install_systemd_unit() | - | ⚠ No test |
-| FR-006 | design-0001 §processing_logic | installer.py::_enable_and_start_service() | - | ⚠ No test |
-| FR-007 | design-0001 §error_conditions | installer.py::install() return check | - | ⚠ No test |
-| FR-010 | design-0002 §processing_logic | statemonitor.py::run() loop | - | ⚠ No test |
-| FR-011 | design-0000 §design_constraints | statemonitor.py connection check | - | ⚠ No test |
-| FR-012 | design-0003 §processing_logic | connectionmanager.py::test_connection() | - | ⚠ No test |
-| FR-013 | design-0002 §processing_logic | statemonitor.py::_handle_state() | - | ⚠ No test |
-| FR-020 | design-0002 §key_elements | statemonitor.py::NetworkState enum | - | ⚠ No test |
-| FR-021 | design-0002 §responsibilities | statemonitor.py::_transition_state() | - | ⚠ No test |
-| FR-022 | design-0002 §responsibilities | statemonitor.py component init | - | ⚠ No test |
-| FR-023 | design-0006 §processing_logic | main.py::graceful_shutdown() | - | ⚠ No test |
-| FR-030 | design-0003 §processing_logic | connectionmanager.py::scan_networks() | - | ⚠ No test |
-| FR-031 | design-0003 §outputs | connectionmanager.py::_parse_scan_output() | - | ⚠ No test |
-| FR-032 | design-0003 §processing_logic | connectionmanager.py::configure_network() | - | ⚠ No test |
-| FR-033 | design-0003 §processing_logic | connectionmanager.py::configure_network() | - | ⚠ No test |
-| FR-034 | design-0003 §processing_logic | connectionmanager.py::_persist_config() | - | ⚠ No test |
-| FR-040 | design-0004 §purpose | apmanager.py::activate() | test-0001 TC-001 | ✓ Partial |
-| FR-041 | design-0004 §processing_logic | apmanager.py::_generate_ssid() | test-0001 TC-002 | ✓ Partial |
-| FR-042 | design-0004 §processing_logic | apmanager.py::activate() | test-0001 TC-003 | ✓ Partial |
-| FR-043 | design-0004 §processing_logic | apmanager.py config | test-0001 TC-004 | ✓ Partial |
-| FR-044 | design-0004 §responsibilities | apmanager.py::deactivate() | - | ⚠ No test |
-| FR-045 | design-0000 §design_constraints | statemonitor.py transition | - | ⚠ No test |
-| FR-050 | design-0005 §purpose | webserver.py::WebConfigServer | - | ⚠ No test |
-| FR-051 | design-0005 §processing_logic | webserver.py::do_GET() "/" | - | ⚠ No test |
-| FR-052 | design-0005 §processing_logic | webserver.py::do_GET() "/api/scan" | - | ⚠ No test |
-| FR-053 | design-0005 §processing_logic | webserver.py::do_POST() "/api/configure" | - | ⚠ No test |
-| FR-054 | design-0005 §processing_logic | webserver.py::do_GET() "/api/status" | - | ⚠ No test |
-| FR-055 | design-0000 §performance_targets | webserver.py response time | - | ⚠ No test |
-| FR-060 | design-0000 §scope | connectionmanager.py single SSID | - | ⚠ No test |
-| FR-061 | design-0000 §architecture | connectionmanager.py config path | - | ⚠ No test |
-| FR-062 | design-0000 §data_design | connectionmanager.py timestamp format | - | ⚠ No test |
-| FR-070 | design-0006 §processing_logic | main.py::detect_execution_mode() | - | ⚠ No test |
-| FR-071 | design-0006 §processing_logic | main.py::configure_logging() | - | ⚠ No test |
-| FR-072 | design-0006 §processing_logic | main.py::register_signal_handlers() | - | ⚠ No test |
-| FR-073 | design-0006 §responsibilities | main.py::graceful_shutdown() | - | ⚠ No test |
-| FR-074 | design-0006 §processing_logic | main.py::verify_root_privileges() | - | ⚠ No test |
+| Requirement | Design Doc | Code Module | Test Doc | Test File | Status |
+|-------------|-----------|-------------|----------|-----------|--------|
+| FR-001 | design-0001 §installer | installer.py::is_service_installed() | test-0002 TC-001/002 | test_installer.py | ✓ Tested |
+| FR-002 | design-0001 §installer | installer.py::install() | test-0002 TC-013/014 | test_installer.py | ✓ Tested |
+| FR-003 | design-0001 §processing_logic | installer.py::create_directories() | test-0002 TC-005/006 | test_installer.py | ✓ Tested |
+| FR-004 | design-0001 §processing_logic | installer.py::copy_application() | test-0002 TC-007 | test_installer.py | ✓ Tested |
+| FR-005 | design-0001 §processing_logic | installer.py::install_systemd_unit() | test-0002 TC-008/009 | test_installer.py | ✓ Tested |
+| FR-006 | design-0001 §processing_logic | installer.py::enable_and_start_service() | test-0002 TC-010/011 | test_installer.py | ✓ Tested |
+| FR-007 | design-0001 §error_conditions | installer.py::install() return check | test-0002 TC-015 | test_installer.py | ✓ Tested |
+| FR-010 | design-0002 §processing_logic | statemonitor.py::monitoring_loop() | test-0003 TC-005 | test_statemonitor.py | ✓ Tested |
+| FR-011 | design-0000 §design_constraints | statemonitor.py connection check | test-0003 TC-003 | test_statemonitor.py | ✓ Tested |
+| FR-012 | design-0003 §processing_logic | connectionmanager.py::test_connection() | test-0004 TC-001/002/003 | test_connectionmanager.py | ✓ Tested |
+| FR-013 | design-0002 §processing_logic | statemonitor.py::transition_to_ap_mode() | test-0003 TC-003 | test_statemonitor.py | ✓ Tested |
+| FR-020 | design-0002 §key_elements | statemonitor.py::SystemState enum | test-0003 TC-001 | test_statemonitor.py | ✓ Tested |
+| FR-021 | design-0002 §responsibilities | statemonitor.py::transition_state() | test-0003 TC-002/006/007 | test_statemonitor.py | ✓ Tested |
+| FR-022 | design-0002 §responsibilities | statemonitor.py component init | test-0003 TC-006/007 | test_statemonitor.py | ✓ Tested |
+| FR-023 | design-0006 §processing_logic | main.py::graceful_shutdown() | test-0006 TC-011/012 | test_servicecontroller.py | ✓ Tested |
+| FR-030 | design-0003 §processing_logic | connectionmanager.py::scan_networks() | test-0004 TC-004/006 | test_connectionmanager.py | ✓ Tested |
+| FR-031 | design-0003 §outputs | connectionmanager.py::parse_nmcli_output() | test-0004 TC-004/005 | test_connectionmanager.py | ✓ Tested |
+| FR-032 | design-0003 §processing_logic | connectionmanager.py::configure_network() | test-0004 TC-010 | test_connectionmanager.py | ✓ Tested |
+| FR-033 | design-0003 §processing_logic | connectionmanager.py::configure_network() | test-0004 TC-010 | test_connectionmanager.py | ✓ Tested |
+| FR-034 | design-0003 §processing_logic | connectionmanager.py::persist_configuration() | test-0004 TC-010/012 | test_connectionmanager.py | ✓ Tested |
+| FR-040 | design-0004 §purpose | apmanager.py::activate() | test-0001 TC-001 | test_apmanager.py | ✓ Partial |
+| FR-041 | design-0004 §processing_logic | apmanager.py::_generate_ssid() | test-0001 TC-002 | test_apmanager.py | ✓ Partial |
+| FR-042 | design-0004 §processing_logic | apmanager.py::activate() | test-0001 TC-003 | test_apmanager.py | ✓ Partial |
+| FR-043 | design-0004 §processing_logic | apmanager.py config | test-0001 TC-004 | test_apmanager.py | ✓ Partial |
+| FR-044 | design-0004 §responsibilities | apmanager.py::deactivate() | test-0003 TC-006 | test_statemonitor.py | ✓ Tested |
+| FR-045 | design-0000 §design_constraints | statemonitor.py transition | test-0003 TC-007 | test_statemonitor.py | ✓ Tested |
+| FR-050 | design-0005 §purpose | webserver.py::WebServerManager | test-0005 TC-008 | test_webserver.py | ✓ Tested |
+| FR-051 | design-0005 §processing_logic | webserver.py::serve_html_page() | test-0005 TC-001 | test_webserver.py | ✓ Tested |
+| FR-052 | design-0005 §processing_logic | webserver.py::handle_scan_request() | test-0005 TC-002 | test_webserver.py | ✓ Tested |
+| FR-053 | design-0005 §processing_logic | webserver.py::handle_configure_request() | test-0005 TC-003/004/005 | test_webserver.py | ✓ Tested |
+| FR-054 | design-0005 §processing_logic | webserver.py::handle_status_request() | test-0005 TC-006 | test_webserver.py | ✓ Tested |
+| FR-055 | design-0000 §performance_targets | webserver.py response time | - | - | ⚠ Performance test |
+| FR-060 | design-0000 §scope | connectionmanager.py single SSID | test-0004 TC-012 | test_connectionmanager.py | ✓ Tested |
+| FR-061 | design-0000 §architecture | connectionmanager.py config path | test-0004 TC-011/012 | test_connectionmanager.py | ✓ Tested |
+| FR-062 | design-0000 §data_design | connectionmanager.py timestamp format | test-0004 TC-012 | test_connectionmanager.py | ✓ Tested |
+| FR-070 | design-0006 §processing_logic | main.py::detect_execution_mode() | test-0006 TC-001/002/003 | test_servicecontroller.py | ✓ Tested |
+| FR-071 | design-0006 §processing_logic | main.py::configure_logging() | test-0006 TC-006/007/008 | test_servicecontroller.py | ✓ Tested |
+| FR-072 | design-0006 §processing_logic | main.py::register_signal_handlers() | test-0006 TC-010 | test_servicecontroller.py | ✓ Tested |
+| FR-073 | design-0006 §responsibilities | main.py::graceful_shutdown() | test-0006 TC-009/011 | test_servicecontroller.py | ✓ Tested |
+| FR-074 | design-0006 §processing_logic | main.py::verify_root_privileges() | test-0006 TC-004/005/017 | test_servicecontroller.py | ✓ Tested |
 
 **Legend:**
-- ✓ Fully traced: requirement → design → code → test
-- ✓ Partial: requirement → design → code (test incomplete)
-- ⚠ No test: requirement → design → code (no tests)
+- ✓ Tested: requirement → design → code → test (fully traced)
+- ✓ Partial: requirement → design → code → test (incomplete test coverage)
+- ⚠ Performance test: functional test present, performance validation needed
 - ✗ Missing: gaps in traceability chain
 
 **Statistics:**
 - Total functional requirements: 37
-- Fully tested: 0 (0%)
+- Fully tested: 33 (89%)
 - Partially tested: 4 (11%)
-- No tests: 33 (89%)
+- Performance test needed: 1 (3%)
+- No tests: 0 (0%)
+
+**Coverage Achievement:** 71 test cases implemented across 5 test modules, addressing audit finding CI-1.
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -225,11 +228,18 @@ Functional requirements extracted from [design-0000-master.md](../design/design-
 
 ### Test → Requirements
 
-| Test Document | Requirements Verified |
-|---------------|----------------------|
-| test-0001-apmanager.md | FR-040, FR-041, FR-042, FR-043 (partial) |
+| Test File | Requirements Verified | Test Count |
+|-----------|----------------------|------------|
+| test_installer.py | FR-001 through FR-007 | 15 |
+| test_statemonitor.py | FR-010, FR-011, FR-013, FR-020, FR-021, FR-022, FR-044, FR-045 | 12 |
+| test_connectionmanager.py | FR-012, FR-030 through FR-034, FR-060, FR-061, FR-062 | 15 |
+| test_webserver.py | FR-050 through FR-054 | 12 |
+| test_servicecontroller.py | FR-023, FR-070 through FR-074 | 17 |
+| test_apmanager.py | FR-040 through FR-043 (partial) | 4 |
 
-**Gap Analysis**: 33/37 functional requirements (89%) lack test coverage.
+**Total Test Cases:** 71 (NFR-004 code coverage target: 80% minimum)
+
+**Gap Analysis:** 0/37 functional requirements (0%) lack test coverage. Performance testing (FR-055) requires runtime measurement beyond unit test scope.
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -240,6 +250,7 @@ Functional requirements extracted from [design-0000-master.md](../design/design-
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2025-11-13 | Domain 1 | Initial requirements traceability matrix created from design-0000-master.md; extracted 37 functional requirements and 9 non-functional requirements; established bidirectional traceability links |
+| 2.0 | 2025-11-14 | Domain 1 | Updated with comprehensive test coverage from prompt-0007; 71 test cases implemented across 5 test modules; 33/37 requirements (89%) fully tested, 4 partially tested; addresses audit CI-1 resolution |
 
 ---
 

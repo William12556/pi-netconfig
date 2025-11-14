@@ -1,6 +1,9 @@
-"""Unit tests for connectionmanager module.
+"""
+Unit tests for connectionmanager.py module
 
-Tests network scanning, connection testing, and configuration management.
+Test Specification: workspace/test/test-0004-connectionmanager.md
+Requirements: FR-012, FR-030-034, FR-060-062
+Coverage Target: 80%
 """
 
 import pytest
@@ -8,8 +11,10 @@ from unittest.mock import Mock, patch, mock_open
 import subprocess
 import socket
 import json
+import threading
 from pathlib import Path
 from datetime import datetime
+from tempfile import TemporaryDirectory
 
 import sys
 import os
