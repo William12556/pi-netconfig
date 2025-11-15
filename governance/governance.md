@@ -133,6 +133,8 @@
 .zsh_history
 coverage.xml
 test.txt
+**/tmp
+deprecated/
 ```
     - Create pyproject.toml in project root:
 ```toml
