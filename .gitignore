@@ -8,3 +8,4 @@
 .zsh_history
 coverage.xml
 test.txt
+**/tmp
