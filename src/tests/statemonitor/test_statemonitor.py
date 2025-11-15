@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
 
 from statemonitor import (
     SystemState,
-    StateMachine,
+    StateMonitor,
     run,
     StateMonitorError,
     StateTransitionError,
@@ -35,8 +35,8 @@ class TestSystemState:
         assert hasattr(SystemState, 'AP_MODE')
 
 
-class TestStateMachineInitialization:
-    """Test StateMachine initialization."""
+class TestStateMonitorInitialization:
+    """Test StateMonitor initialization."""
     
     def test_state_machine_initializes_with_components(self):
         """Initializes with provided component instances."""
@@ -44,7 +44,7 @@ class TestStateMachineInitialization:
         mock_ap = Mock()
         mock_web = Mock()
         
-        sm = StateMachine(mock_conn, mock_ap, mock_web)
+        sm = StateMonitor(mock_conn, mock_ap, mock_web)
         
         assert sm.connection_manager is mock_conn
         assert sm.ap_manager is mock_ap
@@ -52,18 +52,18 @@ class TestStateMachineInitialization:
     
     def test_state_machine_starts_in_checking_state(self):
         """Initial state is CHECKING."""
-        sm = StateMachine(Mock(), Mock(), Mock())
+        sm = StateMonitor(Mock(), Mock(), Mock())
         assert sm.current_state == SystemState.CHECKING
     
     def test_state_machine_initializes_failure_count_zero(self):
         """Failure count starts at zero."""
-        sm = StateMachine(Mock(), Mock(), Mock())
+        sm = StateMonitor(Mock(), Mock(), Mock())
         assert sm.failure_count == 0
     
     @pytest.mark.asyncio
     async def test_initialize_creates_shutdown_event(self):
         """Initialize creates shutdown event."""
-        sm = StateMachine(Mock(), Mock(), Mock())
+        sm = StateMonitor(Mock(), Mock(), Mock())
         await sm.initialize()
         
         assert sm.shutdown_event is not None
@@ -72,7 +72,7 @@ class TestStateMachineInitialization:
     @pytest.mark.asyncio
     async def test_initialize_starts_monitoring_task(self):
         """Initialize starts monitoring loop task."""
-        sm = StateMachine(Mock(), Mock(), Mock())
+        sm = StateMonitor(Mock(), Mock(), Mock())
         
         with patch.object(sm, 'monitoring_loop', return_value=asyncio.sleep(0)):
             await sm.initialize()
@@ -88,7 +88,7 @@ class TestConnectionChecking:
         """Returns True when connection manager reports connected."""
         mock_conn = Mock()
         mock_conn.test_connection = AsyncMock(return_value=True)
-        sm = StateMachine(mock_conn, Mock(), Mock())
+        sm = StateMonitor(mock_conn, Mock(), Mock())
         
         result = await sm.check_connection()
         
@@ -99,7 +99,7 @@ class TestConnectionChecking:
         """Returns False when connection manager reports disconnected."""
         mock_conn = Mock()
         mock_conn.test_connection = AsyncMock(return_value=False)
-        sm = StateMachine(mock_conn, Mock(), Mock())
+        sm = StateMonitor(mock_conn, Mock(), Mock())
         
         result = await sm.check_connection()
         
@@ -110,7 +110,7 @@ class TestConnectionChecking:
         """Returns False when connection check raises exception."""
         mock_conn = Mock()
         mock_conn.test_connection = AsyncMock(side_effect=Exception("Network error"))
-        sm = StateMachine(mock_conn, Mock(), Mock())
+        sm = StateMonitor(mock_conn, Mock(), Mock())
         
         result = await sm.check_connection()
         
@@ -128,7 +128,7 @@ class TestStateTransitions:
         mock_web = Mock()
         mock_web.stop_server = AsyncMock()
         
-        sm = StateMachine(Mock(), mock_ap, mock_web)
+        sm = StateMonitor(Mock(), mock_ap, mock_web)
         sm.current_state = SystemState.AP_MODE
         sm.failure_count = 5
         
@@ -145,7 +145,7 @@ class TestStateTransitions:
         mock_ap = Mock()
         mock_ap.deactivate_ap = AsyncMock()
         
-        sm = StateMachine(Mock(), mock_ap, Mock())
+        sm = StateMonitor(Mock(), mock_ap, Mock())
         sm.current_state = SystemState.CHECKING
         
         await sm.transition_to_client()
@@ -159,7 +159,7 @@ class TestStateTransitions:
         mock_ap = Mock()
         mock_ap.deactivate_ap = AsyncMock(side_effect=Exception("Failed"))
         
-        sm = StateMachine(Mock(), mock_ap, Mock())
+        sm = StateMonitor(Mock(), mock_ap, Mock())
         sm.current_state = SystemState.AP_MODE
         
         with pytest.raises(StateTransitionError):
@@ -173,7 +173,7 @@ class TestStateTransitions:
         mock_web = Mock()
         mock_web.start_server = AsyncMock()
         
-        sm = StateMachine(Mock(), mock_ap, mock_web)
+        sm = StateMonitor(Mock(), mock_ap, mock_web)
         sm.current_state = SystemState.CHECKING
         
         await sm.transition_to_ap_mode()
@@ -188,7 +188,7 @@ class TestStateTransitions:
         mock_ap = Mock()
         mock_ap.activate_ap = AsyncMock(side_effect=Exception("Failed"))
         
-        sm = StateMachine(Mock(), mock_ap, Mock())
+        sm = StateMonitor(Mock(), mock_ap, Mock())
         
         with pytest.raises(StateTransitionError):
             await sm.transition_to_ap_mode()
@@ -203,7 +203,7 @@ class TestMonitoringLoop:
         mock_conn = Mock()
         mock_conn.test_connection = AsyncMock(return_value=True)
         
-        sm = StateMachine(mock_conn, Mock(), Mock())
+        sm = StateMonitor(mock_conn, Mock(), Mock())
         sm.shutdown_event = asyncio.Event()
         sm.current_state = SystemState.CHECKING
         
@@ -226,7 +226,7 @@ class TestMonitoringLoop:
         mock_conn = Mock()
         mock_conn.test_connection = AsyncMock(return_value=False)
         
-        sm = StateMachine(mock_conn, Mock(), Mock())
+        sm = StateMonitor(mock_conn, Mock(), Mock())
         sm.shutdown_event = asyncio.Event()
         sm.current_state = SystemState.CHECKING
         
@@ -253,7 +253,7 @@ class TestMonitoringLoop:
         mock_conn = Mock()
         mock_conn.test_connection = AsyncMock(return_value=True)
         
-        sm = StateMachine(mock_conn, Mock(), Mock())
+        sm = StateMonitor(mock_conn, Mock(), Mock())
         sm.shutdown_event = asyncio.Event()
         sm.current_state = SystemState.CLIENT
         sm.failure_count = 2
@@ -275,7 +275,7 @@ class TestMonitoringLoop:
         mock_conn = Mock()
         mock_conn.test_connection = AsyncMock(return_value=True)
         
-        sm = StateMachine(mock_conn, Mock(), Mock())
+        sm = StateMonitor(mock_conn, Mock(), Mock())
         sm.shutdown_event = asyncio.Event()
         
         with patch.object(sm, 'transition_to_client', new_callable=AsyncMock, side_effect=StateTransitionError("Failed")), \
@@ -299,7 +299,7 @@ class TestShutdown:
     @pytest.mark.asyncio
     async def test_shutdown_cancels_monitoring_task(self):
         """Shutdown cancels the monitoring task."""
-        sm = StateMachine(Mock(), Mock(), Mock())
+        sm = StateMonitor(Mock(), Mock(), Mock())
         sm.shutdown_event = asyncio.Event()
         sm.monitoring_task = asyncio.create_task(asyncio.sleep(1000))
         
@@ -315,7 +315,7 @@ class TestShutdown:
         mock_web = Mock()
         mock_web.stop_server = AsyncMock()
         
-        sm = StateMachine(Mock(), mock_ap, mock_web)
+        sm = StateMonitor(Mock(), mock_ap, mock_web)
         sm.shutdown_event = asyncio.Event()
         sm.current_state = SystemState.AP_MODE
         sm.monitoring_task = None
@@ -331,7 +331,7 @@ class TestShutdown:
         mock_ap = Mock()
         mock_ap.deactivate_ap = AsyncMock(side_effect=Exception("Failed"))
         
-        sm = StateMachine(Mock(), mock_ap, Mock())
+        sm = StateMonitor(Mock(), mock_ap, Mock())
         sm.shutdown_event = asyncio.Event()
         sm.current_state = SystemState.AP_MODE
         sm.monitoring_task = None
@@ -345,12 +345,12 @@ class TestRunFunction:
     
     @pytest.mark.asyncio
     async def test_run_initializes_state_machine(self):
-        """Run function initializes StateMachine."""
+        """Run function initializes StateMonitor."""
         mock_conn = Mock()
         mock_ap = Mock()
         mock_web = Mock()
         
-        with patch('statemonitor.StateMachine') as mock_sm_class:
+        with patch('statemonitor.StateMonitor') as mock_sm_class:
             mock_sm = Mock()
             mock_sm.initialize = AsyncMock()
             mock_sm.shutdown_event = asyncio.Event()
@@ -366,7 +366,7 @@ class TestRunFunction:
     @pytest.mark.asyncio
     async def test_run_handles_keyboard_interrupt(self):
         """Run handles KeyboardInterrupt gracefully."""
-        with patch('statemonitor.StateMachine') as mock_sm_class:
+        with patch('statemonitor.StateMonitor') as mock_sm_class:
             mock_sm = Mock()
             mock_sm.initialize = AsyncMock(side_effect=KeyboardInterrupt())
             mock_sm.shutdown = AsyncMock()
@@ -378,7 +378,7 @@ class TestRunFunction:
     @pytest.mark.asyncio
     async def test_run_raises_state_monitor_error_on_failure(self):
         """Run raises StateMonitorError on critical failure."""
-        with patch('statemonitor.StateMachine') as mock_sm_class:
+        with patch('statemonitor.StateMonitor') as mock_sm_class:
             mock_sm = Mock()
             mock_sm.initialize = AsyncMock(side_effect=Exception("Critical error"))
             mock_sm.shutdown = AsyncMock()
@@ -390,7 +390,7 @@ class TestRunFunction:
     @pytest.mark.asyncio
     async def test_run_calls_shutdown_in_finally(self):
         """Run always calls shutdown in finally block."""
-        with patch('statemonitor.StateMachine') as mock_sm_class:
+        with patch('statemonitor.StateMonitor') as mock_sm_class:
             mock_sm = Mock()
             mock_sm.initialize = AsyncMock()
             mock_sm.shutdown_event = asyncio.Event()

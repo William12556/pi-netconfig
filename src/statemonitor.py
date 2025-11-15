@@ -39,7 +39,7 @@ class ComponentInitializationError(StateMonitorError):
     pass
 
 
-class StateMachine:
+class StateMonitor:
     """State machine coordinating operational mode transitions.
     
     Manages transitions between CHECKING, CLIENT, and AP_MODE states based on
@@ -275,13 +275,13 @@ async def run(connection_manager, ap_manager, web_server) -> None:
     logger = logging.getLogger('StateMonitor')
     logger.info("Starting state monitor")
     
-    state_machine = StateMachine(connection_manager, ap_manager, web_server)
+    state_monitor = StateMonitor(connection_manager, ap_manager, web_server)
     
     try:
-        await state_machine.initialize()
+        await state_monitor.initialize()
         
         # Wait for shutdown signal
-        await state_machine.shutdown_event.wait()
+        await state_monitor.shutdown_event.wait()
         
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt received")
@@ -289,4 +289,4 @@ async def run(connection_manager, ap_manager, web_server) -> None:
         logger.critical("State monitor failed", exc_info=True)
         raise StateMonitorError("State monitor failed") from e
     finally:
-        await state_machine.shutdown()
+        await state_monitor.shutdown()
