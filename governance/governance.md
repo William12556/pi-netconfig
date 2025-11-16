@@ -23,25 +23,25 @@
   - [T04: Prompt](<#2.4 t04 prompt>)
   - [T05: Test](<#2.5 t05 test>)
   
-[Framework Execution Flowchart](<#3.0 framework execution flowchart>)
+[Workflow](<#3.0 workflow>)
 
 [Version History](<#version history>)
 
 ---
-
+###### Governance Prime directive: Follow workflow [flowchart](<#3.0 framework execution flowchart>)
+---
 ## 1.0 Protocols
 
 #### 1.1 P00 Governance (start here)
-  - 1.1.0 Prime directive
-    - Domain 1: Follow workflow [framework execution flowchart](<#3.0 framework execution flowchart>)
+
   - 1.1.1 Purpose
     - Python based software engineering, architecture and development
   - 1.1.2 Scope
     - Agnostic plan, control and initiation of software generation
   - 1.1.3 Framework Application
-    - This governance framework defines the development process and workflow
+    - This governance framework defines software development processes and workflow
     - Domain 1/Domain 2 separation applies to software creation, not to generated application runtime
-    - Generated applications (outputs) are independent of framework architecture
+    - Generated software/applications (outputs) are independent of framework architecture
     - Framework controls: how we build software
     - Framework does not control: how the built software operates
     - Example: \<project name\> uses this framework for development but is a standalone Python application at runtime
@@ -60,7 +60,7 @@
     - Domain 1: Uses template [T04 Prompt](<#2.4 t04 prompt>) to create code generation or debug prompts for Domain 2
     - Domain 1: Embeds complete design specifications and schema within prompt documents
     - Domain 1: Ensures prompt documents are self-contained requiring no external file references
-    - Domain 1: Saves T04 prompt to workspace/prompt/prompt-NNNN-<n>.md
+    - Domain 1: Saves T04 prompt to workspace/prompt/prompt-NNNN-\<name\>.md
     - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md
     - Domain 1: Notifies human to initiate Domain 2
     - Human: Invokes Domain 2 with instruction document
@@ -92,7 +92,7 @@
       Execute from project root:
       ```bash
       cd /Users/williamwatson/Documents/GitHub/pi-netconfig
-      claude code "Read and implement workspace/prompt/prompt-NNNN-<n>.md"
+      claude code "Read and implement workspace/prompt/prompt-NNNN-<name>.md"
       ```
       
       ## Expected Outputs
@@ -113,6 +113,8 @@
     - Domain 1: Maintains GitHub repository as authoritative source for all project artifacts
     - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
     - Domain 1: Performs configuration audit verifying generated code matches approved design baseline commits
+  - 1.1.13 Versioning
+    - All versioning is handled via GitHub
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -181,7 +183,7 @@ exclude_lines = [
   - 1.2.3 README
     - Create initial skeleton 'README.md' document in each folder
   - 1.2.4 Copy this document (governance.md) into \<project name>/governance
-  - 1.2.5 Traceability Matrix 
+  - 1.2.5 Traceability Matrix
      - Create skeleton trace-0001-traceability-matrix.md in workspace/trace/
   - 1.2.6 Project folder structure
     - Layout
@@ -240,6 +242,8 @@ exclude_lines = [
     - Domain 1: Verifies design satisfies all stated requirements before baseline
     - Domain 1: Documents validation results in design document
     - Domain 1: Resolves discrepancies before proceeding to code generation
+  - 1.3.9 Document storage
+    - Domain 1: Saves all design documents in workspace/design
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -426,9 +430,11 @@ exclude_lines = [
     - Facilitate Domain 1 → Domain 2 code generation communication
   - 1.10.2 Prompt Creation
     - Domain 1: Creates prompt documents from design and change documents using [T04 Prompt](<#2.4 t04 prompt>)
-    - Domain 1: Saves prompts with naming format prompt-\<sequence number\>-\<prompt name\>.md in workspace/prompt/
+    - Domain 1: Saves prompts with naming format prompt-\<sequence number\>-\<name\>.md in workspace/prompt/
+    - Domain 1: Rewrites prompt documents in place when revisions required
     - Domain 1: Embeds complete design specifications and schema within prompt documents
     - Domain 1: Ensures prompt documents are self-contained requiring no external file references
+    - GitHub version control maintains complete revision history
   - 1.10.3 Instruction Documents
     - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md after human approval
     - Domain 1: Provides instruction document path to human
@@ -437,10 +443,10 @@ exclude_lines = [
     - Domain 2: Creates completion document workspace/prompt/prompt-NNNN-completion.md
     - Required fields: generation timestamp, files created with paths, status (SUCCESS/FAILURE), warnings/notes
     - Domain 1: Verifies completion document exists and indicates SUCCESS before proceeding
-  - 1.10.5 Prompt Versioning
-    - Domain 1: Uses sequence numbering for prompt iterations (prompt-NNNN-1.md, prompt-NNNN-2.md)
-    - Domain 1: Links related prompts for same component/feature
-    - Domain 1: Documents rationale for prompt revisions
+  - 1.10.5 Prompt Revision
+    - Domain 1: Rewrites existing prompt documents when changes needed
+    - Domain 1: Documents revision rationale in prompt version_history section
+    - GitHub commits provide complete change tracking and rollback capability
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -2846,7 +2852,7 @@ properties:
 
 [Return to Table of Contents](<#table of contents>)
 
-## 3.0 Framework execution flowchart
+## 3.0 Workflow
 
 ```mermaid
 flowchart TD
@@ -2928,6 +2934,7 @@ flowchart TD
 | 2.9 | 2025-11-14 | Added P01 1.2.5 traceability matrix skeleton directive and P05 1.6.4 traceability matrix structure specification. Renumbered P01 1.2.4 to 1.2.6 |
 | 3.0 | 2025-11-14 | Replaced MCP communication with filesystem communication for Domain 1↔Domain 2 (P00 1.1.7-1.1.8-1.1.9-1.1.11); removed LM Studio references; simplified T04 template; updated flowchart; deleted Appendix A |
 | 3.1 | 2025-11-14 | Added P09 Prompt protocol; separated prompt management from trace; created workspace/prompt/ folder; updated P00 1.1.10 document class list; updated P08 1.9.3 audit scope to P00-P09 |
+| 3.2 | 2025-11-16 | Removed prompt iteration numbering (P09 1.10.2, 1.10.5); GitHub version control replaces iteration-based versioning |
 
 ---
 [Return to Table of Contents](<#table of contents>)
