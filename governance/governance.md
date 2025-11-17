@@ -272,6 +272,8 @@ exclude_lines = [
     - Domain 1: Updates all affected documentation when changes implemented
     - Domain 1: Maintains documentation currency with code state
     - Domain 1: Cross-links updated documents to source change document
+  - 1.4.10 Documentation domain
+    - Change documentation is only required for source code changes in src/. Change documentation to documents in the workspace/ is not required and can be made directly after human approval.
 
 [Return to Table of Contents](<#table of contents>)
 
