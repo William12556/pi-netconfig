@@ -17,4 +17,8 @@ pi-netconfig/
 └── deprecated/     # Archive
 ```
 
+**Important Notice:** This software is currently very unproven and in early development stages. The implementation is experimental in nature, serving as a learning exercise in AI-assisted development workflows, protocol-driven project management, and cross-platform embedded systems development. Actual fitness for purpose is not guaranteed.
+
+This project represents a first attempt at AI-supported software development using Claude Desktop, Claude Code and Codestral 22b AI tools. The objective is to establish a sort of AI orchestration framework to guide software development. A kind of AI wrangler if you will.
+
 Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
