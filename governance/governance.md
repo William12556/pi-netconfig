@@ -186,7 +186,7 @@ exclude_lines = [
     - Create initial skeleton 'README.md' document in each folder
   - 1.2.4 Copy this document (governance.md) into \<project name>/governance
   - 1.2.5 Traceability Matrix
-     - Create skeleton trace-0001-traceability-matrix.md in workspace/trace/
+     - Create skeleton trace-0000-master_traceability-matrix.md in workspace/trace/
   - 1.2.6 Project folder structure
     - Layout
 ```text
@@ -199,7 +199,7 @@ exclude_lines = [
         │   ├── issues/
         │   ├── prompt/          # Code generation prompts
         │   ├── trace/           # Requirements traceability
-        │   │   └── trace-0000-traceability-matrix.md
+        │   │   └── trace-0000-master_traceability-matrix.md
         │   ├── audit/
         │   └── test/
         │       └── result/
