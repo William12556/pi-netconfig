@@ -13,8 +13,7 @@ pi-netconfig/
 ├── governance/     # Operational rules
 ├── workspace/      # Operations space
 ├── docs/           # Technical documents
-├── src/            # Source code
-└── deprecated/     # Archive
+└── src/            # Source code
 ```
 
 ## Important Notice
