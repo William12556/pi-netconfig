@@ -1,6 +1,6 @@
 # Pi Network Configuration Tool
 
-HTML based wifi configuration management for Raspberry Pi/Debian systems.
+HTML based WiFi configuration management for Raspberry Pi/Debian systems.
 
 ## Overview
 
