@@ -39,7 +39,7 @@
   - 1.1.2 Scope
     - Agnostic plan, control and initiation of software generation
   - 1.1.3 Framework Application
-    - This governance framework defines software development processes and workflow
+    - This governance framework defines software development processes and workflows
     - Domain 1/Domain 2 separation applies to software creation, not to generated application runtime
     - Generated software/applications (outputs) are independent of framework architecture
     - Framework controls: how we build software
@@ -51,7 +51,7 @@
   - 1.1.5 Forbidden
     - Both domains: Unrequested creation, addition, removal or change of source code and documents is forbidden
   - 1.1.6 Constraints
-    - Domain 1: Does not exceed language model token resource budget communicating with domain 2
+    - Domain 1: Does not exceed language model token/context resource budget communicating with domain 2
   - 1.1.7 Control
     - Domain 1: Coordinates and controls Domain 2 code generator
     - Domain 2: Has read/write access to project folders via filesystem
