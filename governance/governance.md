@@ -30,7 +30,7 @@
 ---
 ###### Governance Prime directive: Follow workflow [flowchart](<#3.0 framework execution flowchart>)
 ---
-## 1.0 Protocols
+## 1.0 Protocols (Directives)
 
 #### 1.1 P00 Governance (start here)
 
@@ -40,55 +40,57 @@
     - Agnostic plan, control and initiation of software generation
   - 1.1.3 Framework Practice
     - This governance framework defines software development processes and workflows
-    - Domain 1/Domain 2 separation applies to software creation, not to generated application runtime
+    - Claude Desktop/Claude Code separation applies to software creation, not to generated application runtime
     - Generated software/applications (outputs) are independent of framework architecture
     - Framework controls: how we build software
     - Framework does not control: how the built software operates
     - Example: \<project name\> uses this framework for development but is a standalone Python application at runtime
   - 1.1.4 Architecture
-    - Domain 1: Plan and control: design, change, test and launching of code generation
-    - Domain 2: Execute: code generation
+    - Claude Desktop: Plan and control: design, change, test and launching of code generation
+    - Claude Code: Execute: code generation
   - 1.1.5 Forbidden
     - Both domains: Unrequested creation, addition, removal or change of source code and documents is forbidden
   - 1.1.6 Constraints
-    - Domain 1: Does not exceed language model token/context resource budget communicating with domain 2
+    - Claude Desktop: Does not exceed language model token/context resource budget communicating with Claude Code
   - 1.1.7 Control
-    - Domain 1: Coordinates and controls Domain 2 code generator
-    - Domain 2: Has read/write access to project folders via filesystem
-    - Domain 2: Saves generated code directly to src/ per T04 specifications
+    - Claude Desktop: Coordinates and controls Claude Code code generator
+    - Claude Code: Has read/write access to project folders via filesystem
+    - Claude Code: Saves generated code directly to src/ per T04 specifications
   - 1.1.8 Communication
-    - Domain 1: Uses template [T04 Prompt](<#2.4 t04 prompt>) to create code generation or debug prompts for Domain 2
-    - Domain 1: Embeds complete design specifications and schema within prompt documents
-    - Domain 1: Ensures prompt documents are self-contained requiring no external file references
-    - Domain 1: Saves T04 prompt to workspace/prompt/prompt-NNNN-\<name\>.md
-    - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md
-    - Domain 1: Notifies human to initiate Domain 2
-    - Human: Invokes Domain 2 with instruction document
-    - Domain 2: Reads T04 prompt from workspace/prompt/
-    - Domain 2: Generates code, saves directly to src/ per T04 specifications
-    - Domain 2: Creates completion document workspace/prompt/prompt-NNNN-completion.md
-    - Domain 1: Reads completion document, verifies SUCCESS status, proceeds with audit
+    - Both Claude Desktop and Claude Code have project filesystem access
+    - Communication between Claude Desktop and Claude Code uses the filesystem for passing messages ( Semaphores ) such as prompts
+    - Claude Desktop: Uses template [T04 Prompt](<#2.4 t04 prompt>) to create code generation or debug prompts for Claude Code
+    - Claude Desktop: Embeds complete design specifications and schema within prompt documents
+    - Claude Desktop: Ensures prompt documents are self-contained requiring no external file references
+    - Claude Desktop: Saves T04 prompt to workspace/prompt/prompt-NNNN-\<name\>.md
+    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md
+    - Claude Desktop: Notifies human to initiate Claude Code
+    - Human: Invokes Claude Code with instruction document
+    - Claude Code: Reads T04 prompt from workspace/prompt/
+    - Claude Code: Generates code, saves directly to src/ per T04 specifications
+    - Claude Code: Creates completion document workspace/prompt/prompt-NNNN-completion.md
+    - Claude Desktop: Reads completion document, verifies SUCCESS status, proceeds with audit
   - 1.1.9 Quality
     - Human review and approval of design, change and initiation of code generation is required
-    - Domain 1: Creates instruction document after human approval
-    - Human: Invokes Domain 2 with provided command
-    - Human: Notifies Domain 1 when Domain 2 completes
-    - Domain 1: Verifies completion document exists and indicates SUCCESS before proceeding
+    - Claude Desktop: Creates instruction document after human approval
+    - Human: Invokes Claude Code with provided command
+    - Human: Notifies Claude Desktop when Claude Code completes
+    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
   - 1.1.10 Documents
     - Master documents have '0000' as a sequence number and are named as \<document class\>-0000-master_\<document name\>.md
-    - Domain 1: Based on document class (design, change, issue, prompt, trace, test, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
-    - Domain 1: Based on document class (design, change, issue, prompt, trace, test, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
-    - Domain 1: Insures related documents are Obsidian cross linked
+    - Claude Desktop: Based on document class (design, change, issue, prompt, trace, test, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
+    - Claude Desktop: Based on document class (design, change, issue, prompt, trace, test, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
+    - Claude Desktop: Insures related documents are Obsidian cross linked
     - Document classes that require a master document are: design, audit, trace and test
-  - 1.1.11 Domain 2 Invocation Instructions
-    - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md containing:
-      - Domain 2 invocation command
+  - 1.1.11 Claude Code Invocation Instructions
+    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md containing:
+      - Claude Code invocation command
       - T04 prompt location
       - Expected output locations (src/ paths per T04)
       - Completion document requirements
     - Instruction document format:
       ```markdown
-      # Domain 2 Code Generation Instructions
+      # Claude Code Code Generation Instructions
       
       ## Invocation
       Execute from project root:
@@ -108,13 +110,13 @@
       - Any warnings or notes
       - Status: SUCCESS or FAILURE
       ```
-    - Domain 1: Provides instruction document path to human
-    - Domain 1: Waits for human confirmation of Domain 2 completion
-    - Domain 1: Verifies completion document exists and indicates SUCCESS before proceeding
+    - Claude Desktop: Provides instruction document path to human
+    - Claude Desktop: Waits for human confirmation of Claude Code completion
+    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
   - 1.1.12 Configuration Management
-    - Domain 1: Maintains GitHub repository as authoritative source for all project artifacts
+    - Claude Desktop: Maintains GitHub repository as authoritative source for all project artifacts
     - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
-    - Domain 1: Performs configuration audit verifying generated code matches approved design baseline commits
+    - Claude Desktop: Performs configuration audit verifying generated code matches approved design baseline commits
   - 1.1.13 Versioning
     - All versioning is handled via GitHub
 
@@ -224,91 +226,91 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.3 P02 Design
-  - 1.3.1 Domain 1: Creates master design document named \<design\>-0000-master_\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#2.1 t01 design>)
-  - 1.3.2 Domain 1: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#2.1 t01 design>)
-  - 1.3.3 Domain 1: Insures design element documents do not exceed domain 2 context window
-  - 1.3.4 Domain 1: Insures the master  design document  is clearly designated within as the master design document.
+  - 1.3.1 Claude Desktop: Creates master design document named \<design\>-0000-master_\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#2.1 t01 design>)
+  - 1.3.2 Claude Desktop: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#2.1 t01 design>)
+  - 1.3.3 Claude Desktop: Insures design element documents do not exceed Claude Code context window
+  - 1.3.4 Claude Desktop: Insures the master  design document  is clearly designated within as the master design document.
   - 1.3.5 Design Verification
-    - Domain 1: Validates design completeness before creating T04 prompt
-    - Domain 1: Verifies all functional requirements have corresponding design elements
-    - Domain 1: Confirms all non-functional requirements addressed in design specifications
+    - Claude Desktop: Validates design completeness before creating T04 prompt
+    - Claude Desktop: Verifies all functional requirements have corresponding design elements
+    - Claude Desktop: Confirms all non-functional requirements addressed in design specifications
   - 1.3.6 Design Review
-    - Domain 1: Presents master design document for human approval before decomposition into functional modules
-    - Domain 1: Documents review findings, required changes, approval decision
-    - Domain 1: Proceeds with module decomposition only after approval recorded
+    - Claude Desktop: Presents master design document for human approval before decomposition into functional modules
+    - Claude Desktop: Documents review findings, required changes, approval decision
+    - Claude Desktop: Proceeds with module decomposition only after approval recorded
   - 1.3.7 Requirements Traceability
-    - Domain 1: Assigns unique identifier to each functional and non-functional requirement
-    - Domain 1: Maps requirements to design elements using traceability matrix
-    - Domain 1: Maintains bidirectional links enabling navigation: requirement ↔ design ↔ code ↔ test (forward and backward)
+    - Claude Desktop: Assigns unique identifier to each functional and non-functional requirement
+    - Claude Desktop: Maps requirements to design elements using traceability matrix
+    - Claude Desktop: Maintains bidirectional links enabling navigation: requirement ↔ design ↔ code ↔ test (forward and backward)
   - 1.3.8 Requirements Validation
-    - Domain 1: Verifies design satisfies all stated requirements before baseline
-    - Domain 1: Documents validation results in design document
-    - Domain 1: Resolves discrepancies before proceeding to code generation
+    - Claude Desktop: Verifies design satisfies all stated requirements before baseline
+    - Claude Desktop: Documents validation results in design document
+    - Claude Desktop: Resolves discrepancies before proceeding to code generation
   - 1.3.9 Document storage
-    - Domain 1: Saves all design documents in workspace/design
+    - Claude Desktop: Saves all design documents in workspace/design
 
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.4 P03 Change
-  - 1.4.1 Domain 1: Creates change documents from issue documents and human change requests using template [T02 Change](<#2.2 t02 change>) and saves them in folder workspace/change
+  - 1.4.1 Claude Desktop: Creates change documents from issue documents and human change requests using template [T02 Change](<#2.2 t02 change>) and saves them in folder workspace/change
   - 1.4.2 Domian 1: Insures created change documents are linked to thier source issue document
-  - 1.4.3 Domain 1: Updates all relevant design documents after implementation
-  - 1.4.4 Domain 1: Insures all design document updates contain change references and links to their source change document
+  - 1.4.3 Claude Desktop: Updates all relevant design documents after implementation
+  - 1.4.4 Claude Desktop: Insures all design document updates contain change references and links to their source change document
   - 1.4.5 Change Review
-    - Domain 1: Performs impact analysis before change approval
-    - Domain 1: Evaluates effects on dependent components, interfaces, data structures
-    - Domain 1: Documents impact analysis results in change document
+    - Claude Desktop: Performs impact analysis before change approval
+    - Claude Desktop: Evaluates effects on dependent components, interfaces, data structures
+    - Claude Desktop: Documents impact analysis results in change document
   - 1.4.6 Requirements Change Management
-    - Domain 1: Links requirement changes to affected design elements
-    - Domain 1: Performs impact analysis when requirements change
-    - Domain 1: Updates requirement traceability matrix after changes
+    - Claude Desktop: Links requirement changes to affected design elements
+    - Claude Desktop: Performs impact analysis when requirements change
+    - Claude Desktop: Updates requirement traceability matrix after changes
   - 1.4.7 Maintenance Classification
-    - Domain 1: Categorizes changes: corrective, adaptive, perfective, preventive
-    - Domain 1: Records classification in change document metadata
-    - Domain 1: Tracks change type distribution for process metrics
+    - Claude Desktop: Categorizes changes: corrective, adaptive, perfective, preventive
+    - Claude Desktop: Records classification in change document metadata
+    - Claude Desktop: Tracks change type distribution for process metrics
   - 1.4.8 Change Impact Analysis
-    - Domain 1: Evaluates change effects on system integrity, performance, security
-    - Domain 1: Identifies all components requiring modification
-    - Domain 1: Documents cascading effects in change document
+    - Claude Desktop: Evaluates change effects on system integrity, performance, security
+    - Claude Desktop: Identifies all components requiring modification
+    - Claude Desktop: Documents cascading effects in change document
   - 1.4.9 Maintenance Documentation
-    - Domain 1: Updates all affected documentation when changes implemented
-    - Domain 1: Maintains documentation currency with code state
-    - Domain 1: Cross-links updated documents to source change document
+    - Claude Desktop: Updates all affected documentation when changes implemented
+    - Claude Desktop: Maintains documentation currency with code state
+    - Claude Desktop: Cross-links updated documents to source change document
   - 1.4.10 Documentation domain
     - Change documentation is only required for source code changes in src/. Change documentation to documents in the workspace/ is not required and can be made directly after human approval.
 
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.5 P04 Issue
-  - 1.5.1 Domain 1: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
-  - 1.5.2 Domain 1: Reserved for future use
-  - 1.5.3 Domain 2: Debugs issues submitted from domain 2 and returns change proposal to domain 1
-  - 1.5.4 Domain 1: Updates issue documents from bugs and  using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
+  - 1.5.1 Claude Desktop: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
+  - 1.5.2 Claude Desktop: Reserved for future use
+  - 1.5.3 Claude Code: Debugs issues submitted from Claude Code and returns change proposal to Claude Desktop
+  - 1.5.4 Claude Desktop: Updates issue documents from bugs and  using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
   - 1.5.5 Non-Conformance Reporting
-    - Domain 1: Documents instances where generated code deviates from design specifications
-    - Domain 1: Records deviation type, severity, affected components
-    - Domain 1: Tracks non-conformance trends for process improvement
+    - Claude Desktop: Documents instances where generated code deviates from design specifications
+    - Claude Desktop: Records deviation type, severity, affected components
+    - Claude Desktop: Tracks non-conformance trends for process improvement
   - 1.5.6 Post-Implementation Review
-    - Domain 1: Evaluates code generation effectiveness after issue resolution
-    - Domain 1: Documents lessons learned
-    - Domain 1: Provides protocol improvement recommendations for human review (protocols immutable, human-modified only)
+    - Claude Desktop: Evaluates code generation effectiveness after issue resolution
+    - Claude Desktop: Documents lessons learned
+    - Claude Desktop: Provides protocol improvement recommendations for human review (protocols immutable, human-modified only)
 
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.6 P05 Trace
   - 1.6.1 Traceability Matrix Management
-    - Domain 1: Maintains traceability matrix in workspace/trace/trace-0000_master-traceability-matrix.md
-    - Domain 1: Updates matrix when requirements, designs, code, or tests modified
+    - Claude Desktop: Maintains traceability matrix in workspace/trace/trace-0000_master-traceability-matrix.md
+    - Claude Desktop: Updates matrix when requirements, designs, code, or tests modified
   - 1.6.2 Traceability Verification
-    - Domain 1: Verifies bidirectional links exist: requirements ↔ design ↔ code ↔ test (navigable forward and backward)
-    - Domain 1: Identifies and resolves traceability gaps
-    - Domain 1: Generates traceability reports on demand
+    - Claude Desktop: Verifies bidirectional links exist: requirements ↔ design ↔ code ↔ test (navigable forward and backward)
+    - Claude Desktop: Identifies and resolves traceability gaps
+    - Claude Desktop: Generates traceability reports on demand
   - 1.6.3 Requirements Traceability
-    - Domain 1: Maintains traceability matrix linking requirements through implementation
-    - Domain 1: Updates matrix when designs, code, or tests modified
-    - Domain 1: Ensures orphaned requirements or implementations identified
+    - Claude Desktop: Maintains traceability matrix linking requirements through implementation
+    - Claude Desktop: Updates matrix when designs, code, or tests modified
+    - Claude Desktop: Ensures orphaned requirements or implementations identified
   - 1.6.4 Traceability Matrix Structure
-    - Domain 1: Maintains single traceability matrix in workspace/trace/trace-0000-master_traceability-matrix.md
+    - Claude Desktop: Maintains single traceability matrix in workspace/trace/trace-0000-master_traceability-matrix.md
     - Required sections:
       - Functional Requirements: ID, Requirement, Design, Code, Test, Status
       - Non-Functional Requirements: ID, Requirement, Target, Design, Code, Test, Status
@@ -316,65 +318,65 @@ exclude_lines = [
       - Design Document Cross-Reference: Design Doc → Requirements → Code → Tests
       - Test Coverage: Test File → Requirements Verified → Code Coverage
       - Bidirectional Navigation: Forward (Req→Design→Code→Test) and Backward (Test→Code→Design→Req)
-    - Domain 1: Updates matrix when requirements, designs, code, or tests change
+    - Claude Desktop: Updates matrix when requirements, designs, code, or tests change
 
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.7 P06 Test
   - 1.7.1 Purpose
-  - 1.7.2 Domain 1: Creates test documents from source code generated by domain 2 using template [T05 Test](<#2.5 t05 test>) and saves them in folder workspace/test
+  - 1.7.2 Claude Desktop: Creates test documents from source code generated by Claude Code using template [T05 Test](<#2.5 t05 test>) and saves them in folder workspace/test
   - 1.7.3 Test Script Creation
-    - Domain 1: Generates executable test scripts in src/tests/
-    - Domain 1: Creates unit tests for components in subdirectories (src/tests/\<component\>/)
-    - Domain 1: Uses pytest or unittest framework per pyproject.toml configuration
-    - Domain 1: Names test files with test_*.py convention
-    - Domain 1: Links test scripts to test documentation via T05 references
+    - Claude Desktop: Generates executable test scripts in src/tests/
+    - Claude Desktop: Creates unit tests for components in subdirectories (src/tests/\<component\>/)
+    - Claude Desktop: Uses pytest or unittest framework per pyproject.toml configuration
+    - Claude Desktop: Names test files with test_*.py convention
+    - Claude Desktop: Links test scripts to test documentation via T05 references
   - 1.7.4 Test Planning
-    - Domain 1: Creates comprehensive test strategy before code generation
-    - Domain 1: Defines test scope, approach, resources, schedule
-    - Domain 1: Identifies test types: unit, integration, system, acceptance
+    - Claude Desktop: Creates comprehensive test strategy before code generation
+    - Claude Desktop: Defines test scope, approach, resources, schedule
+    - Claude Desktop: Identifies test types: unit, integration, system, acceptance
   - 1.7.5 Test Case Specification
-    - Domain 1: Structures test cases: preconditions, inputs, expected outputs, postconditions
-    - Domain 1: Links test cases to requirements and design elements
-    - Domain 1: Includes positive, negative, boundary, edge cases
+    - Claude Desktop: Structures test cases: preconditions, inputs, expected outputs, postconditions
+    - Claude Desktop: Links test cases to requirements and design elements
+    - Claude Desktop: Includes positive, negative, boundary, edge cases
   - 1.7.6 Test Results Documentation
-    - Domain 1: Records test execution results in standardized format
-    - Domain 1: Captures: pass/fail status, defects found, coverage achieved
-    - Domain 1: Links failed tests to issue documents
+    - Claude Desktop: Records test execution results in standardized format
+    - Claude Desktop: Captures: pass/fail status, defects found, coverage achieved
+    - Claude Desktop: Links failed tests to issue documents
   - 1.7.7 Test Organization
-    - Domain 1: Maintains hierarchical test structure in src/tests/
-    - Domain 1: Separates permanent unit tests from ephemeral validation scripts
-    - Domain 1: Organizes unit tests by component in subdirectories
-    - Domain 1: Places fix validation scripts at tests/ root level
+    - Claude Desktop: Maintains hierarchical test structure in src/tests/
+    - Claude Desktop: Separates permanent unit tests from ephemeral validation scripts
+    - Claude Desktop: Organizes unit tests by component in subdirectories
+    - Claude Desktop: Places fix validation scripts at tests/ root level
   - 1.7.8 Test Isolation
-    - Domain 1: Uses temporary environments (tempfile, shutil) for test execution
-    - Domain 1: Ensures tests create/destroy controlled test environments
-    - Domain 1: Prevents test pollution through environment isolation
-    - Domain 1: Enables parallel test execution through isolation
+    - Claude Desktop: Uses temporary environments (tempfile, shutil) for test execution
+    - Claude Desktop: Ensures tests create/destroy controlled test environments
+    - Claude Desktop: Prevents test pollution through environment isolation
+    - Claude Desktop: Enables parallel test execution through isolation
   - 1.7.9 Dependency Mocking
-    - Domain 1: Uses unittest.mock to isolate component dependencies
-    - Domain 1: Mocks external services, file systems, network calls
-    - Domain 1: Verifies interface contracts without external dependencies
-    - Domain 1: Documents mocking strategy in test documentation
+    - Claude Desktop: Uses unittest.mock to isolate component dependencies
+    - Claude Desktop: Mocks external services, file systems, network calls
+    - Claude Desktop: Verifies interface contracts without external dependencies
+    - Claude Desktop: Documents mocking strategy in test documentation
   - 1.7.10 Regression Testing
-    - Domain 1: Creates targeted validation scripts for specific fixes
-    - Domain 1: Implements progressive validation: minimal → integration → full suite
-    - Domain 1: Documents validation scripts with fix references
-    - Domain 1: Removes validation scripts after fix verification
+    - Claude Desktop: Creates targeted validation scripts for specific fixes
+    - Claude Desktop: Implements progressive validation: minimal → integration → full suite
+    - Claude Desktop: Documents validation scripts with fix references
+    - Claude Desktop: Removes validation scripts after fix verification
   - 1.7.11 Test Lifecycle Management
-    - Domain 1: Distinguishes permanent regression suite from temporary validation
-    - Domain 1: Maintains permanent tests in component subdirectories
-    - Domain 1: Archives or removes ephemeral validation scripts post-verification
-    - Domain 1: Updates test documentation to reflect lifecycle status
+    - Claude Desktop: Distinguishes permanent regression suite from temporary validation
+    - Claude Desktop: Maintains permanent tests in component subdirectories
+    - Claude Desktop: Archives or removes ephemeral validation scripts post-verification
+    - Claude Desktop: Updates test documentation to reflect lifecycle status
 
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.8 P07 Quality
   - 1.8.1 Purpose
   - 1.8.2 Code Validation
-    - Domain 1: Verifies generated code implements all design requirements
-    - Domain 1: Validates against design specifications, interface contracts, data schemas
-    - Domain 1: Documents validation results, discrepancies found
+    - Claude Desktop: Verifies generated code implements all design requirements
+    - Claude Desktop: Validates against design specifications, interface contracts, data schemas
+    - Claude Desktop: Documents validation results, discrepancies found
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -395,13 +397,13 @@ exclude_lines = [
     - Traceability: Requirement ↔ design ↔ code ↔ test linkages
     - Configuration management: Code vs. baseline verification
   - 1.9.4 Audit Procedure
-    - Domain 1: Conducts systematic review of source code against governance requirements
-    - Domain 1: Documents findings with severity classification (critical, high, medium, low)
-    - Domain 1: Provides evidence for each finding (file paths, line numbers, specific violations)
-    - Domain 1: Calculates compliance metrics (percentage, deficiency counts by severity)
+    - Claude Desktop: Conducts systematic review of source code against governance requirements
+    - Claude Desktop: Documents findings with severity classification (critical, high, medium, low)
+    - Claude Desktop: Provides evidence for each finding (file paths, line numbers, specific violations)
+    - Claude Desktop: Calculates compliance metrics (percentage, deficiency counts by severity)
   - 1.9.5 Audit Deliverables
-    - Domain 1: Creates audit report following naming format: audit-\<sequence number\>-\<audit name\>.md
-    - Domain 1: Stores audit reports in workspace/audit/ folder
+    - Claude Desktop: Creates audit report following naming format: audit-\<sequence number\>-\<audit name\>.md
+    - Claude Desktop: Stores audit reports in workspace/audit/ folder
     - Audit report structure:
       - Executive summary with compliance status and critical issue count
       - Protocol-by-protocol compliance assessment
@@ -413,44 +415,44 @@ exclude_lines = [
       - Recommendations for remediation
       - Positive findings (strengths identification)
   - 1.9.6 Remediation Process
-    - Domain 1: Converts critical and high-priority audit findings to issue documents via P04
-    - Domain 1: References source code audit report in issue documents
-    - Domain 1: Issue resolution follows standard P04 → P03 → implementation workflow
-    - Domain 1: Tracks remediation progress in audit report updates
+    - Claude Desktop: Converts critical and high-priority audit findings to issue documents via P04
+    - Claude Desktop: References source code audit report in issue documents
+    - Claude Desktop: Issue resolution follows standard P04 → P03 → implementation workflow
+    - Claude Desktop: Tracks remediation progress in audit report updates
   - 1.9.7 Audit Closure
-    - Domain 1: Conducts follow-up audit after remediation completed
-    - Domain 1: Verifies all critical issues resolved
-    - Domain 1: Documents closure with final compliance metrics
+    - Claude Desktop: Conducts follow-up audit after remediation completed
+    - Claude Desktop: Verifies all critical issues resolved
+    - Claude Desktop: Documents closure with final compliance metrics
     - Human: Approves audit closure and authorizes proceeding to next phase
   - 1.9.8 Audit Trail
-    - Domain 1: Maintains chronological audit history
-    - Domain 1: Links related audits (initial → follow-up → closure)
-    - Domain 1: Preserves audit reports for process improvement analysis
+    - Claude Desktop: Maintains chronological audit history
+    - Claude Desktop: Links related audits (initial → follow-up → closure)
+    - Claude Desktop: Preserves audit reports for process improvement analysis
 
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.10 P09 Prompt
   - 1.10.1 Purpose
     - Manage creation and lifecycle of T04 prompt documents
-    - Facilitate Domain 1 → Domain 2 code generation communication
+    - Facilitate Claude Desktop → Claude Code code generation communication
   - 1.10.2 Prompt Creation
-    - Domain 1: Creates prompt documents from design and change documents using [T04 Prompt](<#2.4 t04 prompt>)
-    - Domain 1: Saves prompts with naming format prompt-\<sequence number\>-\<name\>.md in workspace/prompt/
-    - Domain 1: Rewrites prompt documents in place when revisions required
-    - Domain 1: Embeds complete design specifications and schema within prompt documents
-    - Domain 1: Ensures prompt documents are self-contained requiring no external file references
+    - Claude Desktop: Creates prompt documents from design and change documents using [T04 Prompt](<#2.4 t04 prompt>)
+    - Claude Desktop: Saves prompts with naming format prompt-\<sequence number\>-\<name\>.md in workspace/prompt/
+    - Claude Desktop: Rewrites prompt documents in place when revisions required
+    - Claude Desktop: Embeds complete design specifications and schema within prompt documents
+    - Claude Desktop: Ensures prompt documents are self-contained requiring no external file references
     - GitHub version control maintains complete revision history
   - 1.10.3 Instruction Documents
-    - Domain 1: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md after human approval
-    - Domain 1: Provides instruction document path to human
-    - Instruction document contains: Domain 2 invocation command, T04 prompt location, expected output locations, completion document requirements
+    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md after human approval
+    - Claude Desktop: Provides instruction document path to human
+    - Instruction document contains: Claude Code invocation command, T04 prompt location, expected output locations, completion document requirements
   - 1.10.4 Completion Documents
-    - Domain 2: Creates completion document workspace/prompt/prompt-NNNN-completion.md
+    - Claude Code: Creates completion document workspace/prompt/prompt-NNNN-completion.md
     - Required fields: generation timestamp, files created with paths, status (SUCCESS/FAILURE), warnings/notes
-    - Domain 1: Verifies completion document exists and indicates SUCCESS before proceeding
+    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
   - 1.10.5 Prompt Revision
-    - Domain 1: Rewrites existing prompt documents when changes needed
-    - Domain 1: Documents revision rationale in prompt version_history section
+    - Claude Desktop: Rewrites existing prompt documents when changes needed
+    - Claude Desktop: Documents revision rationale in prompt version_history section
     - GitHub commits provide complete change tracking and rollback capability
 
 [Return to Table of Contents](<#table of contents>)
@@ -1923,7 +1925,7 @@ properties:
 #### 2.4 T04 Prompt
 ```yaml
 # T04 Prompt Template v1.0 - YAML Format
-# Optimized for Domain 1 → Domain 2 filesystem communication
+# Optimized for Claude Desktop → Claude Code filesystem communication
 # Designed for minimal token usage while maintaining completeness
 
 prompt_info:
@@ -2862,46 +2864,46 @@ properties:
 ```mermaid
 flowchart TD
     Init[P01: Project Initialization] --> Start([Human: Requirements])
-    Start --> D1_Design[Domain 1: Create master design T01]
+    Start --> D1_Design[Claude Desktop: Create master design T01]
     
     D1_Design --> H1{Human: Review<br/>master design}
     H1 -->|Revise| D1_Design
-    H1 -->|Approve| D1_Decompose[Domain 1: Decompose to<br/>design elements T01]
+    H1 -->|Approve| D1_Decompose[Claude Desktop: Decompose to<br/>design elements T01]
     
     D1_Decompose --> H2{Human: Review<br/>design elements}
     H2 -->|Revise| D1_Decompose
     H2 -->|Approve| D1_Baseline[Human: Tag baseline<br/>in GitHub]
     
-    D1_Baseline --> D1_Prompt[Domain 1: Create T04 prompt<br/>with design + schema]
+    D1_Baseline --> D1_Prompt[Claude Desktop: Create T04 prompt<br/>with design + schema]
     
     D1_Prompt --> H3{Human: Approve<br/>code generation}
     H3 -->|Revise| D1_Prompt
-    H3 -->|Approve| D1_Instruct[Domain 1: Create<br/>instruction doc]
+    H3 -->|Approve| D1_Instruct[Claude Desktop: Create<br/>instruction doc]
     
-    D1_Instruct --> H_Invoke[Human: Invoke Domain 2]
-    H_Invoke --> D2_Read[Domain 2: Read T04]
-    D2_Read --> D2_Generate[Domain 2: Generate code]
-    D2_Generate --> D2_Save[Domain 2: Save to src/]
-    D2_Save --> D2_Complete[Domain 2: Create<br/>completion doc]
-    D2_Complete --> H_Notify[Human: Notify Domain 1]
-    H_Notify --> D1_Verify[Domain 1: Verify<br/>completion doc]
+    D1_Instruct --> H_Invoke[Human: Invoke Claude Code]
+    H_Invoke --> D2_Read[Claude Code: Read T04]
+    D2_Read --> D2_Generate[Claude Code: Generate code]
+    D2_Generate --> D2_Save[Claude Code: Save to src/]
+    D2_Save --> D2_Complete[Claude Code: Create<br/>completion doc]
+    D2_Complete --> H_Notify[Human: Notify Claude Desktop]
+    H_Notify --> D1_Verify[Claude Desktop: Verify<br/>completion doc]
     
-    D1_Verify --> D1_Audit[Domain 1: Config audit<br/>code vs baseline]
-    D1_Audit --> D1_Test_Doc[Domain 1: Create test doc T05]
+    D1_Verify --> D1_Audit[Claude Desktop: Config audit<br/>code vs baseline]
+    D1_Audit --> D1_Test_Doc[Claude Desktop: Create test doc T05]
     
-    D1_Test_Doc --> D1_Execute[Domain 1: Execute tests]
+    D1_Test_Doc --> D1_Execute[Claude Desktop: Execute tests]
     D1_Execute --> Test_Result{Tests pass?}
     
-    Test_Result -->|Fail| D1_Issue[Domain 1: Create issue T03]
+    Test_Result -->|Fail| D1_Issue[Claude Desktop: Create issue T03]
     D1_Issue --> Issue_Type{Issue type?}
     
-    Issue_Type -->|Bug| D1_Debug_Prompt[Domain 1: Create debug<br/>prompt T04]
+    Issue_Type -->|Bug| D1_Debug_Prompt[Claude Desktop: Create debug<br/>prompt T04]
     D1_Debug_Prompt --> H3
     
-    Issue_Type -->|Design flaw| D1_Change[Domain 1: Create change T02]
+    Issue_Type -->|Design flaw| D1_Change[Claude Desktop: Create change T02]
     D1_Change --> H4{Human: Review<br/>change}
     H4 -->|Revise| D1_Change
-    H4 -->|Approve| D1_Update_Design[Domain 1: Update design]
+    H4 -->|Approve| D1_Update_Design[Claude Desktop: Update design]
     D1_Update_Design --> D1_Prompt
     
     Test_Result -->|Pass| H5{Human: Accept<br/>deliverable?}
@@ -2924,20 +2926,20 @@ flowchart TD
 | 1.4     | 2025-11-06 | Integrated IEEE/ISO standards-based directives: P00 (1.1.11-1.1.12), P02 (1.3.5-1.3.8), P03 (1.4.5-1.4.9), P04 (1.5.5-1.5.6), P05 (1.6.2-1.6.3), P06 (1.7.2-1.7.4), new P07 Quality Assurance (1.8.1)               |
 | 1.5     | 2025-11-06 | Added T05 Test template and schema                                                                                                                                                                                  |
 | 1.6     | 2025-11-06 | Replaced flowchart with revised version incorporating human review checkpoints, iterative cycles, and complete workflow loops                                                                                       |
-| 1.7     | 2025-11-06 | Enhanced T04 Prompt template with output format controls to constrain Domain 2 responses to code-only with minimal integration instructions                                                                         |
+| 1.7     | 2025-11-06 | Enhanced T04 Prompt template with output format controls to constrain Claude Code responses to code-only with minimal integration instructions                                                                         |
 | 1.8     | 2025-11-11 | Added P01 initialization square to Framework Execution Flowchart                                                                                                                                                    |
 | 1.9     | 2025-11-11 | Added .gitignore specification to P01.2.2                                                                                                                                                                           |
 | 2.0     | 2025-11-11 | Added pyproject.toml skeleton to P01.2.2                                                                                                                                                                            |
 | 2.1     | 2025-11-12 | Specified GitHub Desktop as tagging mechanism in P00 1.1.11 Configuration Management                                                                                                                                |
-| 2.2     | 2025-11-12 | Added P00 1.1.13 Domain 2 Configuration and Appendix A: Domain 2 Preset Specifications                                                                                                                              |
+| 2.2     | 2025-11-12 | Added P00 1.1.13 Claude Code Configuration and Appendix A: Claude Code Preset Specifications                                                                                                                              |
 | 2.3     | 2025-11-13 | Added tests/ subfolder to src/ directory structure in P01.2.4                                                                                                                                                       |
 | 2.4     | 2025-11-13 | Enhanced P06 Test with sections 1.7.1a (test script creation), 1.7.5-1.7.9 (test organization, isolation, mocking, regression testing, lifecycle management)                                                        |
 | 2.5     | 2025-11-13 | Added audit/ subfolder to workspace directory structure in P01.2.4                                                                                                                                                  |
 | 2.6     | 2025-11-13 | Added P08 Audit protocol establishing periodic compliance verification, audit deliverable requirements, and remediation workflow                                                                                    |
 | 2.7     | 2025-11-13 | Added audit document class to P00 1.1.10 naming convention and updated P08 1.9.5 to use sequence numbering format                                                                                                   |
-| 2.8     | 2025-11-13 | Added P00 1.1.3 Framework Application clarifying that Domain 1/2 separation applies to development workflow, not runtime architecture of generated applications. Renumbered subsequent P00 subsections 1.1.4-1.1.13 |
+| 2.8     | 2025-11-13 | Added P00 1.1.3 Framework Application clarifying that Claude Desktop/2 separation applies to development workflow, not runtime architecture of generated applications. Renumbered subsequent P00 subsections 1.1.4-1.1.13 |
 | 2.9 | 2025-11-14 | Added P01 1.2.5 traceability matrix skeleton directive and P05 1.6.4 traceability matrix structure specification. Renumbered P01 1.2.4 to 1.2.6 |
-| 3.0 | 2025-11-14 | Replaced MCP communication with filesystem communication for Domain 1↔Domain 2 (P00 1.1.7-1.1.8-1.1.9-1.1.11); removed LM Studio references; simplified T04 template; updated flowchart; deleted Appendix A |
+| 3.0 | 2025-11-14 | Replaced MCP communication with filesystem communication for Claude Desktop↔Claude Code (P00 1.1.7-1.1.8-1.1.9-1.1.11); removed LM Studio references; simplified T04 template; updated flowchart; deleted Appendix A |
 | 3.1 | 2025-11-14 | Added P09 Prompt protocol; separated prompt management from trace; created workspace/prompt/ folder; updated P00 1.1.10 document class list; updated P08 1.9.3 audit scope to P00-P09 |
 | 3.2 | 2025-11-16 | Removed prompt iteration numbering (P09 1.10.2, 1.10.5); GitHub version control replaces iteration-based versioning |
 
