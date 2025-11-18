@@ -38,7 +38,7 @@
     - Python based software engineering, architecture and development
   - 1.1.2 Scope
     - Agnostic plan, control and initiation of software generation
-  - 1.1.3 Framework Application
+  - 1.1.3 Framework Practice
     - This governance framework defines software development processes and workflows
     - Domain 1/Domain 2 separation applies to software creation, not to generated application runtime
     - Generated software/applications (outputs) are independent of framework architecture
