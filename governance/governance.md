@@ -436,6 +436,7 @@ exclude_lines = [
     - Manage creation and lifecycle of T04 prompt documents
     - Facilitate Claude Desktop → Claude Code code generation communication
   - 1.10.2 Prompt Creation
+    - Prompt documents are always Claude Code specific.
     - Claude Desktop: Creates prompt documents from design and change documents using [T04 Prompt](<#2.4 t04 prompt>)
     - Claude Desktop: Saves prompts with naming format prompt-\<sequence number\>-\<name\>.md in workspace/prompt/
     - Claude Desktop: Rewrites prompt documents in place when revisions required
