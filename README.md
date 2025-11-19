@@ -4,7 +4,7 @@ HTML based WiFi configuration management for Raspberry Pi/Debian systems.
 
 ## Overview
 
-Tool manages WiFi connectivity with automatic fallback to access point mode when no connection available.
+Tool manages WiFi connectivity with automatic fallback to access point mode when no connection is available.
 
 ## Project Structure
 
