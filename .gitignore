@@ -10,5 +10,4 @@ coverage.xml
 test.txt
 **/tmp
 deprecated/
-release/
 workspace/ai/
