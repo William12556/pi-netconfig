@@ -129,6 +129,7 @@ test.txt
 **/tmp
 deprecated/
 workspace/ai/
+release/
 ```
     - Create pyproject.toml in project root:
 ```toml
@@ -197,7 +198,7 @@ exclude_lines = [
         ├── docs/                 # Technical Documents
         ├── src/                  # Source code
         │   └── tests/
-        └── deprecated/           # Archive
+        └── deprecated/           # Archive (excluded from git)
             ├── governance/
             ├── workspace/
             │   ├── design/
