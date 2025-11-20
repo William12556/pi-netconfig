@@ -46,8 +46,8 @@
     - Framework does not control: how the built software operates
     - Example: \<project name\> uses this framework for development but is a standalone Python application at runtime
   - 1.1.4 Architecture
-    - Claude Desktop: Plan and control: design, change, test and launching of code generation
-    - Claude Code: Execute: code generation
+    - Claude Desktop (domain 1): Plan and control: design, change, test and launching of code generation
+    - Claude Code (domain 2): Execute: code generation
   - 1.1.5 Forbidden
     - Both domains: Unrequested creation, addition, removal or change of source code and documents is forbidden
   - 1.1.6 Constraints
@@ -91,42 +91,11 @@
     - Claude Desktop: Based on document class (design, change, issue, prompt, trace, test, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
     - Claude Desktop: Insures related documents are Obsidian cross linked
     - Document classes that require a master document are: design, audit, trace and test
-  - 1.1.11 Claude Code Invocation Instructions
-    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md containing:
-      - Claude Code invocation command
-      - T04 prompt location
-      - Expected output locations (src/ paths per T04)
-      - Completion document requirements
-    - Instruction document format:
-      ```markdown
-      # Claude Code Code Generation Instructions
-      
-      ## Invocation
-      Execute from project root:
-      ```bash
-      cd /Users/williamwatson/Documents/GitHub/pi-netconfig
-      claude code "Read and implement workspace/prompt/prompt-NNNN-<name>.md"
-      ```
-      
-      ## Expected Outputs
-      - Code files: [list from T04 deliverable.files]
-      - Location: src/
-      
-      ## Completion
-      Create workspace/prompt/prompt-NNNN-completion.md containing:
-      - Generation timestamp
-      - Files created with paths
-      - Any warnings or notes
-      - Status: SUCCESS or FAILURE
-      ```
-    - Claude Desktop: Provides instruction document path to human
-    - Claude Desktop: Waits for human confirmation of Claude Code completion
-    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
-  - 1.1.12 Configuration Management
+  - 1.1.11 Configuration Management
     - Claude Desktop: Maintains GitHub repository as authoritative source for all project artifacts
     - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
     - Claude Desktop: Performs configuration audit verifying generated code matches approved design baseline commits
-  - 1.1.13 Versioning
+  - 1.1.12 Versioning
     - All versioning is handled via GitHub
     - Project uses Semantic Versioning per https://semver.org
     - Format: MAJOR.MINOR.PATCH (e.g., 1.0.0, 1.2.3)
@@ -142,7 +111,7 @@
 
 #### 1.2 P01 Project Initialization (Execute once)
   - 1.2.1 Project folders
-    - Create if does not exist (see Project folder structure)
+    - Create if does not exist (see 1.2.6 Project folder structure)
   - 1.2.2 GitHub documents
     - Create if does not exist
     - Create .gitignore in project root:
@@ -289,7 +258,7 @@ exclude_lines = [
 
 #### 1.4 P03 Change
   - 1.4.1 Claude Desktop: Creates change documents from issue documents and human change requests using template [T02 Change](<#2.2 t02 change>) and saves them in folder workspace/change
-  - 1.4.2 Domian 1: Insures created change documents are linked to thier source issue document
+  - 1.4.2 Claude Desktop: Insures created change documents are linked to thier source issue document
   - 1.4.3 Claude Desktop: Updates all relevant design documents after implementation
   - 1.4.4 Claude Desktop: Insures all design document updates contain change references and links to their source change document
   - 1.4.5 Change Review
@@ -491,6 +460,12 @@ exclude_lines = [
     - Claude Desktop: Rewrites existing prompt documents when changes needed
     - Claude Desktop: Documents revision rationale in prompt version_history section
     - GitHub commits provide complete change tracking and rollback capability
+  - 1.10.6 Instruction Document Creation
+    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md after human approval
+    - Claude Desktop: Provides instruction document path to human
+    - Human: Invokes Claude Code with provided command
+    - Claude Desktop: Waits for human confirmation of Claude Code completion
+    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -3004,6 +2979,7 @@ flowchart TD
 | 3.1 | 2025-11-14 | Added P09 Prompt protocol; separated prompt management from trace; created workspace/prompt/ folder; updated P00 1.1.10 document class list; updated P08 1.9.3 audit scope to P00-P09 |
 | 3.2 | 2025-11-16 | Removed prompt iteration numbering (P09 1.10.2, 1.10.5); GitHub version control replaces iteration-based versioning |
 | 3.3 | 2025-11-19 | Enhanced P00 Control (1.1.7) and Communication (1.1.8) with strategic/tactical clarification and MCP filesystem awareness; Added semantic versioning standard to P01 Versioning (1.1.13); Added workspace/ai/ directory to P01 folder structure (1.2.6) and .gitignore (1.2.2); Added visual documentation requirements to P02 (1.3.10) for embedded Mermaid diagrams; Enhanced T01 Design template with visual_documentation section; Enhanced T03 Issue template with prerequisites, reproducibility_conditions, prevention, and verification_enhanced sections |
+| 3.4 | 2025-11-20 | Restructured instruction document directives: moved P00 1.1.11 to P09 1.10.6; deleted embedded markdown template; converted to point-by-point directive structure; renumbered P00 1.1.12-1.1.13 to 1.1.11-1.1.12 |
 
 ---
 [Return to Table of Contents](<#table of contents>)
