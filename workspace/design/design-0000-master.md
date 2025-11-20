@@ -515,6 +515,13 @@ nonfunctional_requirements:
         - "Manual end-to-end testing on Raspberry Pi"
 
 version_history:
+  - version: "0.2.1"
+    date: "2025-11-20"
+    author: "William Watson"
+    changes:
+      - "Updated per [change-0002](<../change/change-0002-periodic-audits.md>): Governance framework now includes P08 Audit protocol for systematic compliance verification"
+      - "Updated per [change-0003](<../change/change-0003-governance-scope-clarification.md>): Clarified that Domain 1/2 architecture model describes development workflow, not runtime system architecture"
+      - "Updated per [change-0004](<../change/change-0004-version-synchronization.md>): Synchronized pyproject.toml version to match design version 0.2.0"
   - version: "0.2.0"
     date: "2025-11-10"
     author: "William Watson"

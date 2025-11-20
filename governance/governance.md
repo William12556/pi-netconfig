@@ -92,9 +92,14 @@
     - Claude Desktop: Insures related documents are Obsidian cross linked
     - Document classes that require a master document are: design, audit, trace and test
   - 1.1.11 Configuration Management
-    - Claude Desktop: Maintains GitHub repository as authoritative source for all project artifacts
+    - GitHub repository is authoritative source for all project artifacts
     - Human: Tags design document commits when approved as baseline for code generation via GitHub Desktop (History → right-click commit → Create Tag → Push Tags)
     - Claude Desktop: Performs configuration audit verifying generated code matches approved design baseline commits
+    - Claude Desktop: Uses config-audit template from workspace/audit/config-audit-template.md
+    - Claude Desktop: Verifies code matches tagged design baseline specifications
+    - Claude Desktop: Documents findings in config-audit-NNNN-YYYY-MM-DD.md
+    - Claude Desktop: Stores configuration audits in workspace/audit/
+    - Critical deviations: Creates issues via P04 for remediation
   - 1.1.12 Versioning
     - All versioning is handled via GitHub
     - Project uses Semantic Versioning per https://semver.org
@@ -2981,6 +2986,7 @@ flowchart TD
 | 3.2 | 2025-11-16 | Removed prompt iteration numbering (P09 1.10.2, 1.10.5); GitHub version control replaces iteration-based versioning |
 | 3.3 | 2025-11-19 | Enhanced P00 Control (1.1.7) and Communication (1.1.8) with strategic/tactical clarification and MCP filesystem awareness; Added semantic versioning standard to P01 Versioning (1.1.13); Added workspace/ai/ directory to P01 folder structure (1.2.6) and .gitignore (1.2.2); Added visual documentation requirements to P02 (1.3.10) for embedded Mermaid diagrams; Enhanced T01 Design template with visual_documentation section; Enhanced T03 Issue template with prerequisites, reproducibility_conditions, prevention, and verification_enhanced sections |
 | 3.4 | 2025-11-20 | Restructured instruction document directives: moved P00 1.1.11 to P09 1.10.6; deleted embedded markdown template; converted to point-by-point directive structure; renumbered P00 1.1.12-1.1.13 to 1.1.11-1.1.12 |
+| 3.5 | 2025-11-20 | Enhanced P00 1.1.11 Configuration Management with configuration audit procedure directives; added config-audit template and process requirements; established baseline verification workflow |
 
 ---
 [Return to Table of Contents](<#table of contents>)
