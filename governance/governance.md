@@ -53,12 +53,20 @@
   - 1.1.6 Constraints
     - Claude Desktop: Does not exceed language model token/context resource budget communicating with Claude Code
   - 1.1.7 Control
-    - Claude Desktop: Coordinates and controls Claude Code code generator
-    - Claude Code: Has read/write access to project folders via filesystem
-    - Claude Code: Saves generated code directly to src/ per T04 specifications
+    - Claude Desktop: Strategic coordination and validation authority
+    - Claude Desktop: Analyzes requirements and formulates design specifications
+    - Claude Desktop: Creates T04 prompts with complete technical context
+    - Claude Desktop: Validates Claude Code implementation for protocol compliance
+    - Claude Desktop: Coordinates quality assurance and integration verification
+    - Claude Code: Tactical implementation with project awareness
+    - Claude Code: Generates source code with MCP filesystem access
+    - Claude Code: Performs direct file operations in src/ directory
+    - Claude Code: Validates protocol compliance through direct file access
+    - Claude Code: Coordinates multi-file implementations and dependencies
+    - Claude Code: Creates completion documents per T04 specifications
   - 1.1.8 Communication
-    - Both Claude Desktop and Claude Code have project filesystem access
-    - Communication between Claude Desktop and Claude Code uses the filesystem for passing messages ( Semaphores ) such as prompts
+    - Both Claude Desktop and Claude Code have MCP filesystem access to project
+    - Communication uses filesystem-based message passing (semaphores)
     - Claude Desktop: Uses template [T04 Prompt](<#2.4 t04 prompt>) to create code generation or debug prompts for Claude Code
     - Claude Desktop: Embeds complete design specifications and schema within prompt documents
     - Claude Desktop: Ensures prompt documents are self-contained requiring no external file references
@@ -67,6 +75,7 @@
     - Claude Desktop: Notifies human to initiate Claude Code
     - Human: Invokes Claude Code with instruction document
     - Claude Code: Reads T04 prompt from workspace/prompt/
+    - Claude Code: Analyzes project structure and existing code via MCP filesystem access
     - Claude Code: Generates code, saves directly to src/ per T04 specifications
     - Claude Code: Creates completion document workspace/prompt/prompt-NNNN-completion.md
     - Claude Desktop: Reads completion document, verifies SUCCESS status, proceeds with audit
@@ -119,6 +128,15 @@
     - Claude Desktop: Performs configuration audit verifying generated code matches approved design baseline commits
   - 1.1.13 Versioning
     - All versioning is handled via GitHub
+    - Project uses Semantic Versioning per https://semver.org
+    - Format: MAJOR.MINOR.PATCH (e.g., 1.0.0, 1.2.3)
+    - MAJOR: Incompatible API changes or major functionality changes
+    - MINOR: Backwards-compatible functionality additions
+    - PATCH: Backwards-compatible bug fixes
+    - Pre-release versions: MAJOR.MINOR.PATCH-alpha.N, -beta.N, -rc.N (e.g., 1.0.0-alpha.1)
+    - Initial development: 0.y.z (MAJOR version zero for initial development)
+    - Git tags format: vMAJOR.MINOR.PATCH (e.g., v1.0.0, v0.1.0)
+    - Release notes filename: RELEASE_NOTES_vMAJOR.MINOR.PATCH.md
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -141,6 +159,7 @@ coverage.xml
 test.txt
 **/tmp
 deprecated/
+workspace/ai/
 ```
     - Create pyproject.toml in project root:
 ```toml
@@ -203,8 +222,9 @@ exclude_lines = [
         │   ├── trace/           # Requirements traceability
         │   │   └── trace-0000-master_traceability-matrix.md
         │   ├── audit/
-        │   └── test/
-        │       └── result/
+        │   ├── test/
+        │   │   └── result/
+        │   └── ai/              # Optional: Temporary AI working materials (excluded from git)
         ├── docs/                 # Technical Documents
         ├── src/                  # Source code
         │   └── tests/
@@ -248,6 +268,22 @@ exclude_lines = [
     - Claude Desktop: Resolves discrepancies before proceeding to code generation
   - 1.3.9 Document storage
     - Claude Desktop: Saves all design documents in workspace/design
+  - 1.3.10 Visual Documentation Requirements
+    - Claude Desktop: Embeds Mermaid diagrams directly within design documents
+    - Claude Desktop: Master design document includes system architecture diagrams
+    - Claude Desktop: Design element documents include component-specific diagrams as needed
+    - Claude Desktop: All diagrams use Mermaid syntax within markdown code blocks
+    - Claude Desktop: Diagram types include:
+      - System Architecture: Overall structure showing state machine and core modules
+      - Component Interaction: Data flow between modules and interface contracts
+      - State Machine: State transitions, event handling, and system behavior
+      - Data Flow: Information processing paths through components
+    - Claude Desktop: Each diagram includes:
+      - Clear purpose statement explaining what diagram illustrates
+      - Comprehensive legend explaining symbols and notation
+      - Cross-references to related design sections
+    - Claude Desktop: Updates diagrams when design modifications require visual clarification
+    - Claude Desktop: Maintains diagram consistency with textual design specifications
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -622,6 +658,19 @@ nonfunctional_requirements:
       coverage_target: ""
       approaches:
         - ""
+
+visual_documentation:
+  diagrams_required: "Embed Mermaid diagrams within design document"
+  diagram_types:
+    system_architecture: "Overall structure showing modules and relationships"
+    component_interaction: "Data flow between modules and interface contracts"
+    state_machine: "State transitions and event handling logic"
+    data_flow: "Information processing paths through system"
+  mermaid_syntax: "All diagrams use Mermaid markdown code blocks"
+  diagram_elements:
+    - "Purpose statement explaining diagram"
+    - "Legend explaining symbols and notation"
+    - "Cross-references to related design sections"
 
 version_history:
   - version: ""
@@ -1601,9 +1650,11 @@ affected_scope:
   version: ""  # Code version where issue found
 
 reproduction:
+  prerequisites: ""  # Required conditions before issue can occur
   steps:
     - ""
   frequency: ""  # always, intermittent, once
+  reproducibility_conditions: ""  # Specific conditions when issue manifests
   preconditions: ""
   test_data: ""
   error_output: ""  # Error messages, stack traces
@@ -1643,6 +1694,15 @@ verification:
   verified_by: ""
   test_results: ""
   closure_notes: ""
+
+prevention:
+  preventive_measures: ""  # How to prevent similar issues in future
+  process_improvements: ""  # Process changes to prevent recurrence
+
+verification_enhanced:
+  verification_steps:
+    - ""  # Step-by-step verification procedures
+  verification_results: ""  # Detailed results of verification testing
 
 traceability:
   design_refs:
@@ -2943,6 +3003,7 @@ flowchart TD
 | 3.0 | 2025-11-14 | Replaced MCP communication with filesystem communication for Claude Desktop↔Claude Code (P00 1.1.7-1.1.8-1.1.9-1.1.11); removed LM Studio references; simplified T04 template; updated flowchart; deleted Appendix A |
 | 3.1 | 2025-11-14 | Added P09 Prompt protocol; separated prompt management from trace; created workspace/prompt/ folder; updated P00 1.1.10 document class list; updated P08 1.9.3 audit scope to P00-P09 |
 | 3.2 | 2025-11-16 | Removed prompt iteration numbering (P09 1.10.2, 1.10.5); GitHub version control replaces iteration-based versioning |
+| 3.3 | 2025-11-19 | Enhanced P00 Control (1.1.7) and Communication (1.1.8) with strategic/tactical clarification and MCP filesystem awareness; Added semantic versioning standard to P01 Versioning (1.1.13); Added workspace/ai/ directory to P01 folder structure (1.2.6) and .gitignore (1.2.2); Added visual documentation requirements to P02 (1.3.10) for embedded Mermaid diagrams; Enhanced T01 Design template with visual_documentation section; Enhanced T03 Issue template with prerequisites, reproducibility_conditions, prevention, and verification_enhanced sections |
 
 ---
 [Return to Table of Contents](<#table of contents>)
