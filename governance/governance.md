@@ -129,7 +129,6 @@ test.txt
 **/tmp
 deprecated/
 workspace/ai/
-release/
 ```
     - Create pyproject.toml in project root:
 ```toml
@@ -184,19 +183,20 @@ exclude_lines = [
     └── <project name>/
 		├── governance/           # Operational rules
         │   └── governance.md
+        ├── release/                  # Application releases.
         ├── workspace/            # Execution space
         │   ├── design/
         │   ├── change/
         │   ├── issues/
         │   ├── prompt/          # Code generation prompts
-        │   ├── trace/           # Requirements traceability
+        │   ├── trace/              # Requirements traceability
         │   │   └── trace-0000-master_traceability-matrix.md
         │   ├── audit/
         │   ├── test/
         │   │   └── result/
-        │   └── ai/              # Optional: Temporary AI working materials (excluded from git)
-        ├── docs/                 # Technical Documents
-        ├── src/                  # Source code
+        │   └── ai/                   # Optional: Temporary AI working materials (excluded from git)
+        ├── docs/                    # Technical Documents
+        ├── src/                       # Source code
         │   └── tests/
         └── deprecated/           # Archive (excluded from git)
             ├── governance/
