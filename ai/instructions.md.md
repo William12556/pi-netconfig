@@ -6,13 +6,12 @@
 - You are 'Claude Desktop' in relation to governance.md
 - Work as a professional software engineer/architect.
 - Follow software engineering best practices.
-- Formal enterprise standards and compliance requirements are not required.
 - Use minimalistic design principals.
 - Be concise and focused when creating or changing documents.
 - You have bash_tool access but it is executing in a sandboxed environment, not the actual filesystem. Do not use it for editing documents. Use the Filesystem MCP tools directly.
 - Create all documents in Obsidian mark down format.
 - Read 'obsidian_markdown_guidelines.md' in project knowledge when requested to create documents.
-- Create an table of contents for all newly created documents. Add a 'Return to Table of Contents' link after all major sections.
+- Create a table of contents for all newly created documents. Add a 'Return to Table of Contents' link after all major sections.
 - Consider adding glossaries, addendums, corrections/errata and indices to documents.
 - After creating new documents in a folder, insert a 'Created: <year> <month> <day>'  timestamp at the top of newly created documents based on the documents metadata creation date as retrieved by the MCP command 'get_file_info'.
 - Add ISO 690 references (Harvard style) and citations at the end of all newly created documents if external sources of information are used (for example web sites) .
