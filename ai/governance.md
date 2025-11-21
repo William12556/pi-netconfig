@@ -221,10 +221,14 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.3 P02 Design
-  - 1.3.1 Claude Desktop: Creates master design document named \<design\>-0000-master_\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#2.1 t01 design>)
-  - 1.3.2 Claude Desktop: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#2.1 t01 design>)
-  - 1.3.3 Claude Desktop: Insures design element documents do not exceed Claude Code context window
-  - 1.3.4 Claude Desktop: Insures the master  design document  is clearly designated within as the master design document.
+  - 1.3.1 Master design creation
+    - Claude Desktop: Creates master design document named \<design\>-0000-master_\<document name\>.md from human software specifications and requirements (there is only one master design document) using template [T01 Design](<#2.1 t01 design>)
+  - 1.3.2 Design decomposition
+    - Claude Desktop: Deconstructs the master design document into cross linked design element (modules) documents according to functionality using template [T01 Design](<#2.1 t01 design>)
+  - 1.3.3 Context window constraints
+    - Claude Desktop: Insures design element documents do not exceed Claude Code context window
+  - 1.3.4 Master designation
+    - Claude Desktop: Insures the master  design document  is clearly designated within as the master design document.
   - 1.3.5 Design Verification
     - Claude Desktop: Validates design completeness before creating T04 prompt
     - Claude Desktop: Verifies all functional requirements have corresponding design elements
@@ -263,10 +267,19 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.4 P03 Change
-  - 1.4.1 Claude Desktop: Creates change documents from issue documents and human change requests using template [T02 Change](<#2.2 t02 change>) and saves them in folder workspace/change
-  - 1.4.2 Claude Desktop: Insures created change documents are linked to thier source issue document
-  - 1.4.3 Claude Desktop: Updates all relevant design documents after implementation
-  - 1.4.4 Claude Desktop: Insures all design document updates contain change references and links to their source change document
+  - 1.4.1 Change document creation
+    - Claude Desktop: Creates change documents exclusively from issue documents using template [T02 Change](<#2.2 t02 change>) and saves them in folder workspace/change
+    - Claude Desktop: For human-requested source code changes, first creates issue document via P04, then creates change document referencing that issue
+    - Exception: Non-source-code changes (workspace/ documents per 1.4.10) may be implemented directly after human approval without issue/change documents
+  - 1.4.2 Document coupling
+    - Claude Desktop: Ensures one-to-one coupling between issue and change documents
+    - Claude Desktop: Every source code change document must reference exactly one source issue document
+    - Claude Desktop: Every resolved source code issue must reference exactly one change document
+    - Claude Desktop: Prohibits multiple change documents addressing same issue or multiple issues addressed by same change
+  - 1.4.3 Design document updates
+    - Claude Desktop: Updates all relevant design documents after implementation
+  - 1.4.4 Design document cross-linking
+    - Claude Desktop: Insures all design document updates contain change references and links to their source change document
   - 1.4.5 Change Review
     - Claude Desktop: Performs impact analysis before change approval
     - Claude Desktop: Evaluates effects on dependent components, interfaces, data structures
@@ -293,10 +306,14 @@ exclude_lines = [
 [Return to Table of Contents](<#table of contents>)
 
 #### 1.5 P04 Issue
-  - 1.5.1 Claude Desktop: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
-  - 1.5.2 Claude Desktop: Reserved for future use
-  - 1.5.3 Claude Code: Debugs issues submitted from Claude Code and returns change proposal to Claude Desktop
-  - 1.5.4 Claude Desktop: Updates issue documents from bugs and  using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
+  - 1.5.1 Issue creation from test results
+    - Claude Desktop: Creates issue documents from errors reported in workspace/test/result using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
+  - 1.5.2 Reserved for future use
+    - Claude Desktop: Reserved for future use
+  - 1.5.3 Debug workflow
+    - Claude Code: Debugs issues submitted from Claude Code and returns change proposal to Claude Desktop
+  - 1.5.4 Issue updates
+    - Claude Desktop: Updates issue documents from bugs and  using template [T03 Issue](<#2.3 t03 issue>) and saves them in folder workspace/issue
   - 1.5.5 Non-Conformance Reporting
     - Claude Desktop: Documents instances where generated code deviates from design specifications
     - Claude Desktop: Records deviation type, severity, affected components
@@ -305,6 +322,12 @@ exclude_lines = [
     - Claude Desktop: Evaluates code generation effectiveness after issue resolution
     - Claude Desktop: Documents lessons learned
     - Claude Desktop: Provides protocol improvement recommendations for human review (protocols immutable, human-modified only)
+  - 1.5.7 Issue-Change Coupling
+    - Claude Desktop: Updates issue document with change_ref field when change created
+    - Claude Desktop: Sets issue status to "resolved" when corresponding change status becomes "implemented"
+    - Claude Desktop: Verifies bidirectional linkage exists: issue.change_ref ↔ change.source.reference
+    - Claude Desktop: Prevents issue closure without corresponding change document for source code issues
+    - Note: One-to-one coupling does not prevent modification of paired issue/change documents during debugging iterations
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -335,7 +358,8 @@ exclude_lines = [
 
 #### 1.7 P06 Test
   - 1.7.1 Purpose
-  - 1.7.2 Claude Desktop: Creates test documents from source code generated by Claude Code using template [T05 Test](<#2.5 t05 test>) and saves them in folder workspace/test
+  - 1.7.2 Test documentation
+    - Claude Desktop: Creates test documents from source code generated by Claude Code using template [T05 Test](<#2.5 t05 test>) and saves them in folder workspace/test
   - 1.7.3 Test Script Creation
     - Claude Desktop: Generates executable test scripts in src/tests/
     - Claude Desktop: Creates unit tests for components in subdirectories (src/tests/\<component\>/)
@@ -2987,6 +3011,7 @@ flowchart TD
 | 3.3 | 2025-11-19 | Enhanced P00 Control (1.1.7) and Communication (1.1.8) with strategic/tactical clarification and MCP filesystem awareness; Added semantic versioning standard to P01 Versioning (1.1.13); Added workspace/ai/ directory to P01 folder structure (1.2.6) and .gitignore (1.2.2); Added visual documentation requirements to P02 (1.3.10) for embedded Mermaid diagrams; Enhanced T01 Design template with visual_documentation section; Enhanced T03 Issue template with prerequisites, reproducibility_conditions, prevention, and verification_enhanced sections |
 | 3.4 | 2025-11-20 | Restructured instruction document directives: moved P00 1.1.11 to P09 1.10.6; deleted embedded markdown template; converted to point-by-point directive structure; renumbered P00 1.1.12-1.1.13 to 1.1.11-1.1.12 |
 | 3.5 | 2025-11-20 | Enhanced P00 1.1.11 Configuration Management with configuration audit procedure directives; added config-audit template and process requirements; established baseline verification workflow |
+| 3.6 | 2025-11-21 | Enforced one-to-one issue-change coupling: replaced P03 1.4.1-1.4.2 requiring exclusive issue-to-change relationships; added P04 1.5.7 Issue-Change Coupling with bidirectional linkage verification |
 
 ---
 [Return to Table of Contents](<#table of contents>)
