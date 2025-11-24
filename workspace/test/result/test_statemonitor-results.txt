@@ -1,0 +1,81 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.0.1, pluggy-1.6.0 -- /home/admin/pi-netconfig/pi-netconfig-venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/admin/pi-netconfig
+configfile: pyproject.toml
+plugins: cov-7.0.0, asyncio-1.3.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 25 items
+
+src/tests/statemonitor/test_statemonitor.py::TestSystemState::test_system_state_has_required_values PASSED [  4%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_state_machine_initializes_with_components PASSED [  8%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_state_machine_starts_in_checking_state PASSED [ 12%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_state_machine_initializes_failure_count_zero PASSED [ 16%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_initialize_creates_shutdown_event PASSED [ 20%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_initialize_starts_monitoring_task PASSED [ 24%]
+src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_true_when_connected PASSED [ 28%]
+src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_false_when_disconnected PASSED [ 32%]
+src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_false_on_exception PASSED [ 36%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_from_ap_mode PASSED [ 40%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_from_checking PASSED [ 44%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_raises_on_failure PASSED [ 48%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_ap_mode_activates_ap_and_web PASSED [ 52%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_ap_mode_raises_on_failure PASSED [ 56%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_transitions_to_client_when_connected PASSED [ 60%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_transitions_to_ap_after_three_failures FAILED [ 64%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_resets_failure_count_in_client_state PASSED [ 68%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_handles_transition_errors PASSED [ 72%]
+src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_cancels_monitoring_task PASSED [ 76%]
+src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_deactivates_ap_when_in_ap_mode PASSED [ 80%]
+src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_handles_component_errors PASSED [ 84%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_initializes_state_machine PASSED [ 88%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_handles_keyboard_interrupt PASSED [ 92%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_raises_state_monitor_error_on_failure PASSED [ 96%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_calls_shutdown_in_finally PASSED [100%]
+
+=================================== FAILURES ===================================
+_ TestMonitoringLoop.test_monitoring_loop_transitions_to_ap_after_three_failures _
+
+self = <test_statemonitor.TestMonitoringLoop object at 0x7fba5e1810>
+
+    @pytest.mark.asyncio
+    async def test_monitoring_loop_transitions_to_ap_after_three_failures(self):
+        """Transitions to AP_MODE after 3 consecutive failures."""
+        mock_conn = Mock()
+        mock_conn.test_connection = AsyncMock(return_value=False)
+    
+        sm = StateMonitor(mock_conn, Mock(), Mock())
+        sm.shutdown_event = asyncio.Event()
+        sm.current_state = SystemState.CHECKING
+    
+        with patch.object(sm, 'transition_to_ap_mode', new_callable=AsyncMock) as mock_transition:
+            # Simulate enough iterations to hit 3 failures
+            call_count = 0
+            async def run_and_shutdown():
+                nonlocal call_count
+                while call_count < 3:
+                    await asyncio.sleep(0.1)
+                    call_count += 1
+                sm.shutdown_event.set()
+    
+            await asyncio.gather(
+                sm.monitoring_loop(),
+                run_and_shutdown()
+            )
+    
+>           assert sm.failure_count >= 3
+E           assert 1 >= 3
+E            +  where 1 = <statemonitor.StateMonitor object at 0x7fba61bee0>.failure_count
+
+src/tests/statemonitor/test_statemonitor.py:248: AssertionError
+=============================== warnings summary ===============================
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_from_ap_mode
+  /usr/lib/python3.13/unittest/mock.py:493: RuntimeWarning: coroutine 'sleep' was never awaited
+    __dict__['_mock_call_args_list'] = _CallList()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_transitions_to_ap_after_three_failures
+=================== 1 failed, 24 passed, 1 warning in 1.32s ====================

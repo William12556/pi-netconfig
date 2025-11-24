@@ -22,19 +22,35 @@ Tool manages WiFi connectivity with automatic fallback to access point mode when
 - Python 3.11 or higher
 - Root privileges for installation and network operations
 
-## Quick Start
+## Installation
 
 ```bash
-# Clone repository
-git clone https://github.com/williamwatson/pi-netconfig.git
-cd pi-netconfig
+# Copy required files to Raspberry Pi
+scp -r src/ pyproject.toml admin@raspberry-pi:/home/admin/pi-netconfig/
 
-# Run as root to install (first execution only)
-sudo python3 src/main.py
+# On Raspberry Pi, create virtual environment
+cd /home/admin/pi-netconfig
+python3 -m venv pi-netconfig-venv
+source pi-netconfig-venv/bin/activate
+
+# Install dependencies
+pip install -e ".[dev]"
+
+# Run as root to install service (first execution only)
+sudo pi-netconfig-venv/bin/python3 src/main.py
 
 # Service starts automatically after installation
 # If no WiFi connection: connect to "PiConfig-XXXX" network (password: piconfig123)
 # Access configuration at http://192.168.50.1:8080
+```
+
+## Testing
+
+```bash
+# On Raspberry Pi with virtual environment activated
+cd /home/admin/pi-netconfig
+source pi-netconfig-venv/bin/activate
+pytest src/tests/
 ```
 
 ## Architecture

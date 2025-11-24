@@ -1,0 +1,31 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.0.1, pluggy-1.6.0 -- /home/admin/pi-netconfig/pi-netconfig-venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/admin/pi-netconfig
+configfile: pyproject.toml
+plugins: cov-7.0.0, asyncio-1.3.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 20 items
+
+src/tests/installer/test_installer.py::TestInstallationDetector::test_is_service_installed_returns_true_when_exists PASSED [  5%]
+src/tests/installer/test_installer.py::TestInstallationDetector::test_is_service_installed_returns_false_when_missing PASSED [ 10%]
+src/tests/installer/test_installer.py::TestInstallationDetector::test_get_current_script_path_returns_path PASSED [ 15%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_verify_root_privileges_returns_true_for_root PASSED [ 20%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_verify_root_privileges_raises_for_non_root PASSED [ 25%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_create_directories_success PASSED [ 30%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_create_directories_raises_on_failure PASSED [ 35%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_copy_application_success PASSED [ 40%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_copy_application_raises_on_failure PASSED [ 45%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_generate_systemd_unit_returns_content PASSED [ 50%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_install_systemd_unit_success PASSED [ 55%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_install_systemd_unit_raises_on_daemon_reload_failure PASSED [ 60%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_enable_and_start_service_success PASSED [ 65%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_enable_and_start_service_raises_on_failure PASSED [ 70%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_rollback_installation_best_effort PASSED [ 75%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_skips_when_already_installed PASSED [ 80%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_fails_without_root_privileges PASSED [ 85%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_succeeds_with_all_steps PASSED [ 90%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_rolls_back_on_filesystem_error PASSED [ 95%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_rolls_back_on_systemd_error PASSED [100%]
+
+============================== 20 passed in 0.44s ==============================

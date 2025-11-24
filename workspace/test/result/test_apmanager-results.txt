@@ -1,0 +1,1649 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.0.1, pluggy-1.6.0 -- /home/admin/pi-netconfig/pi-netconfig-venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/admin/pi-netconfig
+configfile: pyproject.toml
+plugins: cov-7.0.0, asyncio-1.3.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 24 items
+
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_with_interface FAILED [  4%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_raises_when_no_wifi_interface FAILED [  8%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_gets_mac_address FAILED [ 12%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_generates_ssid_from_mac FAILED [ 16%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_ap_active_false FAILED [ 20%]
+src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_parses_nmcli_output FAILED [ 25%]
+src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_raises_on_nmcli_failure FAILED [ 29%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_creates_connection FAILED [ 33%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_sets_wpa2_security FAILED [ 37%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_configures_ip_range FAILED [ 41%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_raises_on_failure FAILED [ 45%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_brings_connection_up FAILED [ 50%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_sets_ap_active_true FAILED [ 54%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_raises_on_failure FAILED [ 58%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_brings_connection_down FAILED [ 62%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_sets_ap_active_false FAILED [ 66%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_handles_failure_gracefully FAILED [ 70%]
+src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_removes_security FAILED [ 75%]
+src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_returns_ap_active_status FAILED [ 79%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_creates_and_activates FAILED [ 83%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_falls_back_on_profile_error FAILED [ 87%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_deactivate_ap_function_deactivates FAILED [ 91%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_get_ap_ssid_function_returns_ssid FAILED [ 95%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_is_active_function_returns_status FAILED [100%]
+
+=================================== FAILURES ===================================
+__ TestAccessPointInitialization.test_access_point_initializes_with_interface __
+
+self = <apmanager.AccessPoint object at 0x7fb6a6d2b0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAccessPointInitialization object at 0x7fb6a68910>
+
+    def test_access_point_initializes_with_interface(self):
+        """Initializes and detects WiFi interface."""
+        nmcli_output = b"DEVICE  TYPE  STATE\nwlan0   wifi  connected\n"
+    
+        with patch('subprocess.check_output', return_value=nmcli_output):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a6d2b0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:07,372 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+_ TestAccessPointInitialization.test_access_point_raises_when_no_wifi_interface _
+
+self = <apmanager.AccessPoint object at 0x7fb6a6a210>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAccessPointInitialization object at 0x7fb6a68e10>
+
+    def test_access_point_raises_when_no_wifi_interface(self):
+        """Raises InterfaceDetectionError when no WiFi interface found."""
+        nmcli_output = b"DEVICE  TYPE  STATE\neth0   ethernet  connected\n"
+    
+        with patch('subprocess.check_output', return_value=nmcli_output):
+            with pytest.raises(InterfaceDetectionError):
+>               AccessPoint()
+
+src/tests/apmanager/test_apmanager.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a6a210>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:07,628 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+_______ TestAccessPointInitialization.test_access_point_gets_mac_address _______
+
+self = <apmanager.AccessPoint object at 0x7fb6a6a490>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAccessPointInitialization object at 0x7fb69f23f0>
+
+    def test_access_point_gets_mac_address(self):
+        """Retrieves MAC address from nmcli."""
+        device_output = b"DEVICE  TYPE  STATE\nwlan0   wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a6a490>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:07,817 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+___ TestAccessPointInitialization.test_access_point_generates_ssid_from_mac ____
+
+self = <apmanager.AccessPoint object at 0x7fb69f3360>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAccessPointInitialization object at 0x7fb69f2650>
+
+    def test_access_point_generates_ssid_from_mac(self):
+        """Generates SSID using last 4 MAC chars."""
+        device_output = b"DEVICE  TYPE  STATE\nwlan0   wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb69f3360>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:08,032 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+_ TestAccessPointInitialization.test_access_point_initializes_ap_active_false __
+
+self = <apmanager.AccessPoint object at 0x7fb69f3bb0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAccessPointInitialization object at 0x7fb6a9c710>
+
+    def test_access_point_initializes_ap_active_false(self):
+        """Initializes with ap_active set to False."""
+        device_output = b"DEVICE  TYPE  STATE\nwlan0   wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb69f3bb0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:08,222 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+______ TestInterfaceDetection.test_get_wifi_interface_parses_nmcli_output ______
+
+self = <apmanager.AccessPoint object at 0x7fb69f5370>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestInterfaceDetection object at 0x7fb6a68cd0>
+
+    def test_get_wifi_interface_parses_nmcli_output(self):
+        """Parses nmcli device status output correctly."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb69f5370>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:08,411 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+____ TestInterfaceDetection.test_get_wifi_interface_raises_on_nmcli_failure ____
+
+self = <apmanager.AccessPoint object at 0x7fb6a3f570>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestInterfaceDetection object at 0x7fb6a68f50>
+
+    def test_get_wifi_interface_raises_on_nmcli_failure(self):
+        """Raises InterfaceDetectionError on nmcli failure."""
+        with patch('subprocess.check_output', side_effect=CalledProcessError(1, 'nmcli')):
+            with pytest.raises(InterfaceDetectionError):
+>               AccessPoint()
+
+src/tests/apmanager/test_apmanager.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a3f570>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:08,599 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+________ TestProfileCreation.test_create_ap_profile_creates_connection _________
+
+self = <apmanager.AccessPoint object at 0x7fb6a3fbd0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestProfileCreation object at 0x7fb6a69090>
+
+    def test_create_ap_profile_creates_connection(self):
+        """Creates nmcli AP connection profile."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output') as mock_check:
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a3fbd0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:08,787 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+________ TestProfileCreation.test_create_ap_profile_sets_wpa2_security _________
+
+self = <apmanager.AccessPoint object at 0x7fb685ca50>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestProfileCreation object at 0x7fb6a691d0>
+
+    def test_create_ap_profile_sets_wpa2_security(self):
+        """Configures WPA2-PSK security."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output') as mock_check:
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb685ca50>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:08,978 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+________ TestProfileCreation.test_create_ap_profile_configures_ip_range ________
+
+self = <apmanager.AccessPoint object at 0x7fb685ce50>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestProfileCreation object at 0x7fb69f2520>
+
+    def test_create_ap_profile_configures_ip_range(self):
+        """Configures IP address range."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output') as mock_check:
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb685ce50>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:09,166 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+_________ TestProfileCreation.test_create_ap_profile_raises_on_failure _________
+
+self = <apmanager.AccessPoint object at 0x7fb6a4be30>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestProfileCreation object at 0x7fb69f2780>
+
+    def test_create_ap_profile_raises_on_failure(self):
+        """Raises ProfileCreationError on nmcli failure."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output, CalledProcessError(1, 'nmcli')]):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:149: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a4be30>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:09,354 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+____________ TestAPActivation.test_activate_ap_brings_connection_up ____________
+
+self = <apmanager.AccessPoint object at 0x7fb6850500>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAPActivation object at 0x7fb6a69310>
+
+    def test_activate_ap_brings_connection_up(self):
+        """Activates AP connection."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output') as mock_check:
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6850500>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:09,547 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+____________ TestAPActivation.test_activate_ap_sets_ap_active_true _____________
+
+self = <apmanager.AccessPoint object at 0x7fb6898ad0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAPActivation object at 0x7fb6a69450>
+
+    def test_activate_ap_sets_ap_active_true(self):
+        """Sets ap_active flag to True."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output'):
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6898ad0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:09,736 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+_____________ TestAPActivation.test_activate_ap_raises_on_failure ______________
+
+self = <apmanager.AccessPoint object at 0x7fb68999b0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAPActivation object at 0x7fb69f28b0>
+
+    def test_activate_ap_raises_on_failure(self):
+        """Raises APActivationError on nmcli failure."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output, CalledProcessError(1, 'nmcli')]):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb68999b0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:09,923 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+__________ TestAPActivation.test_deactivate_ap_brings_connection_down __________
+
+self = <apmanager.AccessPoint object at 0x7fb67e5710>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAPActivation object at 0x7fb69f29e0>
+
+    def test_deactivate_ap_brings_connection_down(self):
+        """Deactivates AP connection."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output') as mock_check:
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb67e5710>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:10,110 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+___________ TestAPActivation.test_deactivate_ap_sets_ap_active_false ___________
+
+self = <apmanager.AccessPoint object at 0x7fb6b4abd0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAPActivation object at 0x7fb6a9e210>
+
+    def test_deactivate_ap_sets_ap_active_false(self):
+        """Sets ap_active flag to False."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output'):
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:219: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6b4abd0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:10,307 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+________ TestAPActivation.test_deactivate_ap_handles_failure_gracefully ________
+
+self = <apmanager.AccessPoint object at 0x7fb6b4bdd0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestAPActivation object at 0x7fb6a3d9d0>
+
+    def test_deactivate_ap_handles_failure_gracefully(self):
+        """Logs error but doesn't raise on deactivation failure."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output, CalledProcessError(1, 'nmcli')]):
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:231: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6b4bdd0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:10,496 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+______________ TestFallbackOpenAP.test_fallback_removes_security _______________
+
+self = <apmanager.AccessPoint object at 0x7fb6894940>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestFallbackOpenAP object at 0x7fb6a69590>
+
+    def test_fallback_removes_security(self):
+        """Removes security configuration."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output') as mock_check:
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:248: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6894940>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:10,683 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+__________ TestFallbackOpenAP.test_fallback_returns_ap_active_status ___________
+
+self = <apmanager.AccessPoint object at 0x7fb6895180>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestFallbackOpenAP object at 0x7fb6a696d0>
+
+    def test_fallback_returns_ap_active_status(self):
+        """Returns current ap_active status."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]), \
+             patch('subprocess.check_output'):
+    
+>           ap = AccessPoint()
+                 ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:262: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6895180>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:10,872 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+_____ TestModuleFunctions.test_activate_ap_function_creates_and_activates ______
+
+self = <apmanager.AccessPoint object at 0x7fb6a92710>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestModuleFunctions object at 0x7fb6a69810>
+
+    def test_activate_ap_function_creates_and_activates(self):
+        """activate_ap() creates AccessPoint and activates."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output, b'', b'', b'', b'']):
+>           result = activate_ap()
+                     ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:278: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:157: in activate_ap
+    ap = AccessPoint()
+         ^^^^^^^^^^^^^
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a92710>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:11,059 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+__ TestModuleFunctions.test_activate_ap_function_falls_back_on_profile_error ___
+
+self = <apmanager.AccessPoint object at 0x7fb6a927b0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestModuleFunctions object at 0x7fb6a69950>
+
+    def test_activate_ap_function_falls_back_on_profile_error(self):
+        """Falls back to open AP if profile creation fails."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output, CalledProcessError(1, 'nmcli'), b'']):
+>           result = activate_ap()
+                     ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:157: in activate_ap
+    ap = AccessPoint()
+         ^^^^^^^^^^^^^
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6a927b0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:11,261 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+_________ TestModuleFunctions.test_deactivate_ap_function_deactivates __________
+
+self = <apmanager.AccessPoint object at 0x7fb6abed50>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestModuleFunctions object at 0x7fb69f22c0>
+
+    def test_deactivate_ap_function_deactivates(self):
+        """deactivate_ap() creates AccessPoint and deactivates."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output, b'']):
+>           deactivate_ap()  # Should not raise
+            ^^^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:299: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:170: in deactivate_ap
+    ap = AccessPoint()
+         ^^^^^^^^^^^^^
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6abed50>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:11,463 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+__________ TestModuleFunctions.test_get_ap_ssid_function_returns_ssid __________
+
+self = <apmanager.AccessPoint object at 0x7fb68759d0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestModuleFunctions object at 0x7fb69f2b10>
+
+    def test_get_ap_ssid_function_returns_ssid(self):
+        """get_ap_ssid() returns generated SSID."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]):
+>           ssid = get_ap_ssid()
+                   ^^^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:307: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:175: in get_ap_ssid
+    ap = AccessPoint()
+         ^^^^^^^^^^^^^
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb68759d0>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:11,664 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+__________ TestModuleFunctions.test_is_active_function_returns_status __________
+
+self = <apmanager.AccessPoint object at 0x7fb6806750>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+>           raise InterfaceDetectionError("No WiFi interface found")
+E           apmanager.InterfaceDetectionError: No WiFi interface found
+
+src/apmanager.py:55: InterfaceDetectionError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_apmanager.TestModuleFunctions object at 0x7fb6a9e570>
+
+    def test_is_active_function_returns_status(self):
+        """is_active() returns AP activation status."""
+        device_output = b"DEVICE  TYPE=wifi  STATE\nwlan0   TYPE=wifi  connected\n"
+        show_output = b"GENERAL.HWADDR: AA:BB:CC:DD:EE:FF\n"
+    
+        with patch('subprocess.check_output', side_effect=[device_output, show_output]):
+>           status = is_active()
+                     ^^^^^^^^^^^
+
+src/tests/apmanager/test_apmanager.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apmanager.py:180: in is_active
+    ap = AccessPoint()
+         ^^^^^^^^^^^^^
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <apmanager.AccessPoint object at 0x7fb6806750>
+
+    def get_wifi_interface(self) -> str:
+        """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
+        try:
+            output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+            for line in output.splitlines():
+                if "TYPE=wifi" in line:
+                    return line.split()[0]
+            raise InterfaceDetectionError("No WiFi interface found")
+        except CalledProcessError as e:
+            logger.error(f"Failed to get WiFi interface: {e}")
+            traceback.print_exc()
+            raise InterfaceDetectionError("Failed to get WiFi interface") from e
+        except Exception as e:
+            logger.critical(f"Unexpected error: {e}")
+            traceback.print_exc()
+>           raise APManagerError("Unexpected error") from e
+E           apmanager.APManagerError: Unexpected error
+
+src/apmanager.py:63: APManagerError
+----------------------------- Captured stderr call -----------------------------
+2025-11-24 15:08:11,865 - APManager - CRITICAL - Unexpected error: No WiFi interface found
+Traceback (most recent call last):
+  File "/home/admin/pi-netconfig/src/tests/apmanager/../../apmanager.py", line 55, in get_wifi_interface
+    raise InterfaceDetectionError("No WiFi interface found")
+apmanager.InterfaceDetectionError: No WiFi interface found
+------------------------------ Captured log call -------------------------------
+CRITICAL APManager:apmanager.py:61 Unexpected error: No WiFi interface found
+=========================== short test summary info ============================
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_with_interface
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_raises_when_no_wifi_interface
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_gets_mac_address
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_generates_ssid_from_mac
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_ap_active_false
+FAILED src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_parses_nmcli_output
+FAILED src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_raises_on_nmcli_failure
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_creates_connection
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_sets_wpa2_security
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_configures_ip_range
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_raises_on_failure
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_brings_connection_up
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_sets_ap_active_true
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_raises_on_failure
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_brings_connection_down
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_sets_ap_active_false
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_handles_failure_gracefully
+FAILED src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_removes_security
+FAILED src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_returns_ap_active_status
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_creates_and_activates
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_falls_back_on_profile_error
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_deactivate_ap_function_deactivates
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_get_ap_ssid_function_returns_ssid
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_is_active_function_returns_status
+============================== 24 failed in 4.93s ==============================
