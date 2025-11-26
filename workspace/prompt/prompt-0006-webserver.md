@@ -4,7 +4,7 @@ Created: 2025 November 12
 
 ```yaml
 prompt_info:
-  id: "prompt-0005"
+  id: "prompt-0006"
   task_type: "code_generation"
   source_ref: "design-0005-webserver"
   date: "2025-11-12"

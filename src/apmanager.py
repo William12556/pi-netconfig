@@ -49,18 +49,16 @@ class AccessPoint:
         """Execute 'nmcli device status', find TYPE=wifi, return DEVICE name."""
         try:
             output = check_output(["nmcli", "device", "status"]).decode("utf-8")
-            for line in output.splitlines():
-                if "TYPE=wifi" in line:
-                    return line.split()[0]
+            lines = output.splitlines()
+            for line in lines[1:]:  # Skip header
+                fields = line.split()
+                if len(fields) >= 2 and fields[1] == "wifi":
+                    return fields[0]
             raise InterfaceDetectionError("No WiFi interface found")
         except CalledProcessError as e:
             logger.error(f"Failed to get WiFi interface: {e}")
             traceback.print_exc()
             raise InterfaceDetectionError("Failed to get WiFi interface") from e
-        except Exception as e:
-            logger.critical(f"Unexpected error: {e}")
-            traceback.print_exc()
-            raise APManagerError("Unexpected error") from e
 
     def get_mac_address(self) -> str:
         """Execute 'nmcli device show {interface}', extract GENERAL.HWADDR."""

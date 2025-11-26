@@ -4,7 +4,7 @@ Created: 2025 November 12
 
 ```yaml
 prompt_info:
-  id: "prompt-0004"
+  id: "prompt-0005"
   task_type: "debug"
   source_ref: "change-0001-connectionmanager-defect-corrections"
   date: "2025-11-12"

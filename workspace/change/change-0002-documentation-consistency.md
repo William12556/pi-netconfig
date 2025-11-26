@@ -2,7 +2,7 @@
 
 ```yaml
 change_info:
-  id: "change-0006"
+  id: "change-0002"
   title: "Documentation Enhancement - Type Hint Consistency"
   date: "2025-11-20"
   author: "Domain 1"

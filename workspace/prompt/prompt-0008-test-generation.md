@@ -2,7 +2,7 @@
 
 ```yaml
 prompt_info:
-  id: "prompt-0007"
+  id: "prompt-0008"
   task_type: "code_generation"
   source_ref: "test-0002 through test-0006, audit-0001 CI-1"
   date: "2025-11-14"
