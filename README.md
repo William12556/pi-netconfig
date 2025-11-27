@@ -22,26 +22,76 @@ Tool manages WiFi connectivity with automatic fallback to access point mode when
 - Python 3.11 or higher
 - Root privileges for installation and network operations
 
-## Installation
+## Development Setup
+
+**Initial Setup (one-time):**
 
 ```bash
-# Copy required files to Raspberry Pi
-scp -r src/ pyproject.toml admin@raspberry-pi:/home/admin/pi-netconfig/
-
-# On Raspberry Pi, create virtual environment
-cd /home/admin/pi-netconfig
-python3 -m venv pi-netconfig-venv
-source pi-netconfig-venv/bin/activate
-
-# Install dependencies
+cd /path/to/pi-netconfig
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -e ".[dev]"
+```
 
-# Run as root to install service (first execution only)
-sudo pi-netconfig-venv/bin/python3 src/main.py
+Editable installation (`-e` flag) makes imports work during development without reinstalling after code changes.
 
-# Service starts automatically after installation
-# If no WiFi connection: connect to "PiConfig-XXXX" network (password: piconfig123)
-# Access configuration at http://192.168.50.1:8080
+**Running Tests:**
+
+```bash
+# With virtual environment activated
+pytest src/tests/
+```
+
+## Building for Deployment
+
+**Create Distribution Package:**
+
+```bash
+# On development machine (Mac/Linux)
+cd /path/to/pi-netconfig
+pip install build
+python -m build
+```
+
+Creates `dist/pi_netconfig-0.2.0-py3-none-any.whl`
+
+## Deployment to Raspberry Pi
+
+**Transfer and Install on Raspberry Pi:**
+
+```bash
+# Transfer wheel file
+scp dist/pi_netconfig-0.2.0-py3-none-any.whl admin@raspberry-pi:/tmp/
+
+# On Raspberry Pi
+ssh admin@raspberry-pi
+sudo pip install /tmp/pi_netconfig-0.2.0-py3-none-any.whl
+
+# Run installer (first execution only - installs systemd service)
+sudo python3 -m pi_netconfig.main
+```
+
+**Post-Installation:**
+
+Service starts automatically. If no WiFi connection available:
+1. Connect to access point: `PiConfig-XXXX` (password: `piconfig123`)
+2. Access web interface: `http://192.168.50.1:8080`
+3. Configure WiFi network through browser
+
+**Service Management:**
+
+```bash
+# Check status
+sudo systemctl status pi-netconfig
+
+# View logs
+sudo journalctl -u pi-netconfig -f
+
+# Restart service
+sudo systemctl restart pi-netconfig
+
+# Stop service
+sudo systemctl stop pi-netconfig
 ```
 
 ## Testing
@@ -52,6 +102,21 @@ cd /home/admin/pi-netconfig
 source pi-netconfig-venv/bin/activate
 pytest src/tests/
 ```
+
+### Test Status
+
+**Current Pass Rate: 164/165 (99.4%)**
+
+Module test results:
+- APManager: 24/24 (100%)
+- ConnectionManager: 19/19 (100%)
+- Installer: 17/17 (100%)
+- ServiceController: 44/44 (100%)
+- StateMonitor: 24/25 (96%) - 1 async timing test pending fix
+- WebServer: 27/27 (100%)
+
+Known issue:
+- issue-0007: StateMonitor async test timing race condition (non-blocking)
 
 ## Architecture
 
