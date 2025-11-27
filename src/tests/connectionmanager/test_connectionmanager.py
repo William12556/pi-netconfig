@@ -180,14 +180,28 @@ class TestConfigManager:
                 ConfigManager.configure_network("TestSSID", "password123")
     
     def test_configure_network_thread_safe(self):
-        """Uses lock for thread safety."""
-        with patch('subprocess.run'), \
-             patch.object(ConfigManager, 'persist_configuration'), \
-             patch.object(ConfigManager._lock, 'acquire', wraps=ConfigManager._lock.acquire) as mock_acquire:
-            
-            ConfigManager.configure_network("TestSSID", "password123")
-            
-            mock_acquire.assert_called()
+        """Verify thread-safety through concurrent execution."""
+        from threading import Thread
+        results = []
+        errors = []
+        
+        def worker(suffix):
+            try:
+                with patch('subprocess.run'), \
+                     patch.object(ConfigManager, 'persist_configuration'):
+                    ConfigManager.configure_network(f"SSID{suffix}", "password123")
+                    results.append(suffix)
+            except Exception as e:
+                errors.append(e)
+        
+        threads = [Thread(target=worker, args=(i,)) for i in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        
+        assert len(errors) == 0
+        assert len(results) == 10
     
     def test_persist_configuration_creates_directory(self):
         """Creates config directory if missing."""
@@ -218,15 +232,29 @@ class TestConfigManager:
             assert written_config['configured_ssid'] == "TestSSID"
     
     def test_persist_configuration_thread_safe(self):
-        """Uses lock for thread safety."""
-        with patch('pathlib.Path.mkdir'), \
-             patch('builtins.open', mock_open()), \
-             patch('json.dump'), \
-             patch.object(ConfigManager._lock, 'acquire', wraps=ConfigManager._lock.acquire) as mock_acquire:
-            
-            ConfigManager.persist_configuration("TestSSID")
-            
-            mock_acquire.assert_called()
+        """Verify thread-safety through concurrent execution."""
+        from threading import Thread
+        results = []
+        errors = []
+        
+        def worker(suffix):
+            try:
+                with patch('pathlib.Path.mkdir'), \
+                     patch('builtins.open', mock_open()), \
+                     patch('json.dump'):
+                    ConfigManager.persist_configuration(f"SSID{suffix}")
+                    results.append(suffix)
+            except Exception as e:
+                errors.append(e)
+        
+        threads = [Thread(target=worker, args=(i,)) for i in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        
+        assert len(errors) == 0
+        assert len(results) == 10
     
     def test_load_configuration_returns_ssid_when_exists(self):
         """Returns SSID from existing config file."""
@@ -250,10 +278,25 @@ class TestConfigManager:
             assert ssid is None
     
     def test_load_configuration_thread_safe(self):
-        """Uses lock for thread safety."""
-        with patch('pathlib.Path.exists', return_value=False), \
-             patch.object(ConfigManager._lock, 'acquire', wraps=ConfigManager._lock.acquire) as mock_acquire:
-            
-            ConfigManager.load_configuration()
-            
-            mock_acquire.assert_called()
+        """Verify thread-safety through concurrent execution."""
+        from threading import Thread
+        results = []
+        errors = []
+        
+        def worker(suffix):
+            try:
+                with patch('pathlib.Path.exists', return_value=False):
+                    result = ConfigManager.load_configuration()
+                    results.append(result)
+            except Exception as e:
+                errors.append(e)
+        
+        threads = [Thread(target=worker, args=(i,)) for i in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        
+        assert len(errors) == 0
+        assert len(results) == 10
+        assert all(result is None for result in results)

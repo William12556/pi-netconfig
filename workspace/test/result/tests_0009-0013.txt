@@ -1,0 +1,1289 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-8.4.1, pluggy-1.6.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/williamwatson/Documents/GitHub/pi-netconfig
+configfile: pyproject.toml
+plugins: anyio-4.9.0, cov-6.2.1, mock-3.14.1
+collecting ... collected 165 items
+
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_with_interface FAILED [  0%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_raises_when_no_wifi_interface FAILED [  1%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_gets_mac_address FAILED [  1%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_generates_ssid_from_mac FAILED [  2%]
+src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_ap_active_false FAILED [  3%]
+src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_parses_nmcli_output FAILED [  3%]
+src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_raises_on_nmcli_failure FAILED [  4%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_creates_connection FAILED [  4%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_sets_wpa2_security FAILED [  5%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_configures_ip_range FAILED [  6%]
+src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_raises_on_failure FAILED [  6%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_brings_connection_up FAILED [  7%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_sets_ap_active_true FAILED [  7%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_raises_on_failure FAILED [  8%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_brings_connection_down FAILED [  9%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_sets_ap_active_false FAILED [  9%]
+src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_handles_failure_gracefully FAILED [ 10%]
+src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_removes_security FAILED [ 10%]
+src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_returns_ap_active_status FAILED [ 11%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_creates_and_activates FAILED [ 12%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_falls_back_on_profile_error FAILED [ 12%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_deactivate_ap_function_deactivates FAILED [ 13%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_get_ap_ssid_function_returns_ssid FAILED [ 13%]
+src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_is_active_function_returns_status FAILED [ 14%]
+src/tests/connectionmanager/test_connectionmanager.py::TestNetworkInfo::test_network_info_creation PASSED [ 15%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConnectionTester::test_connection_test_returns_true_when_connected PASSED [ 15%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConnectionTester::test_connection_test_returns_false_when_all_fail PASSED [ 16%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConnectionTester::test_connection_test_tries_multiple_hosts PASSED [ 16%]
+src/tests/connectionmanager/test_connectionmanager.py::TestNetworkScanner::test_scan_networks_returns_list PASSED [ 17%]
+src/tests/connectionmanager/test_connectionmanager.py::TestNetworkScanner::test_scan_networks_sorts_by_signal_strength PASSED [ 18%]
+src/tests/connectionmanager/test_connectionmanager.py::TestNetworkScanner::test_scan_networks_removes_duplicates PASSED [ 18%]
+src/tests/connectionmanager/test_connectionmanager.py::TestNetworkScanner::test_scan_networks_raises_on_nmcli_failure PASSED [ 19%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_validates_ssid PASSED [ 20%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_validates_password PASSED [ 20%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_deletes_existing_connection PASSED [ 21%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_creates_new_connection PASSED [ 21%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_activates_connection PASSED [ 22%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_persists_configuration PASSED [ 23%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_raises_on_nmcli_failure PASSED [ 23%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_thread_safe FAILED [ 24%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_persist_configuration_creates_directory PASSED [ 24%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_persist_configuration_writes_json PASSED [ 25%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_persist_configuration_thread_safe PASSED [ 26%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_load_configuration_returns_ssid_when_exists PASSED [ 26%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_load_configuration_returns_none_when_missing PASSED [ 27%]
+src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_load_configuration_thread_safe PASSED [ 27%]
+src/tests/installer/test_installer.py::TestInstallationDetector::test_is_service_installed_returns_true_when_exists PASSED [ 28%]
+src/tests/installer/test_installer.py::TestInstallationDetector::test_is_service_installed_returns_false_when_missing PASSED [ 29%]
+src/tests/installer/test_installer.py::TestInstallationDetector::test_get_current_script_path_returns_path PASSED [ 29%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_verify_root_privileges_returns_true_for_root PASSED [ 30%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_verify_root_privileges_raises_for_non_root PASSED [ 30%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_create_directories_success PASSED [ 31%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_create_directories_raises_on_failure PASSED [ 32%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_copy_application_success PASSED [ 32%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_copy_application_raises_on_failure PASSED [ 33%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_generate_systemd_unit_returns_content PASSED [ 33%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_install_systemd_unit_success PASSED [ 34%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_install_systemd_unit_raises_on_daemon_reload_failure PASSED [ 35%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_enable_and_start_service_success PASSED [ 35%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_enable_and_start_service_raises_on_failure PASSED [ 36%]
+src/tests/installer/test_installer.py::TestSystemdInstaller::test_rollback_installation_best_effort PASSED [ 36%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_skips_when_already_installed PASSED [ 37%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_fails_without_root_privileges PASSED [ 38%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_succeeds_with_all_steps PASSED [ 38%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_rolls_back_on_filesystem_error PASSED [ 39%]
+src/tests/installer/test_installer.py::TestInstallFunction::test_install_rolls_back_on_systemd_error PASSED [ 40%]
+src/tests/servicecontroller/test_main.py::TestExecutionModeDetection::test_detect_bootstrap_mode_when_service_not_installed PASSED [ 40%]
+src/tests/servicecontroller/test_main.py::TestExecutionModeDetection::test_detect_service_mode_when_systemd_context PASSED [ 41%]
+src/tests/servicecontroller/test_main.py::TestExecutionModeDetection::test_detect_manual_mode_when_service_installed_no_systemd PASSED [ 41%]
+src/tests/servicecontroller/test_main.py::TestExecutionModeDetection::test_detect_mode_returns_manual_on_exception PASSED [ 42%]
+src/tests/servicecontroller/test_main.py::TestPrivilegeVerification::test_verify_root_privileges_returns_true_for_root PASSED [ 43%]
+src/tests/servicecontroller/test_main.py::TestPrivilegeVerification::test_verify_root_privileges_returns_false_for_non_root PASSED [ 43%]
+src/tests/servicecontroller/test_main.py::TestPrivilegeVerification::test_verify_root_privileges_handles_exception PASSED [ 44%]
+src/tests/servicecontroller/test_main.py::TestLoggingConfiguration::test_configure_logging_creates_file_handler FAILED [ 44%]
+src/tests/servicecontroller/test_main.py::TestLoggingConfiguration::test_configure_logging_adds_console_handler_in_manual_mode FAILED [ 45%]
+src/tests/servicecontroller/test_main.py::TestLoggingConfiguration::test_configure_logging_no_console_in_service_mode FAILED [ 46%]
+src/tests/servicecontroller/test_main.py::TestLoggingConfiguration::test_configure_logging_raises_on_file_failure PASSED [ 46%]
+src/tests/servicecontroller/test_main.py::TestSignalHandling::test_signal_handler_sets_shutdown_event PASSED [ 47%]
+src/tests/servicecontroller/test_main.py::TestSignalHandling::test_signal_handler_exits_if_no_event PASSED [ 47%]
+src/tests/servicecontroller/test_main.py::TestSignalHandling::test_register_signal_handlers_registers_sigterm_sigint PASSED [ 48%]
+src/tests/servicecontroller/test_main.py::TestSignalHandling::test_register_signal_handlers_raises_on_failure PASSED [ 49%]
+src/tests/servicecontroller/test_main.py::TestGracefulShutdown::test_graceful_shutdown_calls_state_monitor_shutdown FAILED [ 49%]
+src/tests/servicecontroller/test_main.py::TestGracefulShutdown::test_graceful_shutdown_handles_timeout FAILED [ 50%]
+src/tests/servicecontroller/test_main.py::TestGracefulShutdown::test_graceful_shutdown_handles_no_monitor FAILED [ 50%]
+src/tests/servicecontroller/test_main.py::TestRunService::test_run_service_creates_shutdown_event FAILED [ 51%]
+src/tests/servicecontroller/test_main.py::TestRunService::test_run_service_initializes_state_monitor FAILED [ 52%]
+src/tests/servicecontroller/test_main.py::TestRunService::test_run_service_raises_on_critical_failure FAILED [ 52%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_bootstrap_mode_calls_installer PASSED [ 53%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_bootstrap_mode_returns_error_without_root PASSED [ 53%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_service_mode_configures_logging PASSED [ 54%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_service_mode_verifies_root PASSED [ 55%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_service_mode_starts_event_loop PASSED [ 55%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_handles_keyboard_interrupt PASSED [ 56%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_returns_error_on_service_controller_error PASSED [ 56%]
+src/tests/servicecontroller/test_main.py::TestMainFunction::test_main_returns_error_on_unexpected_exception PASSED [ 57%]
+src/tests/servicecontroller/test_servicecontroller.py::TestExecutionModeDetection::test_detect_execution_mode_returns_bootstrap_when_not_installed PASSED [ 58%]
+src/tests/servicecontroller/test_servicecontroller.py::TestExecutionModeDetection::test_detect_execution_mode_returns_service_when_under_systemd PASSED [ 58%]
+src/tests/servicecontroller/test_servicecontroller.py::TestExecutionModeDetection::test_detect_execution_mode_returns_manual_when_installed_but_not_systemd PASSED [ 59%]
+src/tests/servicecontroller/test_servicecontroller.py::TestPrivilegeVerification::test_verify_root_privileges_returns_true_for_uid_zero PASSED [ 60%]
+src/tests/servicecontroller/test_servicecontroller.py::TestPrivilegeVerification::test_verify_root_privileges_returns_false_for_non_root_uid PASSED [ 60%]
+src/tests/servicecontroller/test_servicecontroller.py::TestLoggingConfiguration::test_configure_logging_creates_file_handler FAILED [ 61%]
+src/tests/servicecontroller/test_servicecontroller.py::TestLoggingConfiguration::test_configure_logging_adds_console_handler_in_manual_mode FAILED [ 61%]
+src/tests/servicecontroller/test_servicecontroller.py::TestLoggingConfiguration::test_configure_logging_raises_error_on_permission_denied PASSED [ 62%]
+src/tests/servicecontroller/test_servicecontroller.py::TestSignalHandling::test_signal_handler_sets_shutdown_event PASSED [ 63%]
+src/tests/servicecontroller/test_servicecontroller.py::TestSignalHandling::test_register_signal_handlers_registers_sigterm_and_sigint PASSED [ 63%]
+src/tests/servicecontroller/test_servicecontroller.py::TestGracefulShutdown::test_graceful_shutdown_calls_state_monitor_shutdown FAILED [ 64%]
+src/tests/servicecontroller/test_servicecontroller.py::TestGracefulShutdown::test_graceful_shutdown_handles_timeout_gracefully FAILED [ 64%]
+src/tests/servicecontroller/test_servicecontroller.py::TestRunService::test_run_service_creates_state_monitor_and_waits_for_shutdown FAILED [ 65%]
+src/tests/servicecontroller/test_servicecontroller.py::TestMainFunction::test_main_calls_install_in_bootstrap_mode PASSED [ 66%]
+src/tests/servicecontroller/test_servicecontroller.py::TestMainFunction::test_main_returns_one_when_install_fails PASSED [ 66%]
+src/tests/servicecontroller/test_servicecontroller.py::TestMainFunction::test_main_runs_service_in_service_mode PASSED [ 67%]
+src/tests/servicecontroller/test_servicecontroller.py::TestMainFunction::test_main_returns_one_without_root_privileges PASSED [ 67%]
+src/tests/statemonitor/test_statemonitor.py::TestSystemState::test_system_state_has_required_values PASSED [ 68%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_state_machine_initializes_with_components PASSED [ 69%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_state_machine_starts_in_checking_state PASSED [ 69%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_state_machine_initializes_failure_count_zero PASSED [ 70%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_initialize_creates_shutdown_event FAILED [ 70%]
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_initialize_starts_monitoring_task FAILED [ 71%]
+src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_true_when_connected FAILED [ 72%]
+src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_false_when_disconnected FAILED [ 72%]
+src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_false_on_exception FAILED [ 73%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_from_ap_mode FAILED [ 73%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_from_checking FAILED [ 74%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_raises_on_failure FAILED [ 75%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_ap_mode_activates_ap_and_web FAILED [ 75%]
+src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_ap_mode_raises_on_failure FAILED [ 76%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_transitions_to_client_when_connected FAILED [ 76%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_transitions_to_ap_after_three_failures FAILED [ 77%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_resets_failure_count_in_client_state FAILED [ 78%]
+src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_handles_transition_errors FAILED [ 78%]
+src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_cancels_monitoring_task FAILED [ 79%]
+src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_deactivates_ap_when_in_ap_mode FAILED [ 80%]
+src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_handles_component_errors FAILED [ 80%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_initializes_state_machine FAILED [ 81%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_handles_keyboard_interrupt FAILED [ 81%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_raises_state_monitor_error_on_failure FAILED [ 82%]
+src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_calls_shutdown_in_finally FAILED [ 83%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_serves_html_for_root FAILED [ 83%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_handles_scan_request FAILED [ 84%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_handles_status_request FAILED [ 84%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_returns_404_for_unknown_path FAILED [ 85%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_post_handles_configure_request FAILED [ 86%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_post_validates_ssid_required PASSED [ 86%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_post_validates_password_required PASSED [ 87%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_post_returns_404_for_unknown_path FAILED [ 87%]
+src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_send_json_response_includes_cors_headers PASSED [ 88%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_manager_initializes_with_port PASSED [ 89%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_manager_initializes_without_server PASSED [ 89%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_start_server_creates_http_server PASSED [ 90%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_start_server_starts_daemon_thread PASSED [ 90%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_start_server_raises_if_already_running PASSED [ 91%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_start_server_raises_on_port_unavailable PASSED [ 92%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_stop_server_shuts_down_gracefully FAILED [ 92%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_stop_server_joins_thread FAILED [ 93%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_stop_server_handles_no_server PASSED [ 93%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_is_running_returns_true_when_active PASSED [ 94%]
+src/tests/webserver/test_webserver.py::TestWebServerManager::test_is_running_returns_false_when_inactive PASSED [ 95%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_start_server_creates_manager_and_starts PASSED [ 95%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_start_server_uses_default_port FAILED [ 96%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_start_server_raises_port_in_use_error FAILED [ 96%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_stop_server_stops_existing_manager PASSED [ 97%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_stop_server_handles_no_manager PASSED [ 98%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_is_running_returns_manager_status PASSED [ 98%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_is_running_returns_false_when_no_manager PASSED [ 99%]
+src/tests/webserver/test_webserver.py::TestModuleFunctions::test_module_functions_thread_safe PASSED [100%]
+
+=================================== FAILURES ===================================
+__ TestAccessPointInitialization.test_access_point_initializes_with_interface __
+src/tests/apmanager/test_apmanager.py:82: in test_access_point_initializes_with_interface
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_ TestAccessPointInitialization.test_access_point_raises_when_no_wifi_interface _
+src/tests/apmanager/test_apmanager.py:88: in test_access_point_raises_when_no_wifi_interface
+    AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_______ TestAccessPointInitialization.test_access_point_gets_mac_address _______
+src/tests/apmanager/test_apmanager.py:92: in test_access_point_gets_mac_address
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+___ TestAccessPointInitialization.test_access_point_generates_ssid_from_mac ____
+src/tests/apmanager/test_apmanager.py:97: in test_access_point_generates_ssid_from_mac
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_ TestAccessPointInitialization.test_access_point_initializes_ap_active_false __
+src/tests/apmanager/test_apmanager.py:102: in test_access_point_initializes_ap_active_false
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+______ TestInterfaceDetection.test_get_wifi_interface_parses_nmcli_output ______
+src/tests/apmanager/test_apmanager.py:111: in test_get_wifi_interface_parses_nmcli_output
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+____ TestInterfaceDetection.test_get_wifi_interface_raises_on_nmcli_failure ____
+src/tests/apmanager/test_apmanager.py:119: in test_get_wifi_interface_raises_on_nmcli_failure
+    AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+________ TestProfileCreation.test_create_ap_profile_creates_connection _________
+src/tests/apmanager/test_apmanager.py:127: in test_create_ap_profile_creates_connection
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+________ TestProfileCreation.test_create_ap_profile_sets_wpa2_security _________
+src/tests/apmanager/test_apmanager.py:137: in test_create_ap_profile_sets_wpa2_security
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+________ TestProfileCreation.test_create_ap_profile_configures_ip_range ________
+src/tests/apmanager/test_apmanager.py:146: in test_create_ap_profile_configures_ip_range
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_________ TestProfileCreation.test_create_ap_profile_raises_on_failure _________
+src/tests/apmanager/test_apmanager.py:155: in test_create_ap_profile_raises_on_failure
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+____________ TestAPActivation.test_activate_ap_brings_connection_up ____________
+src/tests/apmanager/test_apmanager.py:166: in test_activate_ap_brings_connection_up
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+____________ TestAPActivation.test_activate_ap_sets_ap_active_true _____________
+src/tests/apmanager/test_apmanager.py:175: in test_activate_ap_sets_ap_active_true
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_____________ TestAPActivation.test_activate_ap_raises_on_failure ______________
+src/tests/apmanager/test_apmanager.py:183: in test_activate_ap_raises_on_failure
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+__________ TestAPActivation.test_deactivate_ap_brings_connection_down __________
+src/tests/apmanager/test_apmanager.py:190: in test_deactivate_ap_brings_connection_down
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+___________ TestAPActivation.test_deactivate_ap_sets_ap_active_false ___________
+src/tests/apmanager/test_apmanager.py:199: in test_deactivate_ap_sets_ap_active_false
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+________ TestAPActivation.test_deactivate_ap_handles_failure_gracefully ________
+src/tests/apmanager/test_apmanager.py:212: in test_deactivate_ap_handles_failure_gracefully
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+______________ TestFallbackOpenAP.test_fallback_removes_security _______________
+src/tests/apmanager/test_apmanager.py:223: in test_fallback_removes_security
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+__________ TestFallbackOpenAP.test_fallback_returns_ap_active_status ___________
+src/tests/apmanager/test_apmanager.py:232: in test_fallback_returns_ap_active_status
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_____ TestModuleFunctions.test_activate_ap_function_creates_and_activates ______
+src/tests/apmanager/test_apmanager.py:244: in test_activate_ap_function_creates_and_activates
+    result = activate_ap()
+src/apmanager.py:155: in activate_ap
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+__ TestModuleFunctions.test_activate_ap_function_falls_back_on_profile_error ___
+src/tests/apmanager/test_apmanager.py:254: in test_activate_ap_function_falls_back_on_profile_error
+    result = activate_ap()
+src/apmanager.py:155: in activate_ap
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_________ TestModuleFunctions.test_deactivate_ap_function_deactivates __________
+src/tests/apmanager/test_apmanager.py:261: in test_deactivate_ap_function_deactivates
+    deactivate_ap()  # Should not raise
+src/apmanager.py:168: in deactivate_ap
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+__________ TestModuleFunctions.test_get_ap_ssid_function_returns_ssid __________
+src/tests/apmanager/test_apmanager.py:265: in test_get_ap_ssid_function_returns_ssid
+    ssid = get_ap_ssid()
+src/apmanager.py:173: in get_ap_ssid
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+__________ TestModuleFunctions.test_is_active_function_returns_status __________
+src/tests/apmanager/test_apmanager.py:270: in test_is_active_function_returns_status
+    status = is_active()
+src/apmanager.py:178: in is_active
+    ap = AccessPoint()
+src/apmanager.py:43: in __init__
+    self.interface = self.get_wifi_interface()
+src/apmanager.py:51: in get_wifi_interface
+    output = check_output(["nmcli", "device", "status"]).decode("utf-8")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:424: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:505: in run
+    with Popen(*popenargs, **kwargs) as process:
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:951: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py:1821: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'nmcli'
+_____________ TestConfigManager.test_configure_network_thread_safe _____________
+src/tests/connectionmanager/test_connectionmanager.py:203: in test_configure_network_thread_safe
+    assert len(errors) == 0
+E   AssertionError: assert 10 == 0
+E    +  where 10 = len([ConfigurationError('Invalid password'), ConfigurationError('Invalid password'), ConfigurationError('Invalid password'), ConfigurationError('Invalid password'), ConfigurationError('Invalid password'), ConfigurationError('Invalid password'), ...])
+_____ TestLoggingConfiguration.test_configure_logging_creates_file_handler _____
+src/main.py:147: in configure_logging
+    logger.info(f"File logging configured: {log_path}")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1446: in info
+    self._log(INFO, msg, args, **kwargs)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1589: in _log
+    self.handle(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1599: in handle
+    self.callHandlers(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1660: in callHandlers
+    if record.levelno >= hdlr.level:
+E   TypeError: '>=' not supported between instances of 'int' and 'MagicMock'
+
+During handling of the above exception, another exception occurred:
+src/tests/servicecontroller/test_main.py:85: in test_configure_logging_creates_file_handler
+    configure_logging('service')
+src/main.py:170: in configure_logging
+    logger.error(f"Unexpected error configuring logging: {e}")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1475: in error
+    self._log(ERROR, msg, args, **kwargs)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1589: in _log
+    self.handle(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1599: in handle
+    self.callHandlers(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1660: in callHandlers
+    if record.levelno >= hdlr.level:
+E   TypeError: '>=' not supported between instances of 'int' and 'MagicMock'
+_ TestLoggingConfiguration.test_configure_logging_adds_console_handler_in_manual_mode _
+src/main.py:147: in configure_logging
+    logger.info(f"File logging configured: {log_path}")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1446: in info
+    self._log(INFO, msg, args, **kwargs)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1589: in _log
+    self.handle(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1599: in handle
+    self.callHandlers(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1660: in callHandlers
+    if record.levelno >= hdlr.level:
+E   TypeError: '>=' not supported between instances of 'int' and 'MagicMock'
+
+During handling of the above exception, another exception occurred:
+src/tests/servicecontroller/test_main.py:96: in test_configure_logging_adds_console_handler_in_manual_mode
+    configure_logging('manual')
+src/main.py:170: in configure_logging
+    logger.error(f"Unexpected error configuring logging: {e}")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1475: in error
+    self._log(ERROR, msg, args, **kwargs)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1589: in _log
+    self.handle(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1599: in handle
+    self.callHandlers(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1660: in callHandlers
+    if record.levelno >= hdlr.level:
+E   TypeError: '>=' not supported between instances of 'int' and 'MagicMock'
+__ TestLoggingConfiguration.test_configure_logging_no_console_in_service_mode __
+src/main.py:147: in configure_logging
+    logger.info(f"File logging configured: {log_path}")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1446: in info
+    self._log(INFO, msg, args, **kwargs)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1589: in _log
+    self.handle(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1599: in handle
+    self.callHandlers(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1660: in callHandlers
+    if record.levelno >= hdlr.level:
+E   TypeError: '>=' not supported between instances of 'int' and 'MagicMock'
+
+During handling of the above exception, another exception occurred:
+src/tests/servicecontroller/test_main.py:107: in test_configure_logging_no_console_in_service_mode
+    configure_logging('service')
+src/main.py:170: in configure_logging
+    logger.error(f"Unexpected error configuring logging: {e}")
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1475: in error
+    self._log(ERROR, msg, args, **kwargs)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1589: in _log
+    self.handle(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1599: in handle
+    self.callHandlers(record)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/logging/__init__.py:1660: in callHandlers
+    if record.levelno >= hdlr.level:
+E   TypeError: '>=' not supported between instances of 'int' and 'MagicMock'
+___ TestGracefulShutdown.test_graceful_shutdown_calls_state_monitor_shutdown ___
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_________ TestGracefulShutdown.test_graceful_shutdown_handles_timeout __________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+________ TestGracefulShutdown.test_graceful_shutdown_handles_no_monitor ________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+____________ TestRunService.test_run_service_creates_shutdown_event ____________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+__________ TestRunService.test_run_service_initializes_state_monitor ___________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+__________ TestRunService.test_run_service_raises_on_critical_failure __________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_____ TestLoggingConfiguration.test_configure_logging_creates_file_handler _____
+src/main.py:135: in configure_logging
+    for handler in root_logger.handlers[:]:
+E   TypeError: 'Mock' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+src/tests/servicecontroller/test_servicecontroller.py:101: in test_configure_logging_creates_file_handler
+    configure_logging('service')
+src/main.py:172: in configure_logging
+    raise LoggingConfigurationError(f"Logging configuration failed: {e}")
+E   main.LoggingConfigurationError: Logging configuration failed: 'Mock' object is not subscriptable
+------------------------------ Captured log call -------------------------------
+ERROR    ServiceController:main.py:170 Unexpected error configuring logging: 'Mock' object is not subscriptable
+DEBUG    ServiceController:main.py:171 Traceback (most recent call last):
+  File "/Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/../../main.py", line 135, in configure_logging
+    for handler in root_logger.handlers[:]:
+TypeError: 'Mock' object is not subscriptable
+_ TestLoggingConfiguration.test_configure_logging_adds_console_handler_in_manual_mode _
+src/main.py:135: in configure_logging
+    for handler in root_logger.handlers[:]:
+E   TypeError: 'Mock' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+src/tests/servicecontroller/test_servicecontroller.py:116: in test_configure_logging_adds_console_handler_in_manual_mode
+    configure_logging('manual')
+src/main.py:172: in configure_logging
+    raise LoggingConfigurationError(f"Logging configuration failed: {e}")
+E   main.LoggingConfigurationError: Logging configuration failed: 'Mock' object is not subscriptable
+------------------------------ Captured log call -------------------------------
+ERROR    ServiceController:main.py:170 Unexpected error configuring logging: 'Mock' object is not subscriptable
+DEBUG    ServiceController:main.py:171 Traceback (most recent call last):
+  File "/Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/../../main.py", line 135, in configure_logging
+    for handler in root_logger.handlers[:]:
+TypeError: 'Mock' object is not subscriptable
+___ TestGracefulShutdown.test_graceful_shutdown_calls_state_monitor_shutdown ___
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+____ TestGracefulShutdown.test_graceful_shutdown_handles_timeout_gracefully ____
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_ TestRunService.test_run_service_creates_state_monitor_and_waits_for_shutdown _
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+____ TestStateMonitorInitialization.test_initialize_creates_shutdown_event _____
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+____ TestStateMonitorInitialization.test_initialize_starts_monitoring_task _____
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+___ TestConnectionChecking.test_check_connection_returns_true_when_connected ___
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_ TestConnectionChecking.test_check_connection_returns_false_when_disconnected _
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+___ TestConnectionChecking.test_check_connection_returns_false_on_exception ____
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_________ TestStateTransitions.test_transition_to_client_from_ap_mode __________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_________ TestStateTransitions.test_transition_to_client_from_checking _________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_______ TestStateTransitions.test_transition_to_client_raises_on_failure _______
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_____ TestStateTransitions.test_transition_to_ap_mode_activates_ap_and_web _____
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______ TestStateTransitions.test_transition_to_ap_mode_raises_on_failure _______
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_ TestMonitoringLoop.test_monitoring_loop_transitions_to_client_when_connected _
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_ TestMonitoringLoop.test_monitoring_loop_transitions_to_ap_after_three_failures _
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_ TestMonitoringLoop.test_monitoring_loop_resets_failure_count_in_client_state _
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______ TestMonitoringLoop.test_monitoring_loop_handles_transition_errors _______
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______________ TestShutdown.test_shutdown_cancels_monitoring_task ______________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+__________ TestShutdown.test_shutdown_deactivates_ap_when_in_ap_mode ___________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_____________ TestShutdown.test_shutdown_handles_component_errors ______________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______________ TestRunFunction.test_run_initializes_state_machine ______________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_____________ TestRunFunction.test_run_handles_keyboard_interrupt ______________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+________ TestRunFunction.test_run_raises_state_monitor_error_on_failure ________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______________ TestRunFunction.test_run_calls_shutdown_in_finally ______________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+____________ TestConfigHTTPHandler.test_do_get_serves_html_for_root ____________
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:978: in assert_any_call
+    raise AssertionError(
+E   AssertionError: send_header('Content-Type', 'text/html') call not found
+
+During handling of the above exception, another exception occurred:
+src/tests/webserver/test_webserver.py:48: in test_do_get_serves_html_for_root
+    handler.send_header.assert_any_call('Content-Type', 'text/html')
+E   AssertionError: send_header('Content-Type', 'text/html') call not found
+E   
+E   pytest introspection follows:
+E   
+E   Args:
+E   assert ('Cache-Control', 'no-cache') == ('Content-Type', 'text/html')
+E     
+E     At index 0 diff: 'Cache-Control' != 'Content-Type'
+E     
+E     Full diff:
+E       (
+E     -     'Content-Type',
+E     -     'text/html',...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+------------------------------ Captured log call -------------------------------
+DEBUG    WebServer:webserver.py:297 Served HTML configuration page
+____________ TestConfigHTTPHandler.test_do_get_handles_scan_request ____________
+src/tests/webserver/test_webserver.py:57: in test_do_get_handles_scan_request
+    with patch.object(handler, 'send_response'), \
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1389: in __enter__
+    self.target = self.getter()
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1564: in <lambda>
+    getter = lambda: _importer(target)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1240: in _importer
+    thing = _dot_lookup(thing, comp, import_path)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1229: in _dot_lookup
+    __import__(import_path)
+E   ModuleNotFoundError: No module named 'webserver.NetworkScanner'; 'webserver' is not a package
+___________ TestConfigHTTPHandler.test_do_get_handles_status_request ___________
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:907: in assert_called_with
+    raise AssertionError(_error_message()) from cause
+E   AssertionError: expected call not found.
+E   Expected: send_response(200)
+E   Actual: send_response(500)
+
+During handling of the above exception, another exception occurred:
+src/tests/webserver/test_webserver.py:77: in test_do_get_handles_status_request
+    handler.send_response.assert_called_with(200)
+E   AssertionError: expected call not found.
+E   Expected: send_response(200)
+E   Actual: send_response(500)
+E   
+E   pytest introspection follows:
+E   
+E   Args:
+E   assert (500,) == (200,)
+E     
+E     At index 0 diff: 500 != 200
+E     
+E     Full diff:
+E       (
+E     -     200,
+E     ?     ^...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+------------------------------ Captured log call -------------------------------
+ERROR    WebServer:webserver.py:334 Status query failed: No module named 'state_monitor'
+Traceback (most recent call last):
+  File "/Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/webserver/../../webserver.py", line 317, in handle_status_request
+    from state_monitor import StateMonitor
+ModuleNotFoundError: No module named 'state_monitor'
+________ TestConfigHTTPHandler.test_do_get_returns_404_for_unknown_path ________
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:898: in assert_called_with
+    raise AssertionError(error_message)
+E   AssertionError: expected call not found.
+E   Expected: send_error(404)
+E   Actual: not called.
+
+During handling of the above exception, another exception occurred:
+src/tests/webserver/test_webserver.py:90: in test_do_get_returns_404_for_unknown_path
+    mock_send_error.assert_called_with(404)
+E   AssertionError: expected call not found.
+E   Expected: send_error(404)
+E   Actual: not called.
+------------------------------ Captured log call -------------------------------
+ERROR    WebServer:webserver.py:404 Failed to send JSON response: 'ConfigHTTPHandler' object has no attribute 'requestline'
+Traceback (most recent call last):
+  File "/Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/webserver/../../webserver.py", line 395, in send_json_response
+    self.send_response(status_code)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/server.py", line 499, in send_response
+    self.log_request(code)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/server.py", line 552, in log_request
+    self.requestline, str(code), str(size))
+AttributeError: 'ConfigHTTPHandler' object has no attribute 'requestline'
+_________ TestConfigHTTPHandler.test_do_post_handles_configure_request _________
+src/tests/webserver/test_webserver.py:103: in test_do_post_handles_configure_request
+    with patch.object(handler, 'send_response'), \
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1389: in __enter__
+    self.target = self.getter()
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1564: in <lambda>
+    getter = lambda: _importer(target)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1240: in _importer
+    thing = _dot_lookup(thing, comp, import_path)
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1229: in _dot_lookup
+    __import__(import_path)
+E   ModuleNotFoundError: No module named 'webserver.ConfigManager'; 'webserver' is not a package
+_______ TestConfigHTTPHandler.test_do_post_returns_404_for_unknown_path ________
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:898: in assert_called_with
+    raise AssertionError(error_message)
+E   AssertionError: expected call not found.
+E   Expected: send_error(404)
+E   Actual: not called.
+
+During handling of the above exception, another exception occurred:
+src/tests/webserver/test_webserver.py:158: in test_do_post_returns_404_for_unknown_path
+    mock_send_error.assert_called_with(404)
+E   AssertionError: expected call not found.
+E   Expected: send_error(404)
+E   Actual: not called.
+------------------------------ Captured log call -------------------------------
+ERROR    WebServer:webserver.py:404 Failed to send JSON response: 'ConfigHTTPHandler' object has no attribute 'requestline'
+Traceback (most recent call last):
+  File "/Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/webserver/../../webserver.py", line 395, in send_json_response
+    self.send_response(status_code)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/server.py", line 499, in send_response
+    self.log_request(code)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/server.py", line 552, in log_request
+    self.requestline, str(code), str(size))
+AttributeError: 'ConfigHTTPHandler' object has no attribute 'requestline'
+_________ TestWebServerManager.test_stop_server_shuts_down_gracefully __________
+src/tests/webserver/test_webserver.py:243: in test_stop_server_shuts_down_gracefully
+    manager.server.shutdown.assert_called_once()
+E   AttributeError: 'NoneType' object has no attribute 'shutdown'
+------------------------------ Captured log call -------------------------------
+INFO     WebServer:webserver.py:456 Shutting down web server
+INFO     WebServer:webserver.py:465 Web server stopped
+______________ TestWebServerManager.test_stop_server_joins_thread ______________
+src/tests/webserver/test_webserver.py:254: in test_stop_server_joins_thread
+    manager.server_thread.join.assert_called_once()
+E   AttributeError: 'NoneType' object has no attribute 'join'
+------------------------------ Captured log call -------------------------------
+INFO     WebServer:webserver.py:456 Shutting down web server
+INFO     WebServer:webserver.py:465 Web server stopped
+___________ TestModuleFunctions.test_start_server_uses_default_port ____________
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:918: in assert_called_once_with
+    raise AssertionError(msg)
+E   AssertionError: Expected 'WebServerManager' to be called once. Called 0 times.
+
+During handling of the above exception, another exception occurred:
+src/tests/webserver/test_webserver.py:301: in test_start_server_uses_default_port
+    mock_manager_class.assert_called_once_with(8080)
+E   AssertionError: Expected 'WebServerManager' to be called once. Called 0 times.
+________ TestModuleFunctions.test_start_server_raises_port_in_use_error ________
+src/tests/webserver/test_webserver.py:311: in test_start_server_raises_port_in_use_error
+    start_server()
+E   Failed: DID NOT RAISE <class 'webserver.PortInUseError'>
+=============================== warnings summary ===============================
+../../../Library/Python/3.9/lib/python/site-packages/_pytest/config/__init__.py:1474
+  /Users/williamwatson/Library/Python/3.9/lib/python/site-packages/_pytest/config/__init__.py:1474: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+src/tests/servicecontroller/test_main.py:161
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_main.py:161: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_main.py:172
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_main.py:172: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_main.py:183
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_main.py:183: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_main.py:193
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_main.py:193: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_main.py:211
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_main.py:211: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_main.py:224
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_main.py:224: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_servicecontroller.py:155
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_servicecontroller.py:155: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_servicecontroller.py:166
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_servicecontroller.py:166: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/servicecontroller/test_servicecontroller.py:181
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/servicecontroller/test_servicecontroller.py:181: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:63
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:63: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:72
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:72: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:86
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:86: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:97
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:97: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:108
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:108: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:123
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:123: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:142
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:142: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:156
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:156: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:168
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:168: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:185
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:185: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:200
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:200: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:223
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:223: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:250
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:250: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:272
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:272: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:299
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:299: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:310
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:310: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:328
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:328: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:346
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:346: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:366
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:366: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:378
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:378: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py:390
+  /Users/williamwatson/Documents/GitHub/pi-netconfig/src/tests/statemonitor/test_statemonitor.py:390: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_initialize_creates_shutdown_event
+  /Users/williamwatson/Library/Python/3.9/lib/python/site-packages/_pytest/skipping.py:215: RuntimeWarning: coroutine 'run_service' was never awaited
+    for mark in item.iter_markers(name="xfail"):
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_with_interface
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_raises_when_no_wifi_interface
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_gets_mac_address
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_generates_ssid_from_mac
+FAILED src/tests/apmanager/test_apmanager.py::TestAccessPointInitialization::test_access_point_initializes_ap_active_false
+FAILED src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_parses_nmcli_output
+FAILED src/tests/apmanager/test_apmanager.py::TestInterfaceDetection::test_get_wifi_interface_raises_on_nmcli_failure
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_creates_connection
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_sets_wpa2_security
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_configures_ip_range
+FAILED src/tests/apmanager/test_apmanager.py::TestProfileCreation::test_create_ap_profile_raises_on_failure
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_brings_connection_up
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_sets_ap_active_true
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_activate_ap_raises_on_failure
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_brings_connection_down
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_sets_ap_active_false
+FAILED src/tests/apmanager/test_apmanager.py::TestAPActivation::test_deactivate_ap_handles_failure_gracefully
+FAILED src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_removes_security
+FAILED src/tests/apmanager/test_apmanager.py::TestFallbackOpenAP::test_fallback_returns_ap_active_status
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_creates_and_activates
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_activate_ap_function_falls_back_on_profile_error
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_deactivate_ap_function_deactivates
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_get_ap_ssid_function_returns_ssid
+FAILED src/tests/apmanager/test_apmanager.py::TestModuleFunctions::test_is_active_function_returns_status
+FAILED src/tests/connectionmanager/test_connectionmanager.py::TestConfigManager::test_configure_network_thread_safe
+FAILED src/tests/servicecontroller/test_main.py::TestLoggingConfiguration::test_configure_logging_creates_file_handler
+FAILED src/tests/servicecontroller/test_main.py::TestLoggingConfiguration::test_configure_logging_adds_console_handler_in_manual_mode
+FAILED src/tests/servicecontroller/test_main.py::TestLoggingConfiguration::test_configure_logging_no_console_in_service_mode
+FAILED src/tests/servicecontroller/test_main.py::TestGracefulShutdown::test_graceful_shutdown_calls_state_monitor_shutdown
+FAILED src/tests/servicecontroller/test_main.py::TestGracefulShutdown::test_graceful_shutdown_handles_timeout
+FAILED src/tests/servicecontroller/test_main.py::TestGracefulShutdown::test_graceful_shutdown_handles_no_monitor
+FAILED src/tests/servicecontroller/test_main.py::TestRunService::test_run_service_creates_shutdown_event
+FAILED src/tests/servicecontroller/test_main.py::TestRunService::test_run_service_initializes_state_monitor
+FAILED src/tests/servicecontroller/test_main.py::TestRunService::test_run_service_raises_on_critical_failure
+FAILED src/tests/servicecontroller/test_servicecontroller.py::TestLoggingConfiguration::test_configure_logging_creates_file_handler
+FAILED src/tests/servicecontroller/test_servicecontroller.py::TestLoggingConfiguration::test_configure_logging_adds_console_handler_in_manual_mode
+FAILED src/tests/servicecontroller/test_servicecontroller.py::TestGracefulShutdown::test_graceful_shutdown_calls_state_monitor_shutdown
+FAILED src/tests/servicecontroller/test_servicecontroller.py::TestGracefulShutdown::test_graceful_shutdown_handles_timeout_gracefully
+FAILED src/tests/servicecontroller/test_servicecontroller.py::TestRunService::test_run_service_creates_state_monitor_and_waits_for_shutdown
+FAILED src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_initialize_creates_shutdown_event
+FAILED src/tests/statemonitor/test_statemonitor.py::TestStateMonitorInitialization::test_initialize_starts_monitoring_task
+FAILED src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_true_when_connected
+FAILED src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_false_when_disconnected
+FAILED src/tests/statemonitor/test_statemonitor.py::TestConnectionChecking::test_check_connection_returns_false_on_exception
+FAILED src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_from_ap_mode
+FAILED src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_from_checking
+FAILED src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_client_raises_on_failure
+FAILED src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_ap_mode_activates_ap_and_web
+FAILED src/tests/statemonitor/test_statemonitor.py::TestStateTransitions::test_transition_to_ap_mode_raises_on_failure
+FAILED src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_transitions_to_client_when_connected
+FAILED src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_transitions_to_ap_after_three_failures
+FAILED src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_resets_failure_count_in_client_state
+FAILED src/tests/statemonitor/test_statemonitor.py::TestMonitoringLoop::test_monitoring_loop_handles_transition_errors
+FAILED src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_cancels_monitoring_task
+FAILED src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_deactivates_ap_when_in_ap_mode
+FAILED src/tests/statemonitor/test_statemonitor.py::TestShutdown::test_shutdown_handles_component_errors
+FAILED src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_initializes_state_machine
+FAILED src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_handles_keyboard_interrupt
+FAILED src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_raises_state_monitor_error_on_failure
+FAILED src/tests/statemonitor/test_statemonitor.py::TestRunFunction::test_run_calls_shutdown_in_finally
+FAILED src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_serves_html_for_root
+FAILED src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_handles_scan_request
+FAILED src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_handles_status_request
+FAILED src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_get_returns_404_for_unknown_path
+FAILED src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_post_handles_configure_request
+FAILED src/tests/webserver/test_webserver.py::TestConfigHTTPHandler::test_do_post_returns_404_for_unknown_path
+FAILED src/tests/webserver/test_webserver.py::TestWebServerManager::test_stop_server_shuts_down_gracefully
+FAILED src/tests/webserver/test_webserver.py::TestWebServerManager::test_stop_server_joins_thread
+FAILED src/tests/webserver/test_webserver.py::TestModuleFunctions::test_start_server_uses_default_port
+FAILED src/tests/webserver/test_webserver.py::TestModuleFunctions::test_start_server_raises_port_in_use_error
+================== 70 failed, 95 passed, 32 warnings in 1.06s ==================

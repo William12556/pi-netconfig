@@ -80,7 +80,11 @@ class TestLoggingConfiguration:
         with patch('pathlib.Path.mkdir'), \
              patch('logging.FileHandler') as mock_file_handler, \
              patch('logging.StreamHandler'), \
-             patch('os.chmod'):
+             patch('logging.getLogger') as mock_get_logger:
+            
+            mock_logger = Mock()
+            mock_logger.handlers = []
+            mock_get_logger.return_value = mock_logger
             
             configure_logging('service')
             
@@ -91,7 +95,11 @@ class TestLoggingConfiguration:
         with patch('pathlib.Path.mkdir'), \
              patch('logging.FileHandler'), \
              patch('logging.StreamHandler') as mock_console_handler, \
-             patch('os.chmod'):
+             patch('logging.getLogger') as mock_get_logger:
+            
+            mock_logger = Mock()
+            mock_logger.handlers = []
+            mock_get_logger.return_value = mock_logger
             
             configure_logging('manual')
             
@@ -102,7 +110,11 @@ class TestLoggingConfiguration:
         with patch('pathlib.Path.mkdir'), \
              patch('logging.FileHandler'), \
              patch('logging.StreamHandler') as mock_console_handler, \
-             patch('os.chmod'):
+             patch('logging.getLogger') as mock_get_logger:
+            
+            mock_logger = Mock()
+            mock_logger.handlers = []
+            mock_get_logger.return_value = mock_logger
             
             configure_logging('service')
             
@@ -193,15 +205,19 @@ class TestRunService:
     @pytest.mark.asyncio
     async def test_run_service_creates_shutdown_event(self):
         """Creates shutdown event on startup."""
+        from unittest.mock import AsyncMock
+        
         mock_monitor = Mock()
-        mock_monitor.run = Mock(return_value=asyncio.sleep(0))
+        mock_monitor.run = AsyncMock()
+        
+        mock_graceful_shutdown = AsyncMock()
         
         with patch('main.StateMonitor', return_value=mock_monitor), \
-             patch('main.graceful_shutdown', return_value=asyncio.sleep(0)), \
+             patch('main.graceful_shutdown', mock_graceful_shutdown), \
              patch('asyncio.Event') as mock_event_class:
             
             mock_event = Mock()
-            mock_event.wait = Mock(return_value=asyncio.sleep(0))
+            mock_event.wait = AsyncMock()
             mock_event_class.return_value = mock_event
             
             await run_service()
@@ -211,11 +227,20 @@ class TestRunService:
     @pytest.mark.asyncio
     async def test_run_service_initializes_state_monitor(self):
         """Initializes and starts StateMonitor."""
+        from unittest.mock import AsyncMock
+        
         mock_monitor = Mock()
-        mock_monitor.run = Mock(return_value=asyncio.sleep(0))
+        mock_monitor.run = AsyncMock()
+        
+        mock_graceful_shutdown = AsyncMock()
         
         with patch('main.StateMonitor', return_value=mock_monitor) as mock_class, \
-             patch('main.graceful_shutdown', return_value=asyncio.sleep(0)):
+             patch('main.graceful_shutdown', mock_graceful_shutdown), \
+             patch('asyncio.Event') as mock_event_class:
+            
+            mock_event = Mock()
+            mock_event.wait = AsyncMock()
+            mock_event_class.return_value = mock_event
             
             await run_service()
             

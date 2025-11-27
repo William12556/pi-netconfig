@@ -91,30 +91,34 @@ class TestLoggingConfiguration:
     
     def test_configure_logging_creates_file_handler(self):
         """TC-006: Verify configure_logging creates file handler."""
-        with TemporaryDirectory() as tmpdir:
-            log_path = Path(tmpdir) / 'test.log'
+        with patch('pathlib.Path.mkdir'), \
+             patch('logging.FileHandler'), \
+             patch('logging.getLogger') as mock_get_logger:
             
-            with patch('main.LOG_FILE_PATH', log_path):
-                configure_logging('service')
-                
-                # Verify log file was created
-                assert log_path.parent.exists()
+            mock_logger = Mock()
+            mock_logger.handlers = []
+            mock_get_logger.return_value = mock_logger
+            
+            configure_logging('service')
+            
+            # Should add file handler
+            assert mock_logger.addHandler.call_count >= 1
     
     def test_configure_logging_adds_console_handler_in_manual_mode(self):
         """TC-007: Verify configure_logging adds console handler in manual mode."""
-        with TemporaryDirectory() as tmpdir:
-            log_path = Path(tmpdir) / 'test.log'
+        with patch('pathlib.Path.mkdir'), \
+             patch('logging.FileHandler'), \
+             patch('logging.StreamHandler'), \
+             patch('logging.getLogger') as mock_get_logger:
             
-            with patch('main.LOG_FILE_PATH', log_path), \
-                 patch('logging.getLogger') as mock_get_logger:
-                
-                mock_logger = Mock()
-                mock_get_logger.return_value = mock_logger
-                
-                configure_logging('manual')
-                
-                # Should have at least 2 handlers (file + console)
-                assert mock_logger.addHandler.call_count >= 2
+            mock_logger = Mock()
+            mock_logger.handlers = []
+            mock_get_logger.return_value = mock_logger
+            
+            configure_logging('manual')
+            
+            # Should have at least 2 handlers (file + console)
+            assert mock_logger.addHandler.call_count >= 2
     
     def test_configure_logging_raises_error_on_permission_denied(self):
         """TC-008: Verify configure_logging raises LoggingConfigurationError on permission denied."""
@@ -128,18 +132,17 @@ class TestSignalHandling:
     
     def test_signal_handler_sets_shutdown_event(self):
         """TC-009: Verify signal_handler sets shutdown_event."""
-        shutdown_event = asyncio.Event()
+        mock_event = Mock()
         
-        signal_handler(signal.SIGTERM, None, shutdown_event)
-        
-        assert shutdown_event.is_set()
+        with patch('main.shutdown_event', mock_event):
+            signal_handler(signal.SIGTERM, None)
+            
+            mock_event.set.assert_called_once()
     
     @patch('signal.signal')
     def test_register_signal_handlers_registers_sigterm_and_sigint(self, mock_signal):
         """TC-010: Verify register_signal_handlers registers SIGTERM and SIGINT."""
-        shutdown_event = asyncio.Event()
-        
-        register_signal_handlers(shutdown_event)
+        register_signal_handlers()
         
         # Should register both SIGTERM and SIGINT
         assert mock_signal.call_count == 2
@@ -157,9 +160,10 @@ class TestGracefulShutdown:
         mock_state_monitor = Mock()
         mock_state_monitor.shutdown = AsyncMock()
         
-        await graceful_shutdown(mock_state_monitor)
-        
-        mock_state_monitor.shutdown.assert_called_once()
+        with patch('main.state_monitor', mock_state_monitor):
+            await graceful_shutdown()
+            
+            mock_state_monitor.shutdown.assert_called_once()
     
     @pytest.mark.asyncio
     async def test_graceful_shutdown_handles_timeout_gracefully(self):
@@ -168,8 +172,9 @@ class TestGracefulShutdown:
         mock_state_monitor.shutdown = AsyncMock(side_effect=asyncio.TimeoutError())
         
         # Should not raise an exception
-        with patch('asyncio.wait_for', side_effect=asyncio.TimeoutError()):
-            await graceful_shutdown(mock_state_monitor)
+        with patch('main.state_monitor', mock_state_monitor), \
+             patch('asyncio.wait_for', side_effect=asyncio.TimeoutError()):
+            await graceful_shutdown()
 
 
 class TestRunService:
@@ -178,21 +183,21 @@ class TestRunService:
     @pytest.mark.asyncio
     async def test_run_service_creates_state_monitor_and_waits_for_shutdown(self):
         """TC-013: Verify run_service creates StateMonitor and waits for shutdown."""
-        shutdown_event = asyncio.Event()
-        
-        with patch('main.StateMachine') as mock_state_machine_class:
-            mock_state_machine = Mock()
-            mock_state_machine.initialize = AsyncMock()
-            mock_state_machine.shutdown = AsyncMock()
-            mock_state_machine_class.return_value = mock_state_machine
+        with patch('main.StateMonitor') as mock_state_monitor_class, \
+             patch('main.graceful_shutdown', return_value=asyncio.sleep(0)), \
+             patch('asyncio.Event') as mock_event_class:
             
-            # Set shutdown event immediately to exit loop
-            shutdown_event.set()
+            mock_state_monitor = Mock()
+            mock_state_monitor.run = Mock(return_value=asyncio.sleep(0))
+            mock_state_monitor_class.return_value = mock_state_monitor
             
-            await run_service(shutdown_event)
+            mock_event = Mock()
+            mock_event.wait = Mock(return_value=asyncio.sleep(0))
+            mock_event_class.return_value = mock_event
             
-            mock_state_machine_class.assert_called_once()
-            mock_state_machine.initialize.assert_called_once()
+            await run_service()
+            
+            mock_state_monitor_class.assert_called_once()
 
 
 class TestMainFunction:
@@ -225,16 +230,14 @@ class TestMainFunction:
         
         assert exit_code == 1
     
-    @patch('main.run_service')
     @patch('main.register_signal_handlers')
     @patch('main.configure_logging')
     @patch('main.verify_root_privileges')
     @patch('main.detect_execution_mode')
-    def test_main_runs_service_in_service_mode(self, mock_detect, mock_verify, mock_configure, mock_register, mock_run):
+    def test_main_runs_service_in_service_mode(self, mock_detect, mock_verify, mock_configure, mock_register):
         """TC-016: Verify main() runs service in service mode."""
         mock_detect.return_value = 'service'
         mock_verify.return_value = True
-        mock_run.return_value = asyncio.create_task(asyncio.sleep(0))
         
         with patch('asyncio.run') as mock_asyncio_run:
             main()
