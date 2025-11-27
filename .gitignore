@@ -11,3 +11,11 @@ test.txt
 **/tmp
 deprecated/
 workspace/ai/
+venv/
+.venv/
+*.pyc
+__pycache__/
+.pytest_cache/
+dist/
+build/
+*.egg-info/
