@@ -6,11 +6,7 @@ Issue documents using T03 Issue template.
 
 | ID | Title | Status | Severity | Module |
 |----|-------|--------|----------|--------|
-| [issue-0006](issue-0006-apmanager-nmcli-parsing-failure.md) | APManager nmcli output parsing failure | open | critical | APManager |
 | [issue-0007](issue-0007-statemonitor-async-test-timing.md) | StateMonitor async test timing race condition | open | high | StateMonitor |
-| [issue-0008](issue-0008-connectionmanager-lock-test-incompatibility.md) | ConnectionManager thread lock testing incompatibility | open | medium | ConnectionManager |
-| [issue-0009](issue-0009-webserver-handler-test-failures.md) | WebServer handler initialization test failures | open | high | WebServer |
-| [issue-0010](issue-0010-servicecontroller-test-mismatches.md) | ServiceController test import and signature mismatches | open | high | ServiceController |
 
 ## Closed Issues
 
@@ -21,15 +17,19 @@ Issue documents using T03 Issue template.
 | [issue-0003](issue-0003-nmcli-delete-error-handling.md) | nmcli delete error handling | closed | medium | ConnectionManager |
 | [issue-0004](issue-0004-missing-directory-creation.md) | Missing directory creation | closed | medium | ConnectionManager |
 | [issue-0005](issue-0005-statemonitor-class-name-mismatch.md) | StateMonitor class name mismatch | closed | critical | StateMonitor |
+| [issue-0006](issue-0006-apmanager-nmcli-parsing-failure.md) | APManager nmcli output parsing failure | closed | critical | APManager |
+| [issue-0008](issue-0008-connectionmanager-lock-test-incompatibility.md) | ConnectionManager thread lock testing incompatibility | closed | medium | ConnectionManager |
+| [issue-0009](issue-0009-webserver-handler-test-failures.md) | WebServer handler initialization test failures | closed | high | WebServer |
+| [issue-0010](issue-0010-servicecontroller-test-mismatches.md) | ServiceController test import and signature mismatches | closed | high | ServiceController |
 
 ## Summary Statistics
 
 - **Total Issues**: 10
-- **Open**: 5
-- **Closed**: 5
-- **Critical**: 1 open, 1 closed
-- **High**: 3 open, 1 closed
-- **Medium**: 1 open, 3 closed
+- **Open**: 1
+- **Closed**: 9
+- **Critical**: 0 open, 2 closed
+- **High**: 1 open, 3 closed
+- **Medium**: 0 open, 4 closed
 
 ---
 

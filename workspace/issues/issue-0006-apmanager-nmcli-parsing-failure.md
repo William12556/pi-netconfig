@@ -8,7 +8,7 @@ issue_info:
   title: "APManager fails to parse nmcli device status output - searches for inline text instead of column data"
   date: "2025-11-26"
   reporter: "Domain 1"
-  status: "open"
+  status: "closed"
   severity: "critical"
   type: "defect"
 
@@ -88,7 +88,7 @@ analysis:
 
 resolution:
   assigned_to: "Domain 2"
-  target_date: "TBD"
+  target_date: "2025-11-26"
   approach: |
     Fix get_wifi_interface() parsing logic:
     
@@ -111,16 +111,30 @@ resolution:
     Remove generic exception wrapper (lines 60-63) that converts InterfaceDetectionError
     to APManagerError - let specific exceptions propagate.
   
-  change_ref: "TBD"
-  resolved_date: null
-  resolved_by: null
-  fix_description: null
+  change_ref: "prompt-0013-apmanager-test-fixes.md"
+  resolved_date: "2025-11-26"
+  resolved_by: "Domain 2"
+  fix_description: |
+    Fixed nmcli output parsing to handle column-based format.
+    Modified get_wifi_interface() to skip header and parse TYPE column correctly.
+    All 24 APManager tests now pass.
 
 verification:
-  verified_date: null
-  verified_by: null
-  test_results: null
-  closure_notes: null
+  verified_date: "2025-11-27"
+  verified_by: "Domain 1"
+  test_results: |
+    Test run 4 results (2025-11-27):
+    - TestAccessPointInitialization: 5/5 passed
+    - TestInterfaceDetection: 2/2 passed
+    - TestProfileCreation: 4/4 passed
+    - TestAPActivation: 6/6 passed
+    - TestFallbackOpenAP: 2/2 passed
+    - TestModuleFunctions: 5/5 passed
+    Total: 24/24 tests passed (100%)
+  closure_notes: |
+    Issue resolved by correcting nmcli parsing logic in get_wifi_interface().
+    Test suite validates complete APManager functionality.
+    No regression issues identified.
 
 traceability:
   design_refs:
@@ -146,6 +160,12 @@ version_history:
     author: "Domain 1"
     changes:
       - "Initial issue creation from test analysis"
+  - version: "1.1"
+    date: "2025-11-27"
+    author: "Domain 1"
+    changes:
+      - "Closed issue with verification results"
+      - "All 24 APManager tests passing"
 
 metadata:
   copyright: "Copyright (c) 2025 William Watson. This work is licensed under the MIT License."

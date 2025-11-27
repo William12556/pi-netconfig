@@ -8,7 +8,7 @@ issue_info:
   title: "ConnectionManager thread-safety tests fail - cannot patch read-only _thread.lock methods"
   date: "2025-11-26"
   reporter: "Domain 1"
-  status: "open"
+  status: "closed"
   severity: "medium"
   type: "test_infrastructure"
 
@@ -80,7 +80,7 @@ analysis:
 
 resolution:
   assigned_to: "Domain 1"
-  target_date: "TBD"
+  target_date: "2025-11-26"
   approach: |
     Replace mock-based lock verification with actual concurrency testing:
     
@@ -113,16 +113,28 @@ resolution:
     - Verifies operations complete without race conditions/deadlocks
     - More realistic test of production concurrency patterns
   
-  change_ref: "TBD"
-  resolved_date: null
-  resolved_by: null
-  fix_description: null
+  change_ref: "prompt-0014-connectionmanager-test-fixes.md"
+  resolved_date: "2025-11-26"
+  resolved_by: "Domain 2"
+  fix_description: |
+    Replaced mock-based lock patching with actual concurrency testing.
+    Tests now spawn multiple threads and verify operations complete without errors.
+    All 19 ConnectionManager tests pass.
 
 verification:
-  verified_date: null
-  verified_by: null
-  test_results: null
-  closure_notes: null
+  verified_date: "2025-11-27"
+  verified_by: "Domain 1"
+  test_results: |
+    Test run 4 results (2025-11-27):
+    - TestNetworkInfo: 1/1 passed
+    - TestConnectionTester: 3/3 passed
+    - TestNetworkScanner: 4/4 passed
+    - TestConfigManager: 11/11 passed (including all thread-safety tests)
+    Total: 19/19 tests passed (100%)
+  closure_notes: |
+    Thread-safety verification now uses actual concurrent execution instead of mock patching.
+    Tests validate production-like concurrency patterns.
+    No regression issues identified.
 
 traceability:
   design_refs:
@@ -153,6 +165,12 @@ version_history:
     author: "Domain 1"
     changes:
       - "Initial issue creation from test analysis"
+  - version: "1.1"
+    date: "2025-11-27"
+    author: "Domain 1"
+    changes:
+      - "Closed issue with verification results"
+      - "All 19 ConnectionManager tests passing"
 
 metadata:
   copyright: "Copyright (c) 2025 William Watson. This work is licensed under the MIT License."
