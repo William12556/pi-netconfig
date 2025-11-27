@@ -103,21 +103,6 @@ source pi-netconfig-venv/bin/activate
 pytest src/tests/
 ```
 
-### Test Status
-
-**Current Pass Rate: 164/165 (99.4%)**
-
-Module test results:
-- APManager: 24/24 (100%)
-- ConnectionManager: 19/19 (100%)
-- Installer: 17/17 (100%)
-- ServiceController: 44/44 (100%)
-- StateMonitor: 24/25 (96%) - 1 async timing test pending fix
-- WebServer: 27/27 (100%)
-
-Known issue:
-- issue-0007: StateMonitor async test timing race condition (non-blocking)
-
 ## Architecture
 
 State machine managing three operational modes:
