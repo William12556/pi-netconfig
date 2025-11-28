@@ -6,7 +6,7 @@ issue_info:
   title: "StateMonitor async timing race condition in concurrent transitions"
   date: "2025-11-28"
   reporter: "Claude Desktop"
-  status: "open"
+  status: "resolved"
   severity: "high"
   type: "defect"
   iteration: 1
@@ -63,28 +63,26 @@ environment:
 
 analysis:
   root_cause: |
-    StateMonitor lacks explicit async locking for state transitions. While normal
-    operation uses a single monitoring_loop task, the design does not prevent
+    StateMonitor lacked explicit async locking for state transitions. While normal
+    operation uses a single monitoring_loop task, the design did not prevent
     concurrent transition attempts if multiple tasks call transition methods.
     
     Specific concerns:
-    1. transition_to_client() and transition_to_ap_mode() lack async coordination
+    1. transition_to_client() and transition_to_ap_mode() lacked async coordination
     2. current_state and failure_count updates not atomic
     3. Component operations (AP activate/deactivate, web start/stop) may overlap
     
-    Current implementation relies on single-task monitoring loop for serialization,
-    but API does not enforce this constraint.
+    Implementation relied on single-task monitoring loop for serialization,
+    but API did not enforce this constraint.
   technical_notes: |
-    StateMonitor uses:
+    StateMonitor used:
     - asyncio.Event for shutdown coordination (correct)
-    - No asyncio.Lock for state transition coordination (missing)
+    - No asyncio.Lock for state transition coordination (missing - now added)
     
-    Potential race scenarios:
+    Potential race scenarios (now prevented):
     - monitoring_loop calls transition_to_client()
     - Concurrent manual shutdown triggers transition_to_ap_mode()
-    - Both transitions execute simultaneously
-    
-    While unlikely in current usage pattern, API design does not prevent this.
+    - Both transitions would execute simultaneously (now serialized)
   related_issues:
     - issue_ref: "N/A"
       relationship: "First identified concurrency issue"
@@ -100,15 +98,29 @@ resolution:
     4. Add test case test_concurrent_transition_safety to verify coordination
     5. Ensure thread-safe operation under concurrent access
   change_ref: "change-0011-statemonitor-async-coordination"
-  resolved_date: ""
-  resolved_by: ""
-  fix_description: ""
+  resolved_date: "2025-11-28"
+  resolved_by: "Claude Code"
+  fix_description: |
+    Added asyncio.Lock (_transition_lock) to StateMonitor class:
+    - Lock initialized in initialize() method
+    - transition_to_client() wrapped with lock context manager
+    - transition_to_ap_mode() wrapped with lock context manager
+    - New test test_concurrent_transition_safety verifies coordination
+    All 26 tests passing (25 existing + 1 new)
 
 verification:
-  verified_date: ""
-  verified_by: ""
-  test_results: ""
-  closure_notes: ""
+  verified_date: "2025-11-28"
+  verified_by: "Claude Desktop"
+  test_results: |
+    26 tests passed in 0.36s
+    - All 25 existing StateMonitor tests pass
+    - New test_concurrent_transition_safety passes
+    - Concurrent transitions properly serialized
+    - No state corruption under concurrent access
+  closure_notes: |
+    AsyncIO lock successfully prevents concurrent transition race conditions.
+    Implementation maintains backward compatibility with no API signature changes.
+    Performance impact negligible (lock uncontended in normal single-task operation).
 
 prevention:
   preventive_measures: |
@@ -125,7 +137,12 @@ verification_enhanced:
     - "Verify no state corruption under concurrent access"
     - "Confirm component activation/deactivation serialization"
     - "Validate failure_count updates remain consistent"
-  verification_results: ""
+  verification_results: |
+    ✅ test_concurrent_transition_safety passes
+    ✅ 10 concurrent transitions (5 client + 5 AP) execute without errors
+    ✅ Final state consistent (CLIENT or AP_MODE)
+    ✅ Component methods invoked correctly
+    ✅ No exceptions during concurrent execution
 
 traceability:
   design_refs:
@@ -137,12 +154,12 @@ traceability:
 
 notes: |
   Issue identified during P08 governance audit. While current single-task monitoring
-  loop prevents concurrent transitions in practice, API design does not enforce this
+  loop prevents concurrent transitions in practice, API design did not enforce this
   constraint. Adding explicit async coordination improves robustness and enables
   comprehensive concurrent testing.
   
-  Priority: High due to test completeness requirement (100% pass rate for deployment).
-  Impact: Low for current usage pattern (single monitoring task).
+  Resolution achieved 100% test pass rate (26/26 tests).
+  Ready for closure after human acceptance.
 
 version_history:
   - version: "1.0"
@@ -152,6 +169,14 @@ version_history:
       - "Initial issue creation from audit-0002 finding HP-001"
       - "Detailed analysis of async timing race condition"
       - "Defined resolution approach with asyncio.Lock"
+  - version: "1.1"
+    date: "2025-11-28"
+    author: "Claude Desktop"
+    changes:
+      - "Updated status to resolved"
+      - "Added resolution details from prompt-0016-completion.md"
+      - "Documented verification results (26/26 tests passing)"
+      - "Ready for closure"
 ```
 
 ---

@@ -1,561 +1,757 @@
 ---
 document_info:
-  id: "design-0000"
-  type: "master_design"
+  id: design-0000
+  type: master_design
   iteration: 1
   tier: 1
-  status: "active"
+  status: active
   coupled_docs:
     change_refs: []
     issue_refs: []
+project_info:
+  name: pi-netconfig
+  version: 0.2.2
+  date: 2025-11-28
+  author: William Watson
+metadata:
+  copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+  template_version: 1.0
+  schema_type: t01_design
 ---
 
 Created: 2025 November 11
 
-# T01 Design Template v1.0 - YAML Format
-# Pi Network Configuration Tool - Master Design (MASTER)
+# Pi Network Configuration Tool - Master Design
 
-project_info:
-  name: "pi-netconfig"
-  version: "0.2.0"
-  date: "2025-11-10"
-  author: "William Watson"
+[Return to top](<#pi network configuration tool - master design>)
 
-scope:
-  purpose: "Autonomous WiFi management service for Raspberry Pi that auto-configures network connectivity via web interface when no router connection exists"
-  in_scope:
-    - "Self-installation as systemd service on first run"
-    - "WiFi connection detection and management"
-    - "Automatic AP mode activation for configuration"
-    - "Web-based configuration interface (port 8080)"
-    - "Systemd service integration"
-    - "Network scanning and selection"
-    - "Single network configuration persistence"
-  out_scope:
-    - "Ethernet configuration"
-    - "VPN management"
-    - "Network diagnostics beyond connectivity testing"
-    - "Multi-language support (English only)"
-    - "Mobile app interface"
-    - "Multiple network profile management"
-    - "Web interface authentication"
-    - "Status LED/notification system"
-  terminology:
-    - term: "AP Mode"
-      definition: "Access Point mode where device creates WiFi network for configuration"
-    - term: "Client Mode"
-      definition: "Standard mode where device connects to existing WiFi network"
-    - term: "Network Manager"
-      definition: "Linux system service managing network interfaces"
+## Table of Contents
 
-system_overview:
-  description: "Self-installing service that monitors WiFi connectivity, switches between client/AP modes, and provides web interface for network configuration"
-  context_flow: "First Run → Detect Service → [Not Installed] → Self-Install → Systemd Start → Boot → Connectivity Check → [No Connection] → AP Mode + Web Server → User Config → Client Mode"
-  primary_functions:
-    - "Self-install as systemd service on first execution"
-    - "Monitor WiFi connection status"
-    - "Create temporary access point for configuration"
-    - "Scan and display available networks"
-    - "Configure WiFi credentials"
-    - "Persist configuration across reboots"
+- [Scope](<#scope>)
+- [System Overview](<#system overview>)
+- [Design Constraints](<#design constraints>)
+- [Architecture](<#architecture>)
+- [Components](<#components>)
+- [Data Design](<#data design>)
+- [Interfaces](<#interfaces>)
+- [Error Handling](<#error handling>)
+- [Non-Functional Requirements](<#non-functional requirements>)
+- [Version History](<#version history>)
 
-design_constraints:
-  technical:
-    - "Must work with NetworkManager (standard in Raspbian Bookworm)"
-    - "Requires root privileges for network operations"
-    - "Single WiFi interface constraint"
-    - "No external dependencies beyond standard Debian packages"
-  implementation:
-    language: "Python"
-    framework: "asyncio for concurrent operations"
-    libraries:
-      - "http.server (stdlib) - web interface"
-      - "subprocess - NetworkManager CLI interaction"
-      - "json - configuration persistence"
-      - "socket - connectivity testing"
-    standards:
-      - "PEP 8 style compliance"
-      - "Type hints for all functions"
-      - "Systemd service unit specification"
-  performance_targets:
-    - metric: "Connection detection"
-      value: "< 10 seconds after boot"
-    - metric: "AP mode activation"
-      value: "< 15 seconds after failed connection"
-    - metric: "Web interface response"
-      value: "< 500ms page load"
+[Return to top](<#pi network configuration tool - master design>)
 
-architecture:
-  pattern: "Self-bootstrapping state machine with monitoring loop"
-  component_relationships: "Installer → [First Run] → ServiceController → StateMonitor → ConnectionManager ↔ APManager + WebServer"
-  technology_stack:
-    language: "Python 3.11+"
-    framework: "asyncio event loop"
-    libraries:
-      - "NetworkManager via nmcli"
-      - "http.server"
-      - "systemd integration"
-    data_store: "JSON file (/etc/pi-netconfig/config.json)"
-  directory_structure:
-    - "/usr/local/bin/pi-netconfig/main.py - application code (installed location)"
-    - "/etc/pi-netconfig/config.json - configuration files"
-    - "/var/log/pi-netconfig.log - service logs"
-    - "/etc/systemd/system/pi-netconfig.service - service unit (auto-generated)"
+## Scope
 
-components:
-  - name: "Installer"
-    purpose: "Self-installation mechanism detecting and configuring systemd service on first run"
-    responsibilities:
-      - "Detect if systemd service already installed"
-      - "Create required directories (/etc/pi-netconfig, logs)"
-      - "Copy script to installation location (/usr/local/bin/pi-netconfig/)"
-      - "Generate and install systemd unit file"
-      - "Enable and start systemd service"
-      - "Verify installation success"
-    inputs:
-      - field: "run_mode"
-        type: "str"
-        description: "bootstrap or service mode indicator"
-    outputs:
-      - field: "installation_status"
-        type: "bool"
-        description: "Installation success/failure"
-    key_elements:
-      - name: "InstallationDetector"
-        type: "class"
-        purpose: "Check for existing systemd service installation"
-      - name: "SystemdInstaller"
-        type: "class"
-        purpose: "Perform installation steps and systemd configuration"
-    dependencies:
-      internal: []
-      external:
-        - "subprocess (systemctl, cp, mkdir)"
-        - "shutil (file operations)"
-        - "os (path operations)"
-    processing_logic:
-      - "Check for service file: /etc/systemd/system/pi-netconfig.service"
-      - "If exists: exit installer, proceed to normal operation"
-      - "If not exists and root privileges: begin installation"
-      - "Create directories: /usr/local/bin/pi-netconfig/, /etc/pi-netconfig/, /var/log/"
-      - "Copy self to /usr/local/bin/pi-netconfig/main.py"
-      - "Generate systemd unit file with proper ExecStart path"
-      - "Install unit: cp to /etc/systemd/system/"
-      - "Enable: systemctl daemon-reload && systemctl enable pi-netconfig"
-      - "Start: systemctl start pi-netconfig"
-      - "Exit bootstrap mode (systemd will restart in service mode)"
-    error_conditions:
-      - condition: "Insufficient privileges (not root)"
-        handling: "Exit with error message: 'Installation requires root privileges'"
-      - condition: "Directory creation fails"
-        handling: "Raise InstallerError with details, rollback partial installation"
-      - condition: "Systemd commands fail"
-        handling: "Log error details, attempt manual cleanup instructions"
+**Purpose:** Autonomous WiFi management service for Raspberry Pi that auto-configures network connectivity via web interface when no router connection exists.
 
-  - name: "StateMonitor"
-    purpose: "Main state machine managing service operational mode"
-    responsibilities:
-      - "Determine current operational state (CHECKING, CLIENT, AP_MODE)"
-      - "Coordinate transitions between states"
-      - "Initialize and shutdown components"
-    inputs:
-      - field: "connection_status"
-        type: "bool"
-        description: "Result from connectivity check"
-    outputs:
-      - field: "current_state"
-        type: "Enum[CHECKING, CLIENT, AP_MODE]"
-        description: "Current operational state"
-    key_elements:
-      - name: "StateMachine"
-        type: "class"
-        purpose: "Implement state transitions and mode coordination"
-    dependencies:
-      internal:
-        - "ConnectionManager"
-        - "APManager"
-        - "WebServer"
-      external:
-        - "asyncio"
-    processing_logic:
-      - "Loop: check connection every 30 seconds"
-      - "On boot or connection loss: transition to AP_MODE after 3 failed checks"
-      - "In AP_MODE: monitor for successful configuration"
-      - "After config: attempt connection, return to CLIENT or remain AP_MODE"
-    error_conditions:
-      - condition: "State transition failure"
-        handling: "Log error, attempt recovery to last known good state"
+**In Scope:**
+- Self-installation as systemd service on first run
+- WiFi connection detection and management
+- Automatic AP mode activation for configuration
+- Web-based configuration interface (port 8080)
+- Systemd service integration
+- Network scanning and selection
+- Single network configuration persistence
 
-  - name: "ConnectionManager"
-    purpose: "Manage WiFi client mode connections and scanning"
-    responsibilities:
-      - "Test active connection to router/AP"
-      - "Scan for available networks"
-      - "Configure and activate WiFi connections"
-      - "Persist connection configurations"
-    inputs:
-      - field: "ssid"
-        type: "str"
-        description: "Network SSID to connect"
-      - field: "password"
-        type: "str"
-        description: "Network PSK"
-    outputs:
-      - field: "connection_active"
-        type: "bool"
-        description: "Connection status result"
-      - field: "available_networks"
-        type: "List[NetworkInfo]"
-        description: "Scanned networks with signal strength"
-    key_elements:
-      - name: "ConnectionTester"
-        type: "class"
-        purpose: "Verify active internet connectivity"
-      - name: "NetworkScanner"
-        type: "class"
-        purpose: "Scan and parse available WiFi networks"
-      - name: "ConfigManager"
-        type: "class"
-        purpose: "Apply and persist NetworkManager configurations"
-    dependencies:
-      internal: []
-      external:
-        - "subprocess (nmcli)"
-        - "socket (connectivity test)"
-    processing_logic:
-      - "Test connection: ping known hosts (8.8.8.8, 1.1.1.1)"
-      - "Scan: nmcli dev wifi list"
-      - "Configure: nmcli connection add/modify"
-      - "Persist to JSON: active SSID and credentials"
-    error_conditions:
-      - condition: "nmcli command fails"
-        handling: "Raise ConnectionManagerError with stderr output"
-      - condition: "Invalid credentials"
-        handling: "Return error status, maintain previous config"
+**Out of Scope:**
+- Ethernet configuration
+- VPN management
+- Network diagnostics beyond connectivity testing
+- Multi-language support (English only)
+- Mobile app interface
+- Multiple network profile management
+- Web interface authentication
+- Status LED/notification system
 
-  - name: "APManager"
-    purpose: "Create and manage local access point for configuration"
-    responsibilities:
-      - "Activate WiFi interface in AP mode"
-      - "Configure DHCP for connected clients"
-      - "Provide predictable SSID and credentials"
-      - "Deactivate AP when switching to client mode"
-    inputs:
-      - field: "enable"
-        type: "bool"
-        description: "Activate or deactivate AP mode"
-    outputs:
-      - field: "ap_active"
-        type: "bool"
-        description: "Current AP mode status"
-      - field: "ap_ssid"
-        type: "str"
-        description: "Access point network name"
-    key_elements:
-      - name: "AccessPoint"
-        type: "class"
-        purpose: "Manage NetworkManager AP connection profile"
-    dependencies:
-      internal: []
-      external:
-        - "subprocess (nmcli)"
-    processing_logic:
-      - "Create AP profile: SSID='PiConfig-<MAC_LAST_4>', WPA2, password='piconfig123'"
-      - "Activate: nmcli connection up <profile>"
-      - "Deactivate: nmcli connection down <profile>"
-      - "IP range: 192.168.50.1/24"
-    error_conditions:
-      - condition: "AP activation fails"
-        handling: "Raise APManagerError, attempt fallback to open AP"
-      - condition: "Interface unavailable"
-        handling: "Log critical error, enter degraded mode"
+**Terminology:**
 
-  - name: "WebServer"
-    purpose: "Provide HTTP interface for network configuration"
-    responsibilities:
-      - "Serve HTML configuration interface"
-      - "Handle network scan requests"
-      - "Process configuration submissions"
-      - "Provide API endpoints for status queries"
-    inputs:
-      - field: "http_request"
-        type: "HTTPRequest"
-        description: "Incoming web requests"
-    outputs:
-      - field: "http_response"
-        type: "HTTPResponse"
-        description: "HTML pages or JSON API responses"
-    key_elements:
-      - name: "ConfigHTTPHandler"
-        type: "class"
-        purpose: "Custom HTTP request handler"
-      - name: "APIEndpoints"
-        type: "class"
-        purpose: "REST-like API for AJAX calls"
-    dependencies:
-      internal:
-        - "ConnectionManager"
-        - "StateMonitor"
-      external:
-        - "http.server"
-        - "json"
-    processing_logic:
-      - "Serve static HTML/CSS/JS from embedded strings"
-      - "GET /: main configuration page"
-      - "GET /api/scan: trigger network scan, return JSON"
-      - "POST /api/configure: accept SSID/password, apply config"
-      - "GET /api/status: return current state and connection info"
-    error_conditions:
-      - condition: "Port 8080 unavailable"
-        handling: "Raise WebServerError, log and exit service"
-      - condition: "Invalid configuration POST"
-        handling: "Return 400 with error details in JSON"
+| Term | Definition |
+|------|------------|
+| AP Mode | Access Point mode where device creates WiFi network for configuration |
+| Client Mode | Standard mode where device connects to existing WiFi network |
+| Network Manager | Linux system service managing network interfaces |
 
-  - name: "ServiceController"
-    purpose: "Application entry point managing bootstrap vs service mode and systemd lifecycle"
-    responsibilities:
-      - "Determine execution mode (bootstrap vs service)"
-      - "Delegate to Installer if not installed"
-      - "Initialize logging"
-      - "Start/stop state monitor loop"
-      - "Handle service signals (SIGTERM, SIGINT)"
-      - "Cleanup on shutdown"
-    inputs:
-      - field: "system_signal"
-        type: "signal"
-        description: "OS signals for service control"
-      - field: "execution_context"
-        type: "str"
-        description: "Detected run mode"
-    outputs:
-      - field: "exit_code"
-        type: "int"
-        description: "Service exit status"
-    key_elements:
-      - name: "ServiceMain"
-        type: "function"
-        purpose: "Entry point for application, routes to installer or service loop"
-    dependencies:
-      internal:
-        - "Installer"
-        - "StateMonitor"
-        - "All other components"
-      external:
-        - "logging"
-        - "signal"
-        - "systemd"
-        - "os (privilege detection)"
-    processing_logic:
-      - "Detect execution mode: check if running under systemd or manual invocation"
-      - "If systemd service not installed: invoke Installer and exit"
-      - "If installed: proceed with normal service operation"
-      - "Setup logging to /var/log/pi-netconfig.log"
-      - "Register signal handlers for graceful shutdown"
-      - "Initialize StateMonitor and start event loop"
-      - "On shutdown: deactivate AP, close web server, exit cleanly"
-    error_conditions:
-      - condition: "Insufficient privileges for service mode"
-        handling: "Log critical error, exit with code 1"
-      - condition: "Unhandled exception"
-        handling: "Log traceback, attempt cleanup, exit with code 1"
+[Return to top](<#pi network configuration tool - master design>)
 
-data_design:
-  entities:
-    - name: "NetworkInfo"
-      purpose: "Represent scanned WiFi network"
-      attributes:
-        - name: "ssid"
-          type: "str"
-          constraints: "non-empty"
-        - name: "signal_strength"
-          type: "int"
-          constraints: "0-100"
-        - name: "security"
-          type: "str"
-          constraints: "enum: WPA2, WPA3, Open"
-        - name: "frequency"
-          type: "str"
-          constraints: "2.4GHz or 5GHz"
-      relationships: []
-    - name: "ConfigurationData"
-      purpose: "Persist single network configuration"
-      attributes:
-        - name: "configured_ssid"
-          type: "str"
-          constraints: "nullable, last successful connection only"
-        - name: "timestamp"
-          type: "datetime"
-          constraints: "ISO 8601 format"
-      relationships: []
-  storage:
-    - name: "/etc/pi-netconfig/config.json"
-      fields:
-        - name: "configured_ssid"
-          type: "string"
-          constraints: "nullable"
-        - name: "last_connected"
-          type: "string (ISO datetime)"
-          constraints: "nullable"
-        - name: "ap_password"
-          type: "string"
-          constraints: "default: piconfig123"
-      indexes: []
-  validation_rules:
-    - "SSID length: 1-32 characters"
-    - "Password length: 8-63 characters for WPA2"
-    - "No special shell characters in credentials"
+## System Overview
 
-interfaces:
-  internal:
-    - name: "test_connection"
-      purpose: "Verify active internet connectivity"
-      signature: "async def test_connection() -> bool"
-      parameters: []
-      returns:
-        type: "bool"
-        description: "True if connection active"
-      raises:
-        - exception: "ConnectionManagerError"
-          condition: "Unable to perform connectivity test"
-    - name: "scan_networks"
-      purpose: "Scan for available WiFi networks"
-      signature: "async def scan_networks() -> List[NetworkInfo]"
-      parameters: []
-      returns:
-        type: "List[NetworkInfo]"
-        description: "Available networks sorted by signal strength"
-      raises:
-        - exception: "ConnectionManagerError"
-          condition: "Scan operation fails"
-    - name: "configure_network"
-      purpose: "Apply WiFi configuration"
-      signature: "async def configure_network(ssid: str, password: str) -> bool"
-      parameters:
-        - name: "ssid"
-          type: "str"
-          description: "Target network SSID"
-        - name: "password"
-          type: "str"
-          description: "Network password"
-      returns:
-        type: "bool"
-        description: "True if configuration successful"
-      raises:
-        - exception: "ConnectionManagerError"
-          condition: "Configuration fails"
-    - name: "activate_ap"
-      purpose: "Enable access point mode"
-      signature: "async def activate_ap() -> bool"
-      parameters: []
-      returns:
-        type: "bool"
-        description: "True if AP activated successfully"
-      raises:
-        - exception: "APManagerError"
-          condition: "AP activation fails"
-  external:
-    - name: "Web API"
-      protocol: "HTTP/1.1"
-      data_format: "JSON"
-      specification: |
-        GET /api/scan -> {"networks": [{"ssid": str, "signal": int, "security": str}]}
-        POST /api/configure {"ssid": str, "password": str} -> {"success": bool, "message": str}
-        GET /api/status -> {"state": str, "ssid": str|null, "ap_active": bool}
+Self-installing service that monitors WiFi connectivity, switches between client/AP modes, and provides web interface for network configuration.
 
-error_handling:
-  exception_hierarchy:
-    base: "PiNetConfigError"
-    specific:
-      - "InstallerError"
-      - "ConnectionManagerError"
-      - "APManagerError"
-      - "WebServerError"
-      - "ConfigurationError"
-  strategy:
-    validation_errors: "Return descriptive message via web interface, log warning"
-    runtime_errors: "Log with traceback, attempt recovery to known state"
-    external_failures: "Retry with exponential backoff, fallback to degraded mode"
-  logging:
-    levels:
-      - "DEBUG: state transitions, nmcli commands"
-      - "INFO: connection status changes, configuration updates"
-      - "WARNING: failed connection attempts, retries"
-      - "ERROR: component failures, unrecoverable errors"
-      - "CRITICAL: service shutdown due to error"
-    required_info:
-      - "Timestamp"
-      - "Log level"
-      - "Component name"
-      - "Message"
-      - "Stack trace (for errors)"
-    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+**Context Flow:**
 
-nonfunctional_requirements:
-  performance:
-    - metric: "Boot to ready"
-      target: "< 30 seconds"
-    - metric: "Network scan"
-      target: "< 5 seconds"
-    - metric: "Configuration application"
-      target: "< 10 seconds"
-  security:
-    authentication: "None - local network access only"
-    authorization: "Root privileges required for service"
-    data_protection:
-      - "WiFi passwords stored in NetworkManager secure storage"
-      - "Configuration file readable only by root"
-      - "No credential logging"
-  reliability:
-    error_recovery: "Automatic recovery to AP mode on repeated failures"
-    fault_tolerance:
-      - "Continue operation if single component fails"
-      - "Graceful degradation if WiFi hardware unavailable"
-  maintainability:
-    code_organization:
-      - "Single-file implementation for simplicity"
-      - "Clear separation of concerns via classes"
-      - "Type hints throughout"
-    documentation:
-      - "Docstrings for all public methods"
-      - "Self-installation guide (run as root on first execution)"
-      - "Systemd service management instructions"
-    testing:
-      coverage_target: "80%"
-      approaches:
-        - "Unit tests for state transitions"
-        - "Mock NetworkManager for integration tests"
-        - "Manual end-to-end testing on Raspberry Pi"
+```
+First Run → Detect Service → [Not Installed] → Self-Install → Systemd Start → 
+Boot → Connectivity Check → [No Connection] → AP Mode + Web Server → 
+User Config → Client Mode
+```
 
-version_history:
-  - version: "0.2.1"
-    date: "2025-11-20"
-    author: "William Watson"
-    changes:
-      - "Updated per [change-0002](<../change/change-0002-periodic-audits.md>): Governance framework now includes P08 Audit protocol for systematic compliance verification"
-      - "Updated per [change-0003](<../change/change-0003-governance-scope-clarification.md>): Clarified that Domain 1/2 architecture model describes development workflow, not runtime system architecture"
-      - "Updated per [change-0004](<../change/change-0004-version-synchronization.md>): Synchronized pyproject.toml version to match design version 0.2.0"
-  - version: "0.2.0"
-    date: "2025-11-10"
-    author: "William Watson"
-    changes:
-      - "Added Installer module for self-installation as systemd service"
-      - "Updated ServiceController to handle bootstrap vs service mode"
-      - "Modified architecture to self-bootstrapping pattern"
-      - "Added InstallerError exception type"
-  - version: "0.1.1"
-    date: "2025-11-10"
-    author: "William Watson"
-    changes:
-      - "Clarified single network configuration approach"
-      - "Removed web authentication requirement"
-      - "Removed LED/notification system from scope"
-  - version: "0.1.0"
-    date: "2025-11-10"
-    author: "William Watson"
-    changes:
-      - "Initial master design document"
+**Primary Functions:**
+- Self-install as systemd service on first execution
+- Monitor WiFi connection status
+- Create temporary access point for configuration
+- Scan and display available networks
+- Configure WiFi credentials
+- Persist configuration across reboots
 
-metadata:
-  copyright: "Copyright (c) 2025 William Watson. This work is licensed under the MIT License."
-  template_version: "1.0"
-  schema_type: "t01_design"
+[Return to top](<#pi network configuration tool - master design>)
+
+## Design Constraints
+
+### Technical Constraints
+
+- Must work with NetworkManager (standard in Raspbian Bookworm)
+- Requires root privileges for network operations
+- Single WiFi interface constraint
+- No external dependencies beyond standard Debian packages
+
+### Implementation Details
+
+**Language:** Python
+
+**Framework:** asyncio for concurrent operations
+
+**Libraries:**
+- `http.server` (stdlib) - web interface
+- `subprocess` - NetworkManager CLI interaction
+- `json` - configuration persistence
+- `socket` - connectivity testing
+
+**Standards:**
+- PEP 8 style compliance
+- Type hints for all functions
+- Systemd service unit specification
+
+### Performance Targets
+
+| Metric | Target |
+|--------|--------|
+| Connection detection | < 10 seconds after boot |
+| AP mode activation | < 15 seconds after failed connection |
+| Web interface response | < 500ms page load |
+
+[Return to top](<#pi network configuration tool - master design>)
+
+## Architecture
+
+**Pattern:** Self-bootstrapping state machine with monitoring loop
+
+**Component Relationships:**
+```
+Installer → [First Run] → ServiceController → StateMonitor → 
+ConnectionManager ↔ APManager + WebServer
+```
+
+### Technology Stack
+
+- **Language:** Python 3.11+
+- **Framework:** asyncio event loop
+- **Libraries:** NetworkManager via nmcli, http.server, systemd integration
+- **Data Store:** JSON file (`/etc/pi-netconfig/config.json`)
+
+### Directory Structure
+
+| Path | Purpose |
+|------|---------|
+| `/usr/local/bin/pi-netconfig/main.py` | Application code (installed location) |
+| `/etc/pi-netconfig/config.json` | Configuration files |
+| `/var/log/pi-netconfig.log` | Service logs |
+| `/etc/systemd/system/pi-netconfig.service` | Service unit (auto-generated) |
+
+### System Diagram
+
+```mermaid
+graph TB
+    subgraph "External Dependencies"
+        NM[NetworkManager/nmcli]
+        SD[systemd]
+        FS[Filesystem<br/>/etc/pi-netconfig/]
+    end
+    
+    subgraph "pi-netconfig Application"
+        SC[ServiceController<br/>Entry Point]
+        SM[StateMonitor<br/>State Machine]
+        
+        subgraph "Network Operations"
+            CM[ConnectionManager<br/>WiFi Client]
+            AP[APManager<br/>Access Point]
+        end
+        
+        subgraph "User Interface"
+            WS[WebServer<br/>HTTP Interface]
+        end
+        
+        subgraph "Bootstrap"
+            IN[Installer<br/>Self-Setup]
+        end
+    end
+    
+    subgraph "User Interaction"
+        U[User Browser<br/>Port 8080]
+    end
+    
+    %% Bootstrap flow
+    SC -->|First Run| IN
+    IN -->|Install Service| SD
+    IN -->|Create Config| FS
+    
+    %% Normal operation flow
+    SC -->|Service Mode| SM
+    SM -->|Monitor| CM
+    CM -->|Test Connection| NM
+    CM -->|Read/Write Config| FS
+    
+    %% State transitions
+    SM -->|Connection Failed| AP
+    AP -->|Create AP| NM
+    SM -->|AP Active| WS
+    WS -->|HTTP| U
+    
+    %% Configuration flow
+    U -->|Submit Config| WS
+    WS -->|Configure Network| CM
+    CM -->|Activate Connection| NM
+    SM -->|Connection Success| CM
+    
+    %% Styling
+    classDef external fill:#f9f,stroke:#333,stroke-width:2px
+    classDef core fill:#bbf,stroke:#333,stroke-width:2px
+    classDef network fill:#bfb,stroke:#333,stroke-width:2px
+    classDef ui fill:#ffb,stroke:#333,stroke-width:2px
+    classDef bootstrap fill:#fbb,stroke:#333,stroke-width:2px
+    
+    class NM,SD,FS external
+    class SC,SM core
+    class CM,AP network
+    class WS,U ui
+    class IN bootstrap
+```
+
+**Diagram Legend:**
+- **External Dependencies:** System services pi-netconfig relies upon
+- **ServiceController:** Entry point handling bootstrap vs service mode
+- **StateMonitor:** State machine coordinating CLIENT/AP_MODE transitions
+- **ConnectionManager:** WiFi client operations (scan, connect, test)
+- **APManager:** Access point creation for configuration mode
+- **WebServer:** HTTP interface for network configuration (port 8080)
+- **Installer:** Self-installation mechanism for systemd integration
+
+**Data Flow:**
+1. First run triggers Installer → creates systemd service
+2. Service mode enters StateMonitor loop
+3. ConnectionManager tests connectivity via NetworkManager
+4. Connection failure triggers APManager + WebServer
+5. User configures network via web interface
+6. Configuration applied via ConnectionManager → NetworkManager
+7. Success returns to CLIENT mode monitoring
+
+[Return to top](<#pi network configuration tool - master design>)
+
+## Components
+
+### Installer
+
+**Purpose:** Self-installation mechanism detecting and configuring systemd service on first run
+
+**Responsibilities:**
+- Detect if systemd service already installed
+- Create required directories (`/etc/pi-netconfig`, logs)
+- Copy script to installation location (`/usr/local/bin/pi-netconfig/`)
+- Generate and install systemd unit file
+- Enable and start systemd service
+- Verify installation success
+
+**Inputs:**
+- `run_mode` (str): bootstrap or service mode indicator
+
+**Outputs:**
+- `installation_status` (bool): Installation success/failure
+
+**Key Elements:**
+- `InstallationDetector` (class): Check for existing systemd service installation
+- `SystemdInstaller` (class): Perform installation steps and systemd configuration
+
+**Dependencies:**
+- External: `subprocess` (systemctl, cp, mkdir), `shutil` (file operations), `os` (path operations)
+
+**Processing Logic:**
+- Check for service file: `/etc/systemd/system/pi-netconfig.service`
+- If exists: exit installer, proceed to normal operation
+- If not exists and root privileges: begin installation
+- Create directories: `/usr/local/bin/pi-netconfig/`, `/etc/pi-netconfig/`, `/var/log/`
+- Copy self to `/usr/local/bin/pi-netconfig/main.py`
+- Generate systemd unit file with proper ExecStart path
+- Install unit: cp to `/etc/systemd/system/`
+- Enable: `systemctl daemon-reload && systemctl enable pi-netconfig`
+- Start: `systemctl start pi-netconfig`
+- Exit bootstrap mode (systemd will restart in service mode)
+
+**Error Conditions:**
+
+| Condition | Handling |
+|-----------|----------|
+| Insufficient privileges (not root) | Exit with error message: 'Installation requires root privileges' |
+| Directory creation fails | Raise InstallerError with details, rollback partial installation |
+| Systemd commands fail | Log error details, attempt manual cleanup instructions |
+
+[Return to top](<#pi network configuration tool - master design>)
+
+### StateMonitor
+
+**Purpose:** Main state machine managing service operational mode
+
+**Responsibilities:**
+- Determine current operational state (CHECKING, CLIENT, AP_MODE)
+- Coordinate transitions between states
+- Initialize and shutdown components
+
+**Inputs:**
+- `connection_status` (bool): Result from connectivity check
+
+**Outputs:**
+- `current_state` (Enum[CHECKING, CLIENT, AP_MODE]): Current operational state
+
+**Key Elements:**
+- `StateMachine` (class): Implement state transitions and mode coordination
+
+**Dependencies:**
+- Internal: ConnectionManager, APManager, WebServer
+- External: asyncio
+
+**Processing Logic:**
+- Loop: check connection every 30 seconds
+- On boot or connection loss: transition to AP_MODE after 3 failed checks
+- In AP_MODE: monitor for successful configuration
+- After config: attempt connection, return to CLIENT or remain AP_MODE
+
+**Error Conditions:**
+
+| Condition | Handling |
+|-----------|----------|
+| State transition failure | Log error, attempt recovery to last known good state |
+
+[Return to top](<#pi network configuration tool - master design>)
+
+### ConnectionManager
+
+**Purpose:** Manage WiFi client mode connections and scanning
+
+**Responsibilities:**
+- Test active connection to router/AP
+- Scan for available networks
+- Configure and activate WiFi connections
+- Persist connection configurations
+
+**Inputs:**
+- `ssid` (str): Network SSID to connect
+- `password` (str): Network PSK
+
+**Outputs:**
+- `connection_active` (bool): Connection status result
+- `available_networks` (List[NetworkInfo]): Scanned networks with signal strength
+
+**Key Elements:**
+- `ConnectionTester` (class): Verify active internet connectivity
+- `NetworkScanner` (class): Scan and parse available WiFi networks
+- `ConfigManager` (class): Apply and persist NetworkManager configurations
+
+**Dependencies:**
+- External: `subprocess` (nmcli), `socket` (connectivity test)
+
+**Processing Logic:**
+- Test connection: ping known hosts (8.8.8.8, 1.1.1.1)
+- Scan: `nmcli dev wifi list`
+- Configure: `nmcli connection add/modify`
+- Persist to JSON: active SSID and credentials
+
+**Error Conditions:**
+
+| Condition | Handling |
+|-----------|----------|
+| nmcli command fails | Raise ConnectionManagerError with stderr output |
+| Invalid credentials | Return error status, maintain previous config |
+
+[Return to top](<#pi network configuration tool - master design>)
+
+### APManager
+
+**Purpose:** Create and manage local access point for configuration
+
+**Responsibilities:**
+- Activate WiFi interface in AP mode
+- Configure DHCP for connected clients
+- Provide predictable SSID and credentials
+- Deactivate AP when switching to client mode
+
+**Inputs:**
+- `enable` (bool): Activate or deactivate AP mode
+
+**Outputs:**
+- `ap_active` (bool): Current AP mode status
+- `ap_ssid` (str): Access point network name
+
+**Key Elements:**
+- `AccessPoint` (class): Manage NetworkManager AP connection profile
+
+**Dependencies:**
+- External: `subprocess` (nmcli)
+
+**Processing Logic:**
+- Create AP profile: SSID='PiConfig-<MAC_LAST_4>', WPA2, password='piconfig123'
+- Activate: `nmcli connection up <profile>`
+- Deactivate: `nmcli connection down <profile>`
+- IP range: 192.168.50.1/24
+
+**Error Conditions:**
+
+| Condition | Handling |
+|-----------|----------|
+| AP activation fails | Raise APManagerError, attempt fallback to open AP |
+| Interface unavailable | Log critical error, enter degraded mode |
+
+[Return to top](<#pi network configuration tool - master design>)
+
+### WebServer
+
+**Purpose:** Provide HTTP interface for network configuration
+
+**Responsibilities:**
+- Serve HTML configuration interface
+- Handle network scan requests
+- Process configuration submissions
+- Provide API endpoints for status queries
+
+**Inputs:**
+- `http_request` (HTTPRequest): Incoming web requests
+
+**Outputs:**
+- `http_response` (HTTPResponse): HTML pages or JSON API responses
+
+**Key Elements:**
+- `ConfigHTTPHandler` (class): Custom HTTP request handler
+- `APIEndpoints` (class): REST-like API for AJAX calls
+
+**Dependencies:**
+- Internal: ConnectionManager, StateMonitor
+- External: `http.server`, `json`
+
+**Processing Logic:**
+- Serve static HTML/CSS/JS from embedded strings
+- `GET /`: main configuration page
+- `GET /api/scan`: trigger network scan, return JSON
+- `POST /api/configure`: accept SSID/password, apply config
+- `GET /api/status`: return current state and connection info
+
+**Error Conditions:**
+
+| Condition | Handling |
+|-----------|----------|
+| Port 8080 unavailable | Raise WebServerError, log and exit service |
+| Invalid configuration POST | Return 400 with error details in JSON |
+
+[Return to top](<#pi network configuration tool - master design>)
+
+### ServiceController
+
+**Purpose:** Application entry point managing bootstrap vs service mode and systemd lifecycle
+
+**Responsibilities:**
+- Determine execution mode (bootstrap vs service)
+- Delegate to Installer if not installed
+- Initialize logging
+- Start/stop state monitor loop
+- Handle service signals (SIGTERM, SIGINT)
+- Cleanup on shutdown
+
+**Inputs:**
+- `system_signal` (signal): OS signals for service control
+- `execution_context` (str): Detected run mode
+
+**Outputs:**
+- `exit_code` (int): Service exit status
+
+**Key Elements:**
+- `ServiceMain` (function): Entry point for application, routes to installer or service loop
+
+**Dependencies:**
+- Internal: Installer, StateMonitor, All other components
+- External: `logging`, `signal`, `systemd`, `os` (privilege detection)
+
+**Processing Logic:**
+- Detect execution mode: check if running under systemd or manual invocation
+- If systemd service not installed: invoke Installer and exit
+- If installed: proceed with normal service operation
+- Setup logging to `/var/log/pi-netconfig.log`
+- Register signal handlers for graceful shutdown
+- Initialize StateMonitor and start event loop
+- On shutdown: deactivate AP, close web server, exit cleanly
+
+**Error Conditions:**
+
+| Condition | Handling |
+|-----------|----------|
+| Insufficient privileges for service mode | Log critical error, exit with code 1 |
+| Unhandled exception | Log traceback, attempt cleanup, exit with code 1 |
+
+[Return to top](<#pi network configuration tool - master design>)
+
+## Data Design
+
+### Entities
+
+#### NetworkInfo
+
+**Purpose:** Represent scanned WiFi network
+
+**Attributes:**
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| ssid | str | non-empty |
+| signal_strength | int | 0-100 |
+| security | str | enum: WPA2, WPA3, Open |
+| frequency | str | 2.4GHz or 5GHz |
+
+#### ConfigurationData
+
+**Purpose:** Persist single network configuration
+
+**Attributes:**
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| configured_ssid | str | nullable, last successful connection only |
+| timestamp | datetime | ISO 8601 format |
+
+### Storage
+
+#### /etc/pi-netconfig/config.json
+
+**Fields:**
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| configured_ssid | string | nullable |
+| last_connected | string (ISO datetime) | nullable |
+| ap_password | string | default: piconfig123 |
+
+### Validation Rules
+
+- SSID length: 1-32 characters
+- Password length: 8-63 characters for WPA2
+- No special shell characters in credentials
+
+[Return to top](<#pi network configuration tool - master design>)
+
+## Interfaces
+
+### Internal Interfaces
+
+#### test_connection
+
+**Purpose:** Verify active internet connectivity
+
+**Signature:** `async def test_connection() -> bool`
+
+**Returns:** `bool` - True if connection active
+
+**Raises:**
+- `ConnectionManagerError`: Unable to perform connectivity test
+
+#### scan_networks
+
+**Purpose:** Scan for available WiFi networks
+
+**Signature:** `async def scan_networks() -> List[NetworkInfo]`
+
+**Returns:** `List[NetworkInfo]` - Available networks sorted by signal strength
+
+**Raises:**
+- `ConnectionManagerError`: Scan operation fails
+
+#### configure_network
+
+**Purpose:** Apply WiFi configuration
+
+**Signature:** `async def configure_network(ssid: str, password: str) -> bool`
+
+**Parameters:**
+- `ssid` (str): Target network SSID
+- `password` (str): Network password
+
+**Returns:** `bool` - True if configuration successful
+
+**Raises:**
+- `ConnectionManagerError`: Configuration fails
+
+#### activate_ap
+
+**Purpose:** Enable access point mode
+
+**Signature:** `async def activate_ap() -> bool`
+
+**Returns:** `bool` - True if AP activated successfully
+
+**Raises:**
+- `APManagerError`: AP activation fails
+
+### External Interfaces
+
+#### Web API
+
+**Protocol:** HTTP/1.1
+
+**Data Format:** JSON
+
+**Specification:**
+
+```
+GET /api/scan 
+→ {"networks": [{"ssid": str, "signal": int, "security": str}]}
+
+POST /api/configure 
+{"ssid": str, "password": str} 
+→ {"success": bool, "message": str}
+
+GET /api/status 
+→ {"state": str, "ssid": str|null, "ap_active": bool}
+```
+
+[Return to top](<#pi network configuration tool - master design>)
+
+## Error Handling
+
+### Exception Hierarchy
+
+**Base:** `PiNetConfigError`
+
+**Specific:**
+- `InstallerError`
+- `ConnectionManagerError`
+- `APManagerError`
+- `WebServerError`
+- `ConfigurationError`
+
+### Strategy
+
+| Error Type | Handling |
+|------------|----------|
+| Validation errors | Return descriptive message via web interface, log warning |
+| Runtime errors | Log with traceback, attempt recovery to known state |
+| External failures | Retry with exponential backoff, fallback to degraded mode |
+
+### Logging
+
+**Levels:**
+- **DEBUG:** state transitions, nmcli commands
+- **INFO:** connection status changes, configuration updates
+- **WARNING:** failed connection attempts, retries
+- **ERROR:** component failures, unrecoverable errors
+- **CRITICAL:** service shutdown due to error
+
+**Required Info:**
+- Timestamp
+- Log level
+- Component name
+- Message
+- Stack trace (for errors)
+
+**Format:** `%(asctime)s - %(name)s - %(levelname)s - %(message)s`
+
+[Return to top](<#pi network configuration tool - master design>)
+
+## Non-Functional Requirements
+
+### Performance
+
+| Metric | Target |
+|--------|--------|
+| Boot to ready | < 30 seconds |
+| Network scan | < 5 seconds |
+| Configuration application | < 10 seconds |
+
+### Security
+
+**Authentication:** None - local network access only
+
+**Authorization:** Root privileges required for service
+
+**Data Protection:**
+- WiFi passwords stored in NetworkManager secure storage
+- Configuration file readable only by root
+- No credential logging
+
+### Reliability
+
+**Error Recovery:** Automatic recovery to AP mode on repeated failures
+
+**Fault Tolerance:**
+- Continue operation if single component fails
+- Graceful degradation if WiFi hardware unavailable
+
+### Maintainability
+
+**Code Organization:**
+- Single-file implementation for simplicity
+- Clear separation of concerns via classes
+- Type hints throughout
+
+**Documentation:**
+- Docstrings for all public methods
+- Self-installation guide (run as root on first execution)
+- Systemd service management instructions
+
+**Testing:**
+- Coverage target: 80%
+- Unit tests for state transitions
+- Mock NetworkManager for integration tests
+- Manual end-to-end testing on Raspberry Pi
+
+[Return to top](<#pi network configuration tool - master design>)
+
+## Version History
+
+### v0.2.2 (2025-11-28)
+
+**Author:** William Watson
+
+**Changes:**
+- Converted document from YAML format to markdown with YAML frontmatter
+- Added system architecture diagram per audit recommendation MD-001 from [audit-0002](<../audit/audit-0002-governance-compliance-v4.md>)
+- Comprehensive Mermaid diagram showing module relationships, data flow, and external dependencies
+
+### v0.2.1 (2025-11-20)
+
+**Author:** William Watson
+
+**Changes:**
+- Updated per [change-0002](<../change/change-0002-periodic-audits.md>): Governance framework now includes P08 Audit protocol for systematic compliance verification
+- Updated per [change-0003](<../change/change-0003-governance-scope-clarification.md>): Clarified that Domain 1/2 architecture model describes development workflow, not runtime system architecture
+- Updated per [change-0004](<../change/change-0004-version-synchronization.md>): Synchronized pyproject.toml version to match design version 0.2.0
+
+### v0.2.0 (2025-11-10)
+
+**Author:** William Watson
+
+**Changes:**
+- Added Installer module for self-installation as systemd service
+- Updated ServiceController to handle bootstrap vs service mode
+- Modified architecture to self-bootstrapping pattern
+- Added InstallerError exception type
+
+### v0.1.1 (2025-11-10)
+
+**Author:** William Watson
+
+**Changes:**
+- Clarified single network configuration approach
+- Removed web authentication requirement
+- Removed LED/notification system from scope
+
+### v0.1.0 (2025-11-10)
+
+**Author:** William Watson
+
+**Changes:**
+- Initial master design document
+
+[Return to top](<#pi network configuration tool - master design>)
