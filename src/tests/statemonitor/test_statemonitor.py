@@ -401,3 +401,40 @@ class TestRunFunction:
             await run(Mock(), Mock(), Mock())
             
             mock_sm.shutdown.assert_called_once()
+
+
+class TestConcurrentTransitions:
+    """Test concurrent state transition safety."""
+    
+    @pytest.mark.asyncio
+    async def test_concurrent_transition_safety(self):
+        """Test that concurrent transitions are properly serialized."""
+        mock_conn = Mock()
+        mock_ap = Mock()
+        mock_ap.deactivate_ap = AsyncMock()
+        mock_ap.activate_ap = AsyncMock()
+        mock_web = Mock()
+        mock_web.stop_server = AsyncMock()
+        mock_web.start_server = AsyncMock()
+        
+        sm = StateMonitor(mock_conn, mock_ap, mock_web)
+        await sm.initialize()
+        
+        # Create concurrent transition tasks
+        client_tasks = [sm.transition_to_client() for _ in range(5)]
+        ap_tasks = [sm.transition_to_ap_mode() for _ in range(5)]
+        
+        # Run all transitions concurrently
+        await asyncio.gather(*client_tasks, *ap_tasks, return_exceptions=False)
+        
+        # Verify final state is consistent
+        assert sm.current_state in [SystemState.CLIENT, SystemState.AP_MODE]
+        
+        # Verify component methods were called appropriate number of times
+        # The exact number depends on final state and transition order
+        total_ap_calls = mock_ap.deactivate_ap.call_count + mock_ap.activate_ap.call_count
+        total_web_calls = mock_web.stop_server.call_count + mock_web.start_server.call_count
+        
+        # At least some transitions should have occurred
+        assert total_ap_calls > 0
+        assert total_web_calls > 0

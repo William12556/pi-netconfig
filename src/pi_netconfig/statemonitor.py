@@ -71,6 +71,7 @@ class StateMonitor:
         self.failure_count: int = 0
         self.shutdown_event: Optional[asyncio.Event] = None
         self.monitoring_task: Optional[asyncio.Task] = None
+        self._transition_lock: Optional[asyncio.Lock] = None
         self.logger = logging.getLogger('StateMonitor')
 
     async def initialize(self) -> None:
@@ -82,6 +83,7 @@ class StateMonitor:
             ComponentInitializationError: If component initialization fails
         """
         self.shutdown_event = asyncio.Event()
+        self._transition_lock = asyncio.Lock()
         try:
             # Components should already be initialized by their constructors
             # This method exists for future initialization needs
@@ -166,22 +168,23 @@ class StateMonitor:
         Raises:
             StateTransitionError: If transition fails
         """
-        try:
-            self.logger.info("Transitioning to CLIENT mode")
-            
-            if self.current_state == SystemState.AP_MODE:
-                await self.ap_manager.deactivate_ap()
-                await self.web_server.stop_server()
-            
-            self.current_state = SystemState.CLIENT
-            self.failure_count = 0
-            self.logger.info("Successfully transitioned to CLIENT mode")
-            
-        except Exception as e:
-            self.logger.error("Failed to transition to CLIENT mode", exc_info=True)
-            raise StateTransitionError(
-                "Failed to transition to CLIENT mode"
-            ) from e
+        async with self._transition_lock:
+            try:
+                self.logger.info("Transitioning to CLIENT mode")
+                
+                if self.current_state == SystemState.AP_MODE:
+                    await self.ap_manager.deactivate_ap()
+                    await self.web_server.stop_server()
+                
+                self.current_state = SystemState.CLIENT
+                self.failure_count = 0
+                self.logger.info("Successfully transitioned to CLIENT mode")
+                
+            except Exception as e:
+                self.logger.error("Failed to transition to CLIENT mode", exc_info=True)
+                raise StateTransitionError(
+                    "Failed to transition to CLIENT mode"
+                ) from e
 
     async def transition_to_ap_mode(self) -> None:
         """Transition to AP_MODE.
@@ -191,20 +194,21 @@ class StateMonitor:
         Raises:
             StateTransitionError: If transition fails
         """
-        try:
-            self.logger.info("Transitioning to AP_MODE")
-            
-            await self.ap_manager.activate_ap()
-            await self.web_server.start_server()
-            
-            self.current_state = SystemState.AP_MODE
-            self.logger.info("Successfully transitioned to AP_MODE")
-            
-        except Exception as e:
-            self.logger.error("Failed to transition to AP_MODE", exc_info=True)
-            raise StateTransitionError(
-                "Failed to transition to AP_MODE"
-            ) from e
+        async with self._transition_lock:
+            try:
+                self.logger.info("Transitioning to AP_MODE")
+                
+                await self.ap_manager.activate_ap()
+                await self.web_server.start_server()
+                
+                self.current_state = SystemState.AP_MODE
+                self.logger.info("Successfully transitioned to AP_MODE")
+                
+            except Exception as e:
+                self.logger.error("Failed to transition to AP_MODE", exc_info=True)
+                raise StateTransitionError(
+                    "Failed to transition to AP_MODE"
+                ) from e
 
     async def handle_state_transition_failure(self, error: Exception) -> None:
         """Handle state transition failures with recovery attempts.
