@@ -134,11 +134,19 @@ test.txt
 **/tmp
 deprecated/
 workspace/ai/
+venv/
+.venv/
+*.pyc
+__pycache__/
+.pytest_cache/
+dist/
+build/
+*.egg-info/
 ```
     - Create pyproject.toml in project root:
 ```toml
 [project]
-name = "\<project-name\>"
+name = "<project-name>"
 version = "0.1.0"
 description = "<project description>"
 authors = [{name = "<author name>"}]
@@ -155,12 +163,15 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "build>=0.10.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests"]
+testpaths = ["src/tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
@@ -188,7 +199,9 @@ exclude_lines = [
     └── <project name>/
 		├── ai/           # Operational rules
         │   └── governance.md
-        ├── release/                  # Application releases.
+        ├── venv/                    # Python virtual environment (excluded from git)
+        ├── dist/                    # Build artifacts (excluded from git)
+        ├── release/                  # Application releases
         ├── workspace/            # Execution space
         │   ├── design/
         │   ├── change/
