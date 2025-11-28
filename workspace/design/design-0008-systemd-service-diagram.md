@@ -1,3 +1,14 @@
+---
+document_info:
+  id: "design-0008"
+  type: "diagram"
+  iteration: 1
+  tier: 1
+  status: "active"
+  coupled_docs:
+    design_refs: ["design-0000"]
+---
+
 Created: 2025 November 11
 
 # Pi Network Configuration Tool - Systemd Service Lifecycle

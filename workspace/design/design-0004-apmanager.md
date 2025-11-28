@@ -1,3 +1,16 @@
+---
+document_info:
+  id: "design-0004"
+  type: "component_design"
+  iteration: 1
+  tier: 3
+  domain: "apmanager"
+  status: "active"
+  coupled_docs:
+    change_refs: []
+    prompt_refs: []
+---
+
 Created: 2025 November 11
 
 # APManager Module Design

@@ -1,3 +1,16 @@
+---
+document_info:
+  id: "design-0003"
+  type: "component_design"
+  iteration: 1
+  tier: 3
+  domain: "connectionmanager"
+  status: "active"
+  coupled_docs:
+    change_refs: []
+    prompt_refs: []
+---
+
 Created: 2025 November 11
 
 # ConnectionManager Module Design

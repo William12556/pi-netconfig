@@ -1,3 +1,15 @@
+---
+document_info:
+  id: "design-0000"
+  type: "master_design"
+  iteration: 1
+  tier: 1
+  status: "active"
+  coupled_docs:
+    change_refs: []
+    issue_refs: []
+---
+
 Created: 2025 November 11
 
 # T01 Design Template v1.0 - YAML Format
