@@ -1,10 +1,10 @@
 # Pi Network Configuration Tool
 
-HTML based WiFi configuration management for Raspberry Pi/Debian systems.
+WiFi configuration management for Raspberry Pi/Debian systems with automatic access point fallback.
 
 ## Overview
 
-Tool manages WiFi connectivity with automatic fallback to access point mode when no connection is available.
+Tool manages WiFi connectivity with automatic fallback to access point mode when no connection is available. Designed for headless Raspberry Pi systems without attached displays or keyboards. The system operates as a self-installing systemd service, providing continuous network monitoring and a web-based configuration interface when needed.
 
 ## Features
 
@@ -22,105 +22,50 @@ Tool manages WiFi connectivity with automatic fallback to access point mode when
 - Python 3.11 or higher
 - Root privileges for installation and network operations
 
-## Development Setup
+## Quick Start
 
-**Initial Setup (one-time):**
-
-```bash
-cd /path/to/pi-netconfig
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -e ".[dev]"
-```
-
-Editable installation (`-e` flag) makes imports work during development without reinstalling after code changes.
-
-**Running Tests:**
+**Build distribution package:**
 
 ```bash
-# With virtual environment activated
-pytest src/tests/
-```
-
-## Building for Deployment
-
-**Create Distribution Package:**
-
-```bash
-# On development machine (Mac/Linux)
 cd /path/to/pi-netconfig
 pip install build
 python -m build
 ```
 
-Creates `dist/pi_netconfig-0.2.0-py3-none-any.whl`
-
-## Deployment to Raspberry Pi
-
-**Transfer and Install on Raspberry Pi:**
+**Deploy to Raspberry Pi:**
 
 ```bash
-# Transfer wheel file
+# Transfer package
 scp dist/pi_netconfig-0.2.0-py3-none-any.whl admin@raspberry-pi:/tmp/
 
-# On Raspberry Pi
+# Install on Raspberry Pi
 ssh admin@raspberry-pi
 sudo pip install /tmp/pi_netconfig-0.2.0-py3-none-any.whl
 
-# Run installer (first execution only - installs systemd service)
+# Run installer (first execution only)
 sudo python3 -m pi_netconfig.main
 ```
 
-**Post-Installation:**
+**Configure WiFi:**
 
-Service starts automatically. If no WiFi connection available:
-1. Connect to access point: `PiConfig-XXXX` (password: `piconfig123`)
-2. Access web interface: `http://192.168.50.1:8080`
-3. Configure WiFi network through browser
+If no connection is available, the system creates access point `PiConfig-XXXX` (password: `piconfig123`). Connect and navigate to `http://192.168.50.1:8080` to configure network.
 
-**Service Management:**
+## Documentation
 
-```bash
-# Check status
-sudo systemctl status pi-netconfig
+Complete installation, deployment, and operational procedures are documented in:
 
-# View logs
-sudo journalctl -u pi-netconfig -f
+- **[User Guide](docs/user-guide.md)** - Installation, deployment, service management, testing, architecture, and troubleshooting
 
-# Restart service
-sudo systemctl restart pi-netconfig
+Additional technical documentation:
 
-# Stop service
-sudo systemctl stop pi-netconfig
-```
-
-## Testing
-
-```bash
-# On Raspberry Pi with virtual environment activated
-cd /home/admin/pi-netconfig
-source pi-netconfig-venv/bin/activate
-pytest src/tests/
-```
-
-## Architecture
-
-State machine managing three operational modes:
-- **CHECKING**: Monitors connection status every 30 seconds
-- **CLIENT**: Connected to configured WiFi network
-- **AP_MODE**: Creates access point with web interface for configuration
-
-Components:
-- Installer: Self-bootstrapping systemd service setup
-- StateMonitor: Operational state coordination
-- ConnectionManager: WiFi client operations
-- APManager: Access point creation
-- WebServer: HTML configuration interface (port 8080)
-- ServiceController: Application lifecycle management
+- **[Design Documentation](governance/)** - Architecture specifications, change management, and governance
 
 ## Important Notice
-This software is currently very unproven and in early development stages. The implementation is experimental in nature, serving as a learning exercise in AI-assisted development workflows, protocol-driven project management, and cross-platform embedded systems development. **Actual fitness for purpose is not guaranteed.**
+
+This software is in early development stages. The implementation is experimental in nature, serving as a learning exercise in AI-assisted development workflows, protocol-driven project management, and cross-platform embedded systems development. **Actual fitness for purpose is not guaranteed.**
 
 This project represents a first attempt at AI-supported software development using Claude Desktop and Claude Code from anthropic.com. The objective is to establish a sort of AI orchestration framework to guide software development. A kind of AI wrangler if you will.
+
+## License
 
 Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
