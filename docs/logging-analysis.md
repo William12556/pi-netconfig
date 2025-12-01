@@ -203,10 +203,10 @@ grep "dnsmasq" ~/pi-netconfig-logs/*/*.log
 
 ## Version History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2025-11-30 | Claude Desktop | Initial documentation |
-| 1.1 | 2025-11-30 | Claude Desktop | Enhanced real-time streaming section with direct-to-Mac file streaming capabilities |
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2025-11-30 | Initial documentation |
+| 1.1 | 2025-11-30 | Enhanced real-time streaming section with direct-to-Mac file streaming capabilities |
 
 ---
 
