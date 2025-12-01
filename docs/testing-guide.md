@@ -622,9 +622,9 @@ Every functional requirement must have corresponding test coverage:
 
 ## Version History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2024-11-30 | William Watson | Initial testing guide creation |
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2024-11-30 | Initial testing guide creation |
 
 ---
 
