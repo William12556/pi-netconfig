@@ -176,6 +176,8 @@ test.txt
 **/tmp
 deprecated/
 workspace/ai/
+workspace/proposal/
+workspace/proposal/closed
 venv/
 .venv/
 *.pyc
@@ -199,7 +201,7 @@ build/
         │   └── governance.md
         ├── release/                  # Application releases
         ├── venv/                     # Python virtual environment (excluded from git)
-        ├── dist/                     # Build artifacts (excluded from git)
+        ├── dist/                     # Python build artefacts (excluded from git)
         ├── workspace/                # Execution space
         │   ├── design/
         │   ├── change/
@@ -222,18 +224,6 @@ build/
         ├── src/                      # Source code
         │   └── tests/
         └── deprecated/               # Archive (excluded from git)
-            ├── ai/
-            ├── workspace/
-            │   ├── design/
-            │   ├── change/
-            │   ├── issue/
-            │   ├── prompt/
-            │   ├── trace/
-            │   ├── audit/
-            │   └── test/
-            │       └── result/
-            ├── docs/
-            └── src/
 ```
 
   - 1.2.7 Python Virtual Environment Setup (Human executes)
@@ -3583,6 +3573,7 @@ flowchart TD
 | 4.0 | 2025-11-28 | Integrated traceability matrix updates into workflow flowchart: Added P05 matrix update nodes after design approval (Trace1), code generation completion (Trace2), test execution (Trace3), and change implementation (Trace4); ensures bidirectional traceability maintained throughout development lifecycle |
 | 4.1 | 2025-11-28 | Added P08 1.9.9 Audit Closure with closure criteria, process, archival procedures, and reopening constraints; added workspace/audit/closed/ to P01 1.2.6 folder structure; added audit closure criteria to P00 1.1.13.3 and audit closed subfolder to P00 1.1.13.5 |
 | 4.2 | 2025-11-30 | Enhanced P06 Test with progressive validation strategy (1.7.15), test type selection criteria (1.7.16), platform execution specifications (1.7.17); updated workflow flowchart to incorporate progressive validation phases and platform-specific testing requirements |
+| 4.3 | 2025-12-03 | Added workspace/proposal/ directory: Added proposal document class to P00 1.1.10; added workspace/proposal/ and workspace/proposal/closed/ to P01 1.2.6 folder structure; added proposal directories to P01 1.2.2 .gitignore |
 
 ---
 [Return to Table of Contents](<#table of contents>)
