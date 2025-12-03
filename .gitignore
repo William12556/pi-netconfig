@@ -11,6 +11,8 @@ test.txt
 **/tmp
 deprecated/
 workspace/ai/
+workspace/proposal/
+workspace/proposal/closed/
 venv/
 .venv/
 *.pyc
