@@ -1,7 +1,7 @@
 """Installer module for pi-netconfig service.
 
 Handles self-installation including systemd service creation, directory setup,
-and initial configuration.
+and initial configuration with venv-based package deployment.
 
 Design: workspace/design/design-0001-installer.md
 Requirements: FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007
@@ -12,12 +12,10 @@ Copyright (c) 2025 William Watson. Licensed under the MIT License.
 """
 
 import os
-import shutil
 import subprocess
 import sys
 from logging import getLogger
 from pathlib import Path
-from typing import Optional
 
 logger = getLogger('Installer')
 
@@ -44,11 +42,11 @@ class SystemdError(InstallerError):
 
 class InstallationDetector:
     """Check for existing systemd service installation."""
-    
+
     @staticmethod
     def is_service_installed() -> bool:
         """Check if systemd service file exists.
-        
+
         Returns:
             bool: True if service file exists, False otherwise.
         """
@@ -56,29 +54,59 @@ class InstallationDetector:
         exists = service_path.exists()
         logger.debug(f"Service file exists check: {exists}")
         return exists
-    
+
+
+class VenvDetector:
+    """Validate virtual environment execution context and package installation."""
+
     @staticmethod
-    def get_current_script_path() -> Path:
-        """Get absolute path of currently executing script.
-        
+    def is_venv() -> bool:
+        """Check if running inside a virtual environment.
+
         Returns:
-            Path: Absolute path to current script.
+            bool: True if running in venv, False otherwise.
         """
-        script_path = Path(__file__).resolve()
-        logger.debug(f"Current script path: {script_path}")
-        return script_path
+        is_venv = sys.prefix != sys.base_prefix
+        logger.debug(f"Virtual environment check: {is_venv} (prefix={sys.prefix}, base_prefix={sys.base_prefix})")
+        return is_venv
+
+    @staticmethod
+    def get_venv_python() -> Path:
+        """Get absolute path to the venv Python interpreter.
+
+        Returns:
+            Path: Absolute path to Python executable.
+        """
+        python_path = Path(sys.executable)
+        logger.debug(f"Venv Python path: {python_path}")
+        return python_path
+
+    @staticmethod
+    def validate_package_installed() -> bool:
+        """Verify that pi_netconfig package is importable.
+
+        Returns:
+            bool: True if package can be imported, False otherwise.
+        """
+        try:
+            import pi_netconfig
+            logger.debug("Package pi_netconfig successfully imported")
+            return True
+        except ImportError as e:
+            logger.debug(f"Package pi_netconfig not importable: {e}")
+            return False
 
 
 class SystemdInstaller:
     """Perform installation steps and systemd configuration."""
-    
+
     @staticmethod
     def verify_root_privileges() -> bool:
         """Verify running as root user.
-        
+
         Returns:
             bool: True if running as root (UID 0).
-            
+
         Raises:
             PrivilegeError: If not running as root.
         """
@@ -88,25 +116,23 @@ class SystemdInstaller:
             print("Installation requires root privileges. Run with sudo.", file=sys.stderr)
             raise PrivilegeError("Installation requires root privileges. Run with sudo.")
         return True
-    
+
     @staticmethod
     def create_directories() -> None:
         """Create required installation directories.
-        
+
         Creates:
-            - /usr/local/bin/pi-netconfig/
             - /etc/pi-netconfig/
             - /var/log/
-            
+
         Raises:
             FileSystemError: If directory creation fails.
         """
         directories = [
-            '/usr/local/bin/pi-netconfig',
             '/etc/pi-netconfig',
             '/var/log'
         ]
-        
+
         for dir_path in directories:
             try:
                 logger.debug(f"Creating directory: {dir_path}")
@@ -116,42 +142,25 @@ class SystemdInstaller:
             except Exception as e:
                 logger.error(f"Failed to create directory {dir_path}: {e}", exc_info=True)
                 raise FileSystemError(f"Failed to create directory {dir_path}: {e}")
-    
+
     @staticmethod
-    def copy_application(script_path: Path) -> None:
-        """Copy application script to installation location.
-        
+    def generate_venv_systemd_unit(venv_python: Path) -> str:
+        """Generate systemd unit file content with venv Python path.
+
         Args:
-            script_path: Path to source script file.
-            
-        Raises:
-            FileSystemError: If copy operation fails.
-        """
-        dest_path = '/usr/local/bin/pi-netconfig/main.py'
-        try:
-            logger.debug(f"Copying {script_path} to {dest_path}")
-            shutil.copy2(script_path, dest_path)
-            os.chmod(dest_path, 0o755)
-            logger.info(f"Application copied to {dest_path}")
-        except Exception as e:
-            logger.error(f"Failed to copy application: {e}", exc_info=True)
-            raise FileSystemError(f"Failed to copy application: {e}")
-    
-    @staticmethod
-    def generate_systemd_unit() -> str:
-        """Generate systemd unit file content.
-        
+            venv_python: Absolute path to venv Python interpreter.
+
         Returns:
             str: Complete systemd unit file content.
         """
-        unit_content = """[Unit]
+        unit_content = f"""[Unit]
 Description=Pi Network Configuration Service
 After=network.target
 Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/local/bin/pi-netconfig/main.py
+ExecStart={venv_python} -m pi_netconfig.service_controller
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
@@ -161,16 +170,16 @@ User=root
 [Install]
 WantedBy=multi-user.target
 """
-        logger.debug("Generated systemd unit file content")
+        logger.debug(f"Generated systemd unit file content with venv Python: {venv_python}")
         return unit_content
-    
+
     @staticmethod
     def install_systemd_unit(unit_content: str) -> None:
         """Write unit file and reload systemd daemon.
-        
+
         Args:
             unit_content: Systemd unit file content.
-            
+
         Raises:
             SystemdError: If unit file write or daemon-reload fails.
         """
@@ -180,7 +189,7 @@ WantedBy=multi-user.target
             with open(unit_path, 'w') as f:
                 f.write(unit_content)
             logger.info(f"Systemd unit file written to {unit_path}")
-            
+
             logger.debug("Executing: systemctl daemon-reload")
             result = subprocess.run(
                 ['systemctl', 'daemon-reload'],
@@ -195,11 +204,11 @@ WantedBy=multi-user.target
         except Exception as e:
             logger.error(f"Failed to install systemd unit: {e}", exc_info=True)
             raise SystemdError(f"Failed to install systemd unit: {e}")
-    
+
     @staticmethod
     def enable_and_start_service() -> None:
         """Enable and start systemd service.
-        
+
         Raises:
             SystemdError: If enable or start commands fail.
         """
@@ -212,7 +221,7 @@ WantedBy=multi-user.target
                 check=True
             )
             logger.info("Service enabled")
-            
+
             logger.debug("Executing: systemctl start pi-netconfig")
             subprocess.run(
                 ['systemctl', 'start', 'pi-netconfig'],
@@ -224,66 +233,81 @@ WantedBy=multi-user.target
         except subprocess.CalledProcessError as e:
             logger.error(f"systemctl command failed: {e.stderr}", exc_info=True)
             raise SystemdError(f"systemctl command failed: {e.stderr}")
-    
+
     @staticmethod
     def rollback_installation() -> None:
-        """Remove created files and directories (best-effort).
-        
+        """Remove created service file (best-effort).
+
         Logs warnings for cleanup failures but does not raise exceptions.
         """
         logger.warning("Rollback initiated")
-        
-        paths_to_remove = [
-            '/etc/systemd/system/pi-netconfig.service',
-            '/usr/local/bin/pi-netconfig'
-        ]
-        
-        for path in paths_to_remove:
-            try:
-                logger.debug(f"Attempting to remove: {path}")
-                if os.path.isdir(path):
-                    shutil.rmtree(path)
-                    logger.debug(f"Removed directory: {path}")
-                elif os.path.exists(path):
-                    os.remove(path)
-                    logger.debug(f"Removed file: {path}")
-            except Exception as e:
-                logger.warning(f"Rollback cleanup failed for {path}: {e}")
+
+        service_path = '/etc/systemd/system/pi-netconfig.service'
+
+        try:
+            logger.debug(f"Attempting to remove: {service_path}")
+            if os.path.exists(service_path):
+                os.remove(service_path)
+                logger.debug(f"Removed file: {service_path}")
+        except Exception as e:
+            logger.warning(f"Rollback cleanup failed for {service_path}: {e}")
 
 
 def install() -> bool:
     """Main installation entry point.
-    
-    Coordinates installation detection, privilege verification, and
-    installation steps. Performs rollback on failure.
-    
+
+    Coordinates installation detection, privilege verification, venv validation,
+    and installation steps. Performs rollback on failure.
+
     Returns:
         bool: True if installation successful, False otherwise.
+
+    Raises:
+        PrivilegeError: If not running as root.
+        InstallerError: If not running in venv or package not installed.
     """
     try:
         logger.info("Installation started")
-        
+
         # Check if already installed
         if InstallationDetector.is_service_installed():
             logger.info("Service already installed, skipping installation")
             return True
-        
+
         # Verify privileges
         SystemdInstaller.verify_root_privileges()
-        
+
+        # Validate venv context
+        if not VenvDetector.is_venv():
+            error_msg = "Installation must be run from within a virtual environment. Please activate venv and retry."
+            print(error_msg, file=sys.stderr)
+            logger.error(error_msg)
+            raise InstallerError(error_msg)
+
+        # Validate package installed
+        if not VenvDetector.validate_package_installed():
+            error_msg = "Package pi_netconfig is not installed in the current environment. Please pip install the package and retry."
+            print(error_msg, file=sys.stderr)
+            logger.error(error_msg)
+            raise InstallerError(error_msg)
+
+        # Get venv Python path
+        venv_python = VenvDetector.get_venv_python()
+
         # Execute installation steps
         SystemdInstaller.create_directories()
-        script_path = InstallationDetector.get_current_script_path()
-        SystemdInstaller.copy_application(script_path)
-        unit_content = SystemdInstaller.generate_systemd_unit()
+        unit_content = SystemdInstaller.generate_venv_systemd_unit(venv_python)
         SystemdInstaller.install_systemd_unit(unit_content)
         SystemdInstaller.enable_and_start_service()
-        
+
         logger.info("Installation successful")
         return True
-        
+
     except PrivilegeError:
         # Already logged and printed, don't rollback
+        return False
+    except InstallerError:
+        # Venv or package validation error, don't rollback
         return False
     except (FileSystemError, SystemdError) as e:
         logger.error(f"Installation failed: {e}", exc_info=True)
@@ -296,5 +320,6 @@ def install() -> bool:
         return False
 
 
-# INTEGRATION: Import install() from installer module. Call from ServiceController 
-# when service not detected. Expects root privileges. Returns bool for success/failure.
+# INTEGRATION: Import install() from installer module. Call from ServiceController
+# when service not detected. Expects root privileges and venv execution context.
+# Returns bool for success/failure.
