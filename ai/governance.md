@@ -88,8 +88,8 @@
     - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
   - 1.1.10 Documents
     - Master documents have '0000' as a sequence number and are named as \<document class\>-0000-master_\<document name\>.md
-    - Claude Desktop: Based on document class (design, change, issue, prompt, trace, test, result, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
-    - Claude Desktop: Based on document class (design, change, issue, prompt, trace, test, result, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
+    - Claude Desktop: Based on document class (design, change, issue, proposal, prompt, trace, test, result, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
+    - Claude Desktop: Based on document class (design, change, issue, proposal, prompt, trace, test, result, audit) follows naming format \<document class\>-\<sequence number\>-\<document name\>.md when creating documents
     - Claude Desktop: Design documents follow tier naming convention: master_, domain_, component_ prefixes
     - Claude Desktop: Insures related documents are Obsidian cross linked
     - Document classes that require a master document are: design, audit, trace and test
@@ -195,32 +195,33 @@ build/
     - Layout
 ```
     └── <project name>/
-        ├── ai/           # Operational rules
+        ├── ai/                       # Operational rules
         │   └── governance.md
         ├── release/                  # Application releases
         ├── venv/                     # Python virtual environment (excluded from git)
         ├── dist/                     # Build artifacts (excluded from git)
-        ├── workspace/            # Execution space
+        ├── workspace/                # Execution space
         │   ├── design/
         │   ├── change/
         │   │   └── closed/
         │   ├── issues/
         │   │   └── closed/
-        │   ├── prompt/          # Code generation prompts
+        │   ├── proposal/             # (excluded from git)
         │   │   └── closed/
-        │   ├── trace/              # Requirements traceability
-        │   │   └── trace-0000-master_traceability-matrix.md
+        │   ├── prompt/
+        │   │   └── closed/
+        │   ├── trace/
         │   ├── audit/
         │   │   └── closed/
         │   ├── test/
         │   │   ├── closed/
         │   │   └── result/
         │   │       └── closed/
-        │   └── ai/                   # Optional: Temporary AI working materials (excluded from git)
-        ├── docs/                    # Technical Documents
-        ├── src/                       # Source code
+        │   └── ai/                   # Optional: (excluded from git)
+        ├── docs/                     # Technical Documents
+        ├── src/                      # Source code
         │   └── tests/
-        └── deprecated/           # Archive (excluded from git)
+        └── deprecated/               # Archive (excluded from git)
             ├── ai/
             ├── workspace/
             │   ├── design/
