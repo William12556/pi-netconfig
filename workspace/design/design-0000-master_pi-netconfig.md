@@ -10,8 +10,8 @@ document_info:
     issue_refs: []
 project_info:
   name: pi-netconfig
-  version: 0.2.2
-  date: 2025-11-28
+  version: 0.2.3
+  date: 2025-12-03
   author: William Watson
 metadata:
   copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
@@ -152,7 +152,7 @@ ConnectionManager ↔ APManager + WebServer
 
 | Path | Purpose |
 |------|---------|
-| `/usr/local/bin/pi-netconfig/main.py` | Application code (installed location) |
+| `/opt/pi-netconfig/venv/` | Virtual environment (package installation) |
 | `/etc/pi-netconfig/config.json` | Configuration files |
 | `/var/log/pi-netconfig.log` | Service logs |
 | `/etc/systemd/system/pi-netconfig.service` | Service unit (auto-generated) |
@@ -250,13 +250,14 @@ graph TB
 
 ### Installer
 
-**Purpose:** Self-installation mechanism detecting and configuring systemd service on first run
+**Purpose:** Self-installation mechanism for venv-based package deployment with systemd integration
 
 **Responsibilities:**
 - Detect if systemd service already installed
+- Validate virtual environment execution context
+- Validate package installation in venv
 - Create required directories (`/etc/pi-netconfig`, logs)
-- Copy script to installation location (`/usr/local/bin/pi-netconfig/`)
-- Generate and install systemd unit file
+- Generate venv-aware systemd unit file
 - Enable and start systemd service
 - Verify installation success
 
@@ -268,19 +269,22 @@ graph TB
 
 **Key Elements:**
 - `InstallationDetector` (class): Check for existing systemd service installation
-- `SystemdInstaller` (class): Perform installation steps and systemd configuration
+- `VenvDetector` (class): Validate venv context and package installation
+- `SystemdInstaller` (class): Generate venv-aware systemd unit, perform installation
 
 **Dependencies:**
-- External: `subprocess` (systemctl, cp, mkdir), `shutil` (file operations), `os` (path operations)
+- External: `subprocess` (systemctl), `sys` (venv detection), `os` (path operations)
 
 **Processing Logic:**
 - Check for service file: `/etc/systemd/system/pi-netconfig.service`
 - If exists: exit installer, proceed to normal operation
 - If not exists and root privileges: begin installation
-- Create directories: `/usr/local/bin/pi-netconfig/`, `/etc/pi-netconfig/`, `/var/log/`
-- Copy self to `/usr/local/bin/pi-netconfig/main.py`
-- Generate systemd unit file with proper ExecStart path
-- Install unit: cp to `/etc/systemd/system/`
+- Validate venv context: `sys.prefix != sys.base_prefix`
+- Validate package installed: `import pi_netconfig` succeeds
+- Extract venv Python path: `sys.executable`
+- Create directories: `/etc/pi-netconfig/`, `/var/log/`
+- Generate systemd unit with venv Python: `ExecStart={venv_python} -m pi_netconfig.service_controller`
+- Install unit: write to `/etc/systemd/system/`
 - Enable: `systemctl daemon-reload && systemctl enable pi-netconfig`
 - Start: `systemctl start pi-netconfig`
 - Exit bootstrap mode (systemd will restart in service mode)
@@ -289,9 +293,11 @@ graph TB
 
 | Condition | Handling |
 |-----------|----------|
-| Insufficient privileges (not root) | Exit with error message: 'Installation requires root privileges' |
-| Directory creation fails | Raise InstallerError with details, rollback partial installation |
-| Systemd commands fail | Log error details, attempt manual cleanup instructions |
+| Insufficient privileges (not root) | Raise PrivilegeError: 'Installation requires root privileges' |
+| Not in virtual environment | Raise InstallerError: 'Must execute within virtual environment' |
+| Package not installed | Raise InstallerError: 'Package pi_netconfig not installed in venv' |
+| Directory creation fails | Raise FileSystemError with details, rollback partial installation |
+| Systemd commands fail | Log error details, attempt rollback |
 
 [Return to top](<#pi network configuration tool - master design>)
 
@@ -709,6 +715,17 @@ GET /api/status
 [Return to top](<#pi network configuration tool - master design>)
 
 ## Version History
+
+### v0.2.3 (2025-12-03)
+
+**Author:** William Watson
+
+**Changes:**
+- Updated per [change-0013](<../change/change-0013-installer-venv-deployment.md>): Redesigned Installer for venv-based package deployment
+- Added VenvDetector class for virtual environment validation
+- Removed script file copying (package in site-packages)
+- Updated systemd unit generation for module execution with venv Python
+- Updated directory structure to reflect venv deployment model
 
 ### v0.2.2 (2025-11-28)
 

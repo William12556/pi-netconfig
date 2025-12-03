@@ -2,12 +2,13 @@
 document_info:
   id: "design-0001"
   type: "component_design"
-  iteration: 1
+  iteration: 2
   tier: 3
   domain: "installer"
   status: "active"
   coupled_docs:
-    change_refs: []
+    change_refs:
+      - "change-0012"
     prompt_refs: []
 ---
 
@@ -34,10 +35,11 @@ Created: 2025 November 11
 
 **Project:** pi-netconfig  
 **Module:** Installer  
-**Version:** 1.0.0  
-**Date:** 2025-11-11  
+**Version:** 2.0.0  
+**Date:** 2025-12-03  
 **Author:** William Watson  
-**Master Design:** [design-0000-master.md](<design-0000-master.md>)
+**Master Design:** [design-0000-master.md](<design-0000-master.md>)  
+**Change:** [change-0012-installer-venv-deployment.md](<../change/change-0012-installer-venv-deployment.md>)
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -45,17 +47,18 @@ Created: 2025 November 11
 
 ## Module Overview
 
-**Purpose:** Self-installation mechanism that detects existing systemd service installation and configures the system on first run.
+**Purpose:** Self-installation mechanism that detects existing systemd service installation and configures the system for venv-based package deployment.
 
 **Responsibilities:**
 - Detect if systemd service already installed
-- Create required directories and files
-- Copy application to installation location
-- Generate and install systemd unit file
+- Validate venv execution context
+- Validate package installation
+- Create required directories
+- Generate venv-aware systemd unit file
 - Enable and start systemd service
 - Verify installation success
 
-**Context:** Invoked by ServiceController on first application run when systemd service not detected.
+**Context:** Invoked by ServiceController when systemd service not detected. Must execute within virtual environment where pi_netconfig package is installed.
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -65,9 +68,11 @@ Created: 2025 November 11
 
 **In Scope:**
 - Service file detection at `/etc/systemd/system/pi-netconfig.service`
-- Directory creation: `/usr/local/bin/pi-netconfig/`, `/etc/pi-netconfig/`, `/var/log/`
-- File operations: copy script to installation location
-- Systemd unit file generation
+- Virtual environment validation (sys.prefix != sys.base_prefix)
+- Package installation validation (import pi_netconfig)
+- Venv Python path extraction (sys.executable)
+- Directory creation: `/etc/pi-netconfig/`, `/var/log/`
+- Venv-aware systemd unit file generation
 - Systemd service enablement and activation
 - Root privilege verification
 - Installation rollback on failure
@@ -77,6 +82,7 @@ Created: 2025 November 11
 - Service removal/uninstallation
 - Configuration file management (handled by ConnectionManager)
 - Runtime operation (handled by other modules)
+- Script file copying (package installed via pip in site-packages)
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -86,14 +92,16 @@ Created: 2025 November 11
 
 **Technical:**
 - Requires root privileges for all operations
-- Must work with systemd (standard on Raspbian Bookworm)
+- Must execute within virtual environment
+- Must work with systemd (standard on Raspbian/Debian)
 - Must handle partial installation failures
 - Single execution model (run once, then exit)
+- Must support Python package deployment (pip install)
 
 **Implementation:**
-- Language: Python 3.11+
-- External libraries: subprocess, shutil, os, pathlib (stdlib only)
-- Standards: PEP 8 compliance, type hints
+- Language: Python 3.9+
+- External libraries: subprocess, sys, os, pathlib (stdlib only)
+- Standards: PEP 8 compliance, type hints, Debian PEP 668 compliance
 
 **Performance:**
 - Installation completion: < 30 seconds
@@ -116,14 +124,35 @@ def is_service_installed() -> bool
 ```
 - Checks for existence of `/etc/systemd/system/pi-netconfig.service`
 - Returns True if service file exists
-- Raises: InstallerError if filesystem access fails
+- No exceptions (returns False on access error)
+
+### VenvDetector Class
+
+**Purpose:** Validate virtual environment execution context and package installation
+
+**Key Methods:**
 
 ```python
-def get_current_script_path() -> Path
+def is_venv() -> bool
 ```
-- Returns absolute path of currently executing script
-- Used for self-copy operation
-- Raises: InstallerError if path cannot be determined
+- Checks if running in virtual environment
+- Returns: sys.prefix != sys.base_prefix
+- No exceptions
+
+```python
+def get_venv_python() -> Path
+```
+- Returns absolute path to venv Python interpreter
+- Returns: Path(sys.executable)
+- No exceptions
+
+```python
+def validate_package_installed() -> bool
+```
+- Validates pi_netconfig package importable
+- Attempts: import pi_netconfig
+- Returns True if import succeeds, False otherwise
+- No exceptions
 
 ### SystemdInstaller Class
 
@@ -136,30 +165,25 @@ def verify_root_privileges() -> bool
 ```
 - Checks effective user ID == 0
 - Returns True if running as root
-- No exceptions (returns False on non-root)
+- Raises: PrivilegeError if not root
 
 ```python
 def create_directories() -> None
 ```
-- Creates: `/usr/local/bin/pi-netconfig/`, `/etc/pi-netconfig/`, `/var/log/`
+- Creates: `/etc/pi-netconfig/`, `/var/log/`
 - Sets proper permissions (755 for directories)
-- Raises: InstallerError on creation failure
+- Raises: FileSystemError on creation failure
 
 ```python
-def copy_application() -> None
-```
-- Copies current script to `/usr/local/bin/pi-netconfig/main.py`
-- Sets executable permissions (755)
-- Raises: InstallerError on copy failure
-
-```python
-def generate_systemd_unit() -> str
+def generate_venv_systemd_unit(venv_python: Path) -> str
 ```
 - Returns systemd unit file content as string
 - Template includes:
   - `[Unit]` section with description and network dependency
-  - `[Service]` section with ExecStart, restart policy
+  - `[Service]` section with ExecStart using venv Python and module execution
+  - ExecStart format: {venv_python} -m pi_netconfig.service_controller
   - `[Install]` section with WantedBy=multi-user.target
+- Parameters: venv_python - Absolute path to venv Python interpreter
 - No exceptions
 
 ```python
@@ -167,33 +191,36 @@ def install_systemd_unit(unit_content: str) -> None
 ```
 - Writes unit file to `/etc/systemd/system/pi-netconfig.service`
 - Executes `systemctl daemon-reload`
-- Raises: InstallerError on write or systemctl failure
+- Raises: SystemdError on write or systemctl failure
 
 ```python
 def enable_and_start_service() -> None
 ```
 - Executes `systemctl enable pi-netconfig`
 - Executes `systemctl start pi-netconfig`
-- Raises: InstallerError on systemctl command failure
+- Raises: SystemdError on systemctl command failure
 
 ```python
 def rollback_installation() -> None
 ```
-- Removes created directories and files
+- Removes systemd service file only
+- Package remains in venv (managed by pip)
 - Best-effort cleanup (does not raise exceptions)
 - Logs cleanup actions
 
 **Processing Logic:**
 
-1. Verify root privileges → exit with error message if not root
-2. Check if service already installed → skip installation if exists
-3. Create required directories
-4. Copy application script to installation location
-5. Generate systemd unit file content
-6. Install unit file and reload systemd
-7. Enable and start service
-8. On any failure: rollback partial installation
-9. Exit with status code 0 (success) or 1 (failure)
+1. Verify root privileges → raise PrivilegeError if not root
+2. Check if service already installed → return True if exists
+3. Validate venv context → raise InstallerError if not in venv
+4. Validate package installed → raise InstallerError if not importable
+5. Get venv Python path from sys.executable
+6. Create required directories
+7. Generate venv-aware systemd unit file with extracted Python path
+8. Install unit file and reload systemd
+9. Enable and start service
+10. On any failure: rollback partial installation
+11. Return True on success, False on failure
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -214,7 +241,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/local/bin/pi-netconfig/main.py
+ExecStart={venv_python_path} -m pi_netconfig.service_controller
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
@@ -225,11 +252,21 @@ User=root
 WantedBy=multi-user.target
 ```
 
+**Template Variables:**
+- `{venv_python_path}`: Absolute path to venv Python interpreter from sys.executable
+- Example: `/opt/pi-netconfig/venv/bin/python`
+
 ### Installation Paths
 
 **Application:**
-- Source: Current script location (detected at runtime)
-- Destination: `/usr/local/bin/pi-netconfig/main.py`
+- Location: Venv site-packages (managed by pip)
+- Example: `/opt/pi-netconfig/venv/lib/python3.11/site-packages/pi_netconfig/`
+- No file copying performed by installer
+
+**Venv Python:**
+- Detected at runtime via sys.executable
+- Example: `/opt/pi-netconfig/venv/bin/python`
+- Used in systemd ExecStart
 
 **Configuration:**
 - Directory: `/etc/pi-netconfig/`
@@ -248,19 +285,24 @@ WantedBy=multi-user.target
 ### Public Functions
 
 ```python
-async def install() -> bool
+def install() -> bool
 ```
 **Purpose:** Main installation entry point  
 **Parameters:** None  
 **Returns:** True if installation successful, False otherwise  
-**Raises:** InstallerError on critical failures  
+**Raises:** 
+- PrivilegeError if not running as root
+- InstallerError if not in venv or package not installed
 
 **Processing:**
 1. Verify root privileges
-2. Check existing installation
-3. Execute installation steps
-4. Rollback on failure
-5. Return success/failure status
+2. Check existing installation (skip if exists)
+3. Validate venv context
+4. Validate package installation
+5. Extract venv Python path
+6. Execute installation steps
+7. Rollback on failure
+8. Return success/failure status
 
 ### Internal Interfaces
 
@@ -302,18 +344,23 @@ class SystemdError(InstallerError):
 
 **Insufficient Privileges:**
 - Condition: `os.geteuid() != 0`
-- Handling: Print error message, exit with code 1
+- Handling: Print error message to stderr, raise PrivilegeError
 - Message: "Installation requires root privileges. Run with sudo."
+
+**Not in Virtual Environment:**
+- Condition: `sys.prefix == sys.base_prefix`
+- Handling: Print error message to stderr, raise InstallerError
+- Message: "Installer must execute within virtual environment. Install package with pip in venv."
+
+**Package Not Installed:**
+- Condition: `import pi_netconfig` raises ImportError
+- Handling: Print error message to stderr, raise InstallerError
+- Message: "Package pi_netconfig not installed. Run: pip install pi_netconfig"
 
 **Directory Creation Fails:**
 - Condition: `os.makedirs()` raises exception
 - Handling: Raise FileSystemError, trigger rollback
 - Log: Full traceback with path details
-
-**Script Copy Fails:**
-- Condition: `shutil.copy2()` raises exception
-- Handling: Raise FileSystemError, trigger rollback
-- Log: Source and destination paths, error details
 
 **Systemd Commands Fail:**
 - Condition: `subprocess.run()` returns non-zero exit code
@@ -330,12 +377,14 @@ class SystemdError(InstallerError):
 **Level: DEBUG**
 - Each installation step start/completion
 - Directory paths created
-- File operations performed
+- Venv detection results
+- Python path extraction
 - Systemctl commands executed
 
 **Level: INFO**
 - Installation start
 - Service detection result
+- Venv validation success
 - Installation success
 
 **Level: WARNING**
@@ -344,6 +393,7 @@ class SystemdError(InstallerError):
 
 **Level: ERROR**
 - Installation step failures
+- Venv validation failures
 - Exception details with traceback
 
 **Level: CRITICAL**
@@ -358,12 +408,14 @@ class SystemdError(InstallerError):
 
 **Master Design:** [design-0000-master.md](<design-0000-master.md>)
 
+**Changes:** [change-0012-installer-venv-deployment.md](<../change/change-0012-installer-venv-deployment.md>)
+
 **Related Modules:**
 - [ServiceController](<design-0006-servicecontroller.md>) - Invokes installer on first run
 - All modules - Depend on successful installation
 
 **Dependencies:**
-- Python standard library only (subprocess, shutil, os, pathlib)
+- Python standard library only (subprocess, sys, os, pathlib)
 - Systemd (system service)
 
 [Return to Table of Contents](<#table of contents>)
@@ -374,6 +426,7 @@ class SystemdError(InstallerError):
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.0.0 | 2025-12-03 | William Watson | Redesigned for venv-based package deployment (change-0012): Added VenvDetector class, removed script copy operations, updated systemd unit for module execution |
 | 1.0.0 | 2025-11-11 | William Watson | Initial module design extracted from master |
 
 [Return to Table of Contents](<#table of contents>)

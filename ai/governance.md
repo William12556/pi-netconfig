@@ -107,6 +107,16 @@
     - Claude Desktop: Documents findings in config-audit-NNNN-YYYY-MM-DD.md
     - Claude Desktop: Stores configuration audits in workspace/audit/
     - Critical deviations: Creates issues via P04 for remediation
+  - 1.1.14 Logging Standards
+    - Generated applications implement environment-based log level control
+    - Debug mode enables verbose logging for development and testing
+    - Normal mode restricts logging to informational events only
+    - Flat file format recommended: timestamp level logger message
+    - Centralized log location per application requirements
+    - Log rotation policy prevents disk exhaustion
+    - Test environments use debug mode for comprehensive logging
+    - Production environments use normal mode for operational efficiency
+    - Log artifacts preserved for failure analysis
   - 1.1.12 Versioning
     - All versioning is handled via GitHub
     - Project uses Semantic Versioning per https://semver.org
@@ -154,6 +164,16 @@
       - No modifications permitted to closed documents
       - New work requires new document with new sequence number
       - Reopening closed work: Create new issue referencing closed documents
+  - 1.1.14 Logging Standards
+    - Generated applications implement environment-based log level control
+    - Debug mode enables verbose logging for development and testing
+    - Normal mode restricts logging to informational events only
+    - Flat file format recommended: timestamp level logger message
+    - Centralized log location per application requirements
+    - Log rotation policy prevents disk exhaustion
+    - Test environments use debug mode for comprehensive logging
+    - Production environments use normal mode for operational efficiency
+    - Log artifacts preserved for failure analysis
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -3574,6 +3594,7 @@ flowchart TD
 | 4.1 | 2025-11-28 | Added P08 1.9.9 Audit Closure with closure criteria, process, archival procedures, and reopening constraints; added workspace/audit/closed/ to P01 1.2.6 folder structure; added audit closure criteria to P00 1.1.13.3 and audit closed subfolder to P00 1.1.13.5 |
 | 4.2 | 2025-11-30 | Enhanced P06 Test with progressive validation strategy (1.7.15), test type selection criteria (1.7.16), platform execution specifications (1.7.17); updated workflow flowchart to incorporate progressive validation phases and platform-specific testing requirements |
 | 4.3 | 2025-12-03 | Added workspace/proposal/ directory: Added proposal document class to P00 1.1.10; added workspace/proposal/ and workspace/proposal/closed/ to P01 1.2.6 folder structure; added proposal directories to P01 1.2.2 .gitignore |
+| 4.4 | 2025-12-03 | Added P00 1.1.14 Logging Standards: environment-based log level control, flat file format, rotation policy, test/production mode separation |
 
 ---
 [Return to Table of Contents](<#table of contents>)
