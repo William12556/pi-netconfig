@@ -86,17 +86,9 @@ deliverable:
     - "Modify src/pi_netconfig/main.py only"
     - "Add import: logging.handlers"
     - "Replace configure_logging() function"
-    - "Create completion document"
   files:
     - path: "src/pi_netconfig/main.py"
       content: "Modified configure_logging() function with new imports"
-  completion_document:
-    path: "workspace/prompt/prompt-0012-completion.md"
-    required_fields:
-      - "timestamp"
-      - "files_modified: [src/pi_netconfig/main.py]"
-      - "status: SUCCESS or FAILURE"
-      - "notes: [any warnings]"
 
 success_criteria:
   - "Import logging.handlers added"

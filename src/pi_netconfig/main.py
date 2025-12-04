@@ -15,6 +15,7 @@ Copyright (c) 2025 William Watson. Licensed under the MIT License.
 
 import asyncio
 import logging
+import logging.handlers
 import os
 import signal
 import sys
@@ -114,49 +115,59 @@ def configure_logging(mode: str) -> None:
     Args:
         mode: Execution mode ('bootstrap', 'service', 'manual')
     
-    Raises:
-        LoggingConfigurationError: If log file cannot be created/written
-    
     Configuration:
-        - File handler: /var/log/pi-netconfig.log (INFO level)
-        - Console handler: stdout (DEBUG level, manual mode only)
-        - Format: timestamp - logger - level - message
+        - Debug mode (PI_NETCONFIG_DEBUG=true): INFO and ERROR
+        - Normal mode (PI_NETCONFIG_DEBUG=false): INFO only
+        - File: /var/log/pi-netconfig.log (10MB, 3 backups)
+        - Console: Manual mode only, same level as file
+        - Format: timestamp level logger message
     """
     try:
-        # Create log directory if needed
+        # Determine log filtering from environment
+        debug_mode = os.environ.get('PI_NETCONFIG_DEBUG', 'true').lower() == 'true'
+        
+        # Create log directory
         log_path = Path('/var/log/pi-netconfig.log')
         log_path.parent.mkdir(parents=True, exist_ok=True)
         
         # Configure root logger
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.DEBUG)
+        root_logger.setLevel(logging.INFO)
         
         # Remove existing handlers
         for handler in root_logger.handlers[:]:
             root_logger.removeHandler(handler)
         
-        # File handler (all modes)
-        try:
-            file_handler = logging.FileHandler(log_path)
+        # File handler with rotation and filtering
+        file_handler = logging.handlers.RotatingFileHandler(
+            log_path,
+            maxBytes=10 * 1024 * 1024,  # 10MB
+            backupCount=3
+        )
+        
+        # Normal mode: INFO only; Debug mode: INFO and ERROR
+        if debug_mode:
             file_handler.setLevel(logging.INFO)
-            file_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            )
-            file_handler.setFormatter(file_formatter)
-            root_logger.addHandler(file_handler)
-            logger.info(f"File logging configured: {log_path}")
-        except (OSError, PermissionError) as e:
-            # If file logging fails, we can't log this error to file
-            # Fall back to stderr
-            print(f"ERROR: Cannot write to log file {log_path}: {e}", file=sys.stderr)
-            raise LoggingConfigurationError(f"Cannot configure file logging: {e}")
+        else:
+            file_handler.addFilter(lambda record: record.levelno == logging.INFO)
+        
+        file_formatter = logging.Formatter(
+            '%(asctime)s %(levelname)s %(name)s %(message)s'
+        )
+        file_handler.setFormatter(file_formatter)
+        root_logger.addHandler(file_handler)
+        
+        logger.info(f"Logging configured: debug_mode={debug_mode}, level={logging.getLevelName(logging.INFO)}")
         
         # Console handler (manual mode only)
         if mode == 'manual':
             console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setLevel(logging.DEBUG)
+            if debug_mode:
+                console_handler.setLevel(logging.INFO)
+            else:
+                console_handler.addFilter(lambda record: record.levelno == logging.INFO)
             console_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+                '%(asctime)s %(levelname)s %(name)s %(message)s'
             )
             console_handler.setFormatter(console_formatter)
             root_logger.addHandler(console_handler)
@@ -164,12 +175,9 @@ def configure_logging(mode: str) -> None:
         
         logger.info("Logging configuration complete")
     
-    except LoggingConfigurationError:
-        raise
     except Exception as e:
-        logger.error(f"Unexpected error configuring logging: {e}")
-        logger.debug(traceback.format_exc())
-        raise LoggingConfigurationError(f"Logging configuration failed: {e}")
+        print(f"ERROR: Cannot configure logging: {e}", file=sys.stderr)
+        raise LoggingConfigurationError(f"Cannot configure logging: {e}")
 
 
 def signal_handler(signum: int, frame) -> None:

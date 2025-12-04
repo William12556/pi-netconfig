@@ -200,17 +200,9 @@ deliverable:
     - Save generated code directly to src/pi_netconfig/installer.py (overwrite existing)
     - Maintain existing exception class definitions
     - Update all class and function implementations
-    - Create completion document in workspace/prompt/
   files:
     - path: src/pi_netconfig/installer.py
       content: "Complete refactored installer module"
-  completion_document:
-    path: workspace/prompt/prompt-0013-completion.md
-    required_fields:
-      - "timestamp: ISO format"
-      - "files_created: [src/pi_netconfig/installer.py]"
-      - "status: SUCCESS or FAILURE"
-      - "notes: Any warnings or implementation notes"
 
 success_criteria:
   - VenvDetector class implemented with is_venv(), get_venv_python(), validate_package_installed()
