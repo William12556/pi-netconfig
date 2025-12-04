@@ -11,6 +11,7 @@ Traceability: workspace/trace/trace-0001-requirements-traceability-matrix.md
 Copyright (c) 2025 William Watson. Licensed under the MIT License.
 """
 
+import argparse
 import os
 import subprocess
 import sys
@@ -323,3 +324,27 @@ def install() -> bool:
 # INTEGRATION: Import install() from installer module. Call from ServiceController
 # when service not detected. Expects root privileges and venv execution context.
 # Returns bool for success/failure.
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Pi-Netconfig installer - systemd service installation'
+    )
+    parser.add_argument('--install', action='store_true', required=True,
+                        help='Execute installation')
+    parser.add_argument('--systemd-mode', action='store_true', required=True,
+                        help='Install as systemd service')
+    
+    args = parser.parse_args()
+    
+    try:
+        result = install()
+        if result:
+            print('Installation complete. Service enabled and started.')
+            sys.exit(0)
+        else:
+            print('Installation failed. See errors above.')
+            sys.exit(1)
+    except Exception as e:
+        print(f'Installation failed: {e}')
+        sys.exit(1)
