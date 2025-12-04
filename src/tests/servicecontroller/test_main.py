@@ -1,4 +1,4 @@
-"""Unit tests for main.py (ServiceController).
+"""Unit tests for pi_netconfig.main.py (ServiceController).
 
 Tests execution mode detection, logging, signal handling, and service lifecycle.
 """
@@ -12,7 +12,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
 
-from main import (
+from pi_netconfig.main import (
     detect_execution_mode,
     verify_root_privileges,
     configure_logging,
@@ -32,24 +32,24 @@ class TestExecutionModeDetection:
     
     def test_detect_bootstrap_mode_when_service_not_installed(self):
         """Returns 'bootstrap' when service file doesn't exist."""
-        with patch('main.InstallationDetector.is_service_installed', return_value=False):
+        with patch('pi_netconfig.main.InstallationDetector.is_service_installed', return_value=False):
             assert detect_execution_mode() == 'bootstrap'
     
     def test_detect_service_mode_when_systemd_context(self):
         """Returns 'service' when INVOCATION_ID present."""
-        with patch('main.InstallationDetector.is_service_installed', return_value=True), \
+        with patch('pi_netconfig.main.InstallationDetector.is_service_installed', return_value=True), \
              patch.dict('os.environ', {'INVOCATION_ID': 'test-id'}):
             assert detect_execution_mode() == 'service'
     
     def test_detect_manual_mode_when_service_installed_no_systemd(self):
         """Returns 'manual' when service exists but no INVOCATION_ID."""
-        with patch('main.InstallationDetector.is_service_installed', return_value=True), \
+        with patch('pi_netconfig.main.InstallationDetector.is_service_installed', return_value=True), \
              patch.dict('os.environ', {}, clear=True):
             assert detect_execution_mode() == 'manual'
     
     def test_detect_mode_returns_manual_on_exception(self):
         """Returns 'manual' as safe fallback on error."""
-        with patch('main.InstallationDetector.is_service_installed', side_effect=Exception("Error")):
+        with patch('pi_netconfig.main.InstallationDetector.is_service_installed', side_effect=Exception("Error")):
             assert detect_execution_mode() == 'manual'
 
 
@@ -136,14 +136,14 @@ class TestSignalHandling:
         """Signal handler sets global shutdown event."""
         mock_event = Mock()
         
-        with patch('main.shutdown_event', mock_event):
+        with patch('pi_netconfig.main.shutdown_event', mock_event):
             signal_handler(signal.SIGTERM, None)
             
             mock_event.set.assert_called_once()
     
     def test_signal_handler_exits_if_no_event(self):
         """Signal handler calls sys.exit if event not initialized."""
-        with patch('main.shutdown_event', None), \
+        with patch('pi_netconfig.main.shutdown_event', None), \
              patch('sys.exit') as mock_exit:
             
             signal_handler(signal.SIGTERM, None)
@@ -176,7 +176,7 @@ class TestGracefulShutdown:
         mock_monitor = Mock()
         mock_monitor.shutdown = Mock(return_value=asyncio.sleep(0))
         
-        with patch('main.state_monitor', mock_monitor):
+        with patch('pi_netconfig.main.state_monitor', mock_monitor):
             await graceful_shutdown()
             
             mock_monitor.shutdown.assert_called_once()
@@ -189,13 +189,13 @@ class TestGracefulShutdown:
             await asyncio.sleep(20)
         mock_monitor.shutdown = slow_shutdown
         
-        with patch('main.state_monitor', mock_monitor):
+        with patch('pi_netconfig.main.state_monitor', mock_monitor):
             await graceful_shutdown()  # Should timeout but not raise
     
     @pytest.mark.asyncio
     async def test_graceful_shutdown_handles_no_monitor(self):
         """Handles case where state_monitor is None."""
-        with patch('main.state_monitor', None):
+        with patch('pi_netconfig.main.state_monitor', None):
             await graceful_shutdown()  # Should not raise
 
 
@@ -212,8 +212,8 @@ class TestRunService:
         
         mock_graceful_shutdown = AsyncMock()
         
-        with patch('main.StateMonitor', return_value=mock_monitor), \
-             patch('main.graceful_shutdown', mock_graceful_shutdown), \
+        with patch('pi_netconfig.main.StateMonitor', return_value=mock_monitor), \
+             patch('pi_netconfig.main.graceful_shutdown', mock_graceful_shutdown), \
              patch('asyncio.Event') as mock_event_class:
             
             mock_event = Mock()
@@ -234,8 +234,8 @@ class TestRunService:
         
         mock_graceful_shutdown = AsyncMock()
         
-        with patch('main.StateMonitor', return_value=mock_monitor) as mock_class, \
-             patch('main.graceful_shutdown', mock_graceful_shutdown), \
+        with patch('pi_netconfig.main.StateMonitor', return_value=mock_monitor) as mock_class, \
+             patch('pi_netconfig.main.graceful_shutdown', mock_graceful_shutdown), \
              patch('asyncio.Event') as mock_event_class:
             
             mock_event = Mock()
@@ -249,7 +249,7 @@ class TestRunService:
     @pytest.mark.asyncio
     async def test_run_service_raises_on_critical_failure(self):
         """Raises ServiceControllerError on critical failure."""
-        with patch('main.StateMonitor', side_effect=Exception("Critical error")):
+        with patch('pi_netconfig.main.StateMonitor', side_effect=Exception("Critical error")):
             with pytest.raises(ServiceControllerError):
                 await run_service()
 
@@ -259,9 +259,9 @@ class TestMainFunction:
     
     def test_main_bootstrap_mode_calls_installer(self):
         """Bootstrap mode invokes install() function."""
-        with patch('main.detect_execution_mode', return_value='bootstrap'), \
-             patch('main.verify_root_privileges', return_value=True), \
-             patch('main.install', return_value=True) as mock_install:
+        with patch('pi_netconfig.main.detect_execution_mode', return_value='bootstrap'), \
+             patch('pi_netconfig.main.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.main.install', return_value=True) as mock_install:
             
             result = main()
             
@@ -270,8 +270,8 @@ class TestMainFunction:
     
     def test_main_bootstrap_mode_returns_error_without_root(self):
         """Bootstrap mode returns 1 without root privileges."""
-        with patch('main.detect_execution_mode', return_value='bootstrap'), \
-             patch('main.verify_root_privileges', return_value=False):
+        with patch('pi_netconfig.main.detect_execution_mode', return_value='bootstrap'), \
+             patch('pi_netconfig.main.verify_root_privileges', return_value=False):
             
             result = main()
             
@@ -279,10 +279,10 @@ class TestMainFunction:
     
     def test_main_service_mode_configures_logging(self):
         """Service mode configures logging before startup."""
-        with patch('main.detect_execution_mode', return_value='service'), \
-             patch('main.configure_logging') as mock_logging, \
-             patch('main.verify_root_privileges', return_value=True), \
-             patch('main.register_signal_handlers'), \
+        with patch('pi_netconfig.main.detect_execution_mode', return_value='service'), \
+             patch('pi_netconfig.main.configure_logging') as mock_logging, \
+             patch('pi_netconfig.main.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.main.register_signal_handlers'), \
              patch('asyncio.run'):
             
             main()
@@ -291,9 +291,9 @@ class TestMainFunction:
     
     def test_main_service_mode_verifies_root(self):
         """Service mode verifies root privileges."""
-        with patch('main.detect_execution_mode', return_value='service'), \
-             patch('main.configure_logging'), \
-             patch('main.verify_root_privileges', return_value=False):
+        with patch('pi_netconfig.main.detect_execution_mode', return_value='service'), \
+             patch('pi_netconfig.main.configure_logging'), \
+             patch('pi_netconfig.main.verify_root_privileges', return_value=False):
             
             result = main()
             
@@ -301,10 +301,10 @@ class TestMainFunction:
     
     def test_main_service_mode_starts_event_loop(self):
         """Service mode starts asyncio event loop."""
-        with patch('main.detect_execution_mode', return_value='service'), \
-             patch('main.configure_logging'), \
-             patch('main.verify_root_privileges', return_value=True), \
-             patch('main.register_signal_handlers'), \
+        with patch('pi_netconfig.main.detect_execution_mode', return_value='service'), \
+             patch('pi_netconfig.main.configure_logging'), \
+             patch('pi_netconfig.main.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.main.register_signal_handlers'), \
              patch('asyncio.run') as mock_run:
             
             main()
@@ -313,10 +313,10 @@ class TestMainFunction:
     
     def test_main_handles_keyboard_interrupt(self):
         """Handles KeyboardInterrupt gracefully."""
-        with patch('main.detect_execution_mode', return_value='service'), \
-             patch('main.configure_logging'), \
-             patch('main.verify_root_privileges', return_value=True), \
-             patch('main.register_signal_handlers'), \
+        with patch('pi_netconfig.main.detect_execution_mode', return_value='service'), \
+             patch('pi_netconfig.main.configure_logging'), \
+             patch('pi_netconfig.main.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.main.register_signal_handlers'), \
              patch('asyncio.run', side_effect=KeyboardInterrupt()):
             
             result = main()
@@ -325,10 +325,10 @@ class TestMainFunction:
     
     def test_main_returns_error_on_service_controller_error(self):
         """Returns 1 on ServiceControllerError."""
-        with patch('main.detect_execution_mode', return_value='service'), \
-             patch('main.configure_logging'), \
-             patch('main.verify_root_privileges', return_value=True), \
-             patch('main.register_signal_handlers', side_effect=ServiceControllerError("Error")):
+        with patch('pi_netconfig.main.detect_execution_mode', return_value='service'), \
+             patch('pi_netconfig.main.configure_logging'), \
+             patch('pi_netconfig.main.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.main.register_signal_handlers', side_effect=ServiceControllerError("Error")):
             
             result = main()
             
@@ -336,7 +336,7 @@ class TestMainFunction:
     
     def test_main_returns_error_on_unexpected_exception(self):
         """Returns 1 on unexpected exception."""
-        with patch('main.detect_execution_mode', side_effect=Exception("Unexpected")):
+        with patch('pi_netconfig.main.detect_execution_mode', side_effect=Exception("Unexpected")):
             result = main()
             
             assert result == 1

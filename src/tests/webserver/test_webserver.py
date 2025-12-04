@@ -1,7 +1,7 @@
 """
-Unit tests for webserver.py module
+Unit tests for pi_netconfig.webserver.py module
 
-Test Specification: workspace/test/test-0005-webserver.md
+Test Specification: workspace/test/test-0005-pi_netconfig.webserver.md
 Requirements: FR-050 through FR-055
 Coverage Target: 80%
 """
@@ -16,7 +16,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
 
-from webserver import (
+from pi_netconfig.webserver import (
     ConfigHTTPHandler,
     ThreadedHTTPServer,
     WebServerManager,
@@ -232,7 +232,7 @@ class TestWebServerManager:
         """start_server() creates ThreadedHTTPServer."""
         manager = WebServerManager(port=8080)
         
-        with patch('webserver.ThreadedHTTPServer') as mock_server:
+        with patch('pi_netconfig.webserver.ThreadedHTTPServer') as mock_server:
             mock_instance = Mock()
             mock_server.return_value = mock_instance
             
@@ -244,7 +244,7 @@ class TestWebServerManager:
         """start_server() starts server in daemon thread."""
         manager = WebServerManager(port=8080)
         
-        with patch('webserver.ThreadedHTTPServer'), \
+        with patch('pi_netconfig.webserver.ThreadedHTTPServer'), \
              patch('threading.Thread') as mock_thread:
             
             mock_instance = Mock()
@@ -269,7 +269,7 @@ class TestWebServerManager:
         """start_server() raises PortInUseError if port taken."""
         manager = WebServerManager(port=8080)
         
-        with patch('webserver.ThreadedHTTPServer', side_effect=OSError("Address in use")):
+        with patch('pi_netconfig.webserver.ThreadedHTTPServer', side_effect=OSError("Address in use")):
             with pytest.raises(PortInUseError):
                 manager.start_server()
     
@@ -326,8 +326,8 @@ class TestModuleFunctions:
     
     def test_start_server_creates_manager_and_starts(self):
         """start_server() creates WebServerManager and starts."""
-        with patch('webserver._server_manager', None), \
-             patch('webserver.WebServerManager') as mock_manager_class:
+        with patch('pi_netconfig.webserver._server_manager', None), \
+             patch('pi_netconfig.webserver.WebServerManager') as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
             
@@ -338,8 +338,8 @@ class TestModuleFunctions:
     
     def test_start_server_uses_default_port(self):
         """start_server() defaults to port 8080."""
-        with patch('webserver._server_manager', None), \
-             patch('webserver.WebServerManager') as mock_manager_class:
+        with patch('pi_netconfig.webserver._server_manager', None), \
+             patch('pi_netconfig.webserver.WebServerManager') as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
             
@@ -349,8 +349,8 @@ class TestModuleFunctions:
     
     def test_start_server_raises_port_in_use_error(self):
         """start_server() propagates PortInUseError."""
-        with patch('webserver._server_manager', None), \
-             patch('webserver.WebServerManager') as mock_manager_class:
+        with patch('pi_netconfig.webserver._server_manager', None), \
+             patch('pi_netconfig.webserver.WebServerManager') as mock_manager_class:
             mock_manager = Mock()
             mock_manager.start_server = Mock(side_effect=PortInUseError("Port taken"))
             mock_manager_class.return_value = mock_manager
@@ -362,14 +362,14 @@ class TestModuleFunctions:
         """stop_server() stops active WebServerManager."""
         mock_manager = Mock()
         
-        with patch('webserver._server_manager', mock_manager):
+        with patch('pi_netconfig.webserver._server_manager', mock_manager):
             stop_server()
             
             mock_manager.stop_server.assert_called_once()
     
     def test_stop_server_handles_no_manager(self):
         """stop_server() handles case where no manager exists."""
-        with patch('webserver._server_manager', None):
+        with patch('pi_netconfig.webserver._server_manager', None):
             # Should not raise
             stop_server()
     
@@ -378,18 +378,18 @@ class TestModuleFunctions:
         mock_manager = Mock()
         mock_manager.is_running = Mock(return_value=True)
         
-        with patch('webserver._server_manager', mock_manager):
+        with patch('pi_netconfig.webserver._server_manager', mock_manager):
             assert is_running() is True
     
     def test_is_running_returns_false_when_no_manager(self):
         """is_running() returns False when no manager."""
-        with patch('webserver._server_manager', None):
+        with patch('pi_netconfig.webserver._server_manager', None):
             assert is_running() is False
     
     def test_module_functions_thread_safe(self):
         """Module functions use lock for thread safety."""
-        with patch('webserver._manager_lock') as mock_lock, \
-             patch('webserver._server_manager', None):
+        with patch('pi_netconfig.webserver._manager_lock') as mock_lock, \
+             patch('pi_netconfig.webserver._server_manager', None):
             
             stop_server()
             

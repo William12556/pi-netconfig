@@ -12,8 +12,8 @@ Issue documents using T03 Issue template.
 | ID | Title | Status | Severity | Module |
 |----|-------|--------|----------|--------|
 | [issue-0007](issue-0007-statemonitor-async-test-timing.md) | StateMonitor async test timing race condition | open | high | StateMonitor |
-| [issue-0012](issue-0012-logging_configuration_enhancement.md) | Logging configuration enhancement | open | medium | Multiple |
-| [issue-0013](issue-0013-installer-venv-incompatibility.md) | Installer venv incompatibility | open | critical | Installer |
+| [issue-0012](issue-0017-logging_configuration_enhancement.md) | Logging configuration enhancement | open | medium | Multiple |
+| [issue-0013](issue-0013-installer-venv-deployment.md) | Installer venv incompatibility | open | critical | Installer |
 
 ## Closed Issues
 

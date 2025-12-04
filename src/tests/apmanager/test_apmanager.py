@@ -11,7 +11,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
 
-from apmanager import (
+from pi_netconfig.apmanager import (
     AccessPoint,
     activate_ap,
     deactivate_ap,
@@ -27,7 +27,7 @@ from apmanager import (
 @pytest.fixture
 def mock_nmcli():
     """Mock nmcli calls before any AccessPoint instantiation."""
-    with patch('apmanager.check_output') as mock:
+    with patch('pi_netconfig.apmanager.check_output') as mock:
         device_output = b"DEVICE  TYPE      STATE\nwlan0   wifi      connected\n"
         mac_output = b"GENERAL.HWADDR:        AA:BB:CC:DD:EE:FF\n"
         mock.side_effect = [device_output, mac_output]
@@ -37,7 +37,7 @@ def mock_nmcli():
 @pytest.fixture
 def mock_nmcli_no_wifi():
     """Mock nmcli calls with no WiFi interface."""
-    with patch('apmanager.check_output') as mock:
+    with patch('pi_netconfig.apmanager.check_output') as mock:
         device_output = b"DEVICE  TYPE      STATE\neth0    ethernet  connected\n"
         mock.return_value = device_output
         yield mock
@@ -46,7 +46,7 @@ def mock_nmcli_no_wifi():
 @pytest.fixture
 def mock_nmcli_extended():
     """Mock nmcli calls for tests requiring additional subprocess calls."""
-    with patch('apmanager.check_output') as mock:
+    with patch('pi_netconfig.apmanager.check_output') as mock:
         device_output = b"DEVICE  TYPE      STATE\nwlan0   wifi      connected\n"
         mac_output = b"GENERAL.HWADDR:        AA:BB:CC:DD:EE:FF\n"
         # Default to success for additional calls
@@ -57,7 +57,7 @@ def mock_nmcli_extended():
 @pytest.fixture
 def mock_nmcli_profile_creation_fail():
     """Mock nmcli calls with profile creation failure."""
-    with patch('apmanager.check_output') as mock:
+    with patch('pi_netconfig.apmanager.check_output') as mock:
         device_output = b"DEVICE  TYPE      STATE\nwlan0   wifi      connected\n"
         mac_output = b"GENERAL.HWADDR:        AA:BB:CC:DD:EE:FF\n"
         mock.side_effect = [device_output, mac_output, CalledProcessError(1, 'nmcli')]
@@ -67,7 +67,7 @@ def mock_nmcli_profile_creation_fail():
 @pytest.fixture
 def mock_nmcli_activation_fail():
     """Mock nmcli calls with activation failure."""
-    with patch('apmanager.check_output') as mock:
+    with patch('pi_netconfig.apmanager.check_output') as mock:
         device_output = b"DEVICE  TYPE      STATE\nwlan0   wifi      connected\n"
         mac_output = b"GENERAL.HWADDR:        AA:BB:CC:DD:EE:FF\n"
         mock.side_effect = [device_output, mac_output, CalledProcessError(1, 'nmcli')]
@@ -113,7 +113,7 @@ class TestInterfaceDetection:
     
     def test_get_wifi_interface_raises_on_nmcli_failure(self):
         """Raises InterfaceDetectionError on nmcli failure."""
-        with patch('apmanager.check_output') as mock_check:
+        with patch('pi_netconfig.apmanager.check_output') as mock_check:
             mock_check.side_effect = CalledProcessError(1, 'nmcli')
             with pytest.raises(InterfaceDetectionError):
                 AccessPoint()
@@ -207,7 +207,7 @@ class TestAPActivation:
         device_output = b"DEVICE  TYPE  STATE\nwlan0   wifi  connected\n"
         mac_output = b"GENERAL.HWADDR:        AA:BB:CC:DD:EE:FF\n"
         
-        with patch('apmanager.check_output') as mock_check:
+        with patch('pi_netconfig.apmanager.check_output') as mock_check:
             mock_check.side_effect = [device_output, mac_output, CalledProcessError(1, 'nmcli')]
             ap = AccessPoint()
             
@@ -249,7 +249,7 @@ class TestModuleFunctions:
         device_output = b"DEVICE  TYPE  STATE\nwlan0   wifi  connected\n"
         mac_output = b"GENERAL.HWADDR:        AA:BB:CC:DD:EE:FF\n"
         
-        with patch('apmanager.check_output') as mock_check:
+        with patch('pi_netconfig.apmanager.check_output') as mock_check:
             mock_check.side_effect = [device_output, mac_output, CalledProcessError(1, 'nmcli'), b'', b'', b'']
             result = activate_ap()
             

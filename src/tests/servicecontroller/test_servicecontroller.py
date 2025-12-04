@@ -1,5 +1,5 @@
 """
-Unit tests for main.py module
+Unit tests for pi_netconfig.main.py module
 
 Test Specification: workspace/test/test-0006-servicecontroller.md
 Requirements: FR-023, FR-070-074
@@ -18,7 +18,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
 
-from main import (
+from pi_netconfig.main import (
     detect_execution_mode,
     verify_root_privileges,
     configure_logging,
@@ -34,7 +34,7 @@ from main import (
 class TestExecutionModeDetection:
     """Test execution mode detection logic."""
     
-    @patch('main.InstallationDetector.is_service_installed')
+    @patch('pi_netconfig.main.InstallationDetector.is_service_installed')
     def test_detect_execution_mode_returns_bootstrap_when_not_installed(self, mock_is_installed):
         """TC-001: Verify detect_execution_mode returns 'bootstrap' when service not installed."""
         mock_is_installed.return_value = False
@@ -44,7 +44,7 @@ class TestExecutionModeDetection:
         assert mode == 'bootstrap'
     
     @patch.dict('os.environ', {'INVOCATION_ID': 'test123'})
-    @patch('main.InstallationDetector.is_service_installed')
+    @patch('pi_netconfig.main.InstallationDetector.is_service_installed')
     def test_detect_execution_mode_returns_service_when_under_systemd(self, mock_is_installed):
         """TC-002: Verify detect_execution_mode returns 'service' when under systemd."""
         mock_is_installed.return_value = True
@@ -54,7 +54,7 @@ class TestExecutionModeDetection:
         assert mode == 'service'
     
     @patch.dict('os.environ', {}, clear=True)
-    @patch('main.InstallationDetector.is_service_installed')
+    @patch('pi_netconfig.main.InstallationDetector.is_service_installed')
     def test_detect_execution_mode_returns_manual_when_installed_but_not_systemd(self, mock_is_installed):
         """TC-003: Verify detect_execution_mode returns 'manual' when installed but not systemd."""
         mock_is_installed.return_value = True
@@ -134,7 +134,7 @@ class TestSignalHandling:
         """TC-009: Verify signal_handler sets shutdown_event."""
         mock_event = Mock()
         
-        with patch('main.shutdown_event', mock_event):
+        with patch('pi_netconfig.main.shutdown_event', mock_event):
             signal_handler(signal.SIGTERM, None)
             
             mock_event.set.assert_called_once()
@@ -160,7 +160,7 @@ class TestGracefulShutdown:
         mock_state_monitor = Mock()
         mock_state_monitor.shutdown = AsyncMock()
         
-        with patch('main.state_monitor', mock_state_monitor):
+        with patch('pi_netconfig.main.state_monitor', mock_state_monitor):
             await graceful_shutdown()
             
             mock_state_monitor.shutdown.assert_called_once()
@@ -172,7 +172,7 @@ class TestGracefulShutdown:
         mock_state_monitor.shutdown = AsyncMock(side_effect=asyncio.TimeoutError())
         
         # Should not raise an exception
-        with patch('main.state_monitor', mock_state_monitor), \
+        with patch('pi_netconfig.main.state_monitor', mock_state_monitor), \
              patch('asyncio.wait_for', side_effect=asyncio.TimeoutError()):
             await graceful_shutdown()
 
@@ -183,8 +183,8 @@ class TestRunService:
     @pytest.mark.asyncio
     async def test_run_service_creates_state_monitor_and_waits_for_shutdown(self):
         """TC-013: Verify run_service creates StateMonitor and waits for shutdown."""
-        with patch('main.StateMonitor') as mock_state_monitor_class, \
-             patch('main.graceful_shutdown', return_value=asyncio.sleep(0)), \
+        with patch('pi_netconfig.main.StateMonitor') as mock_state_monitor_class, \
+             patch('pi_netconfig.main.graceful_shutdown', return_value=asyncio.sleep(0)), \
              patch('asyncio.Event') as mock_event_class:
             
             mock_state_monitor = Mock()
@@ -203,9 +203,9 @@ class TestRunService:
 class TestMainFunction:
     """Test main entry point functionality."""
     
-    @patch('main.install')
-    @patch('main.verify_root_privileges')
-    @patch('main.detect_execution_mode')
+    @patch('pi_netconfig.main.install')
+    @patch('pi_netconfig.main.verify_root_privileges')
+    @patch('pi_netconfig.main.detect_execution_mode')
     def test_main_calls_install_in_bootstrap_mode(self, mock_detect, mock_verify, mock_install):
         """TC-014: Verify main() calls install() in bootstrap mode."""
         mock_detect.return_value = 'bootstrap'
@@ -217,9 +217,9 @@ class TestMainFunction:
         assert exit_code == 0
         mock_install.assert_called_once()
     
-    @patch('main.install')
-    @patch('main.verify_root_privileges')
-    @patch('main.detect_execution_mode')
+    @patch('pi_netconfig.main.install')
+    @patch('pi_netconfig.main.verify_root_privileges')
+    @patch('pi_netconfig.main.detect_execution_mode')
     def test_main_returns_one_when_install_fails(self, mock_detect, mock_verify, mock_install):
         """TC-015: Verify main() returns 1 when install() fails."""
         mock_detect.return_value = 'bootstrap'
@@ -230,10 +230,10 @@ class TestMainFunction:
         
         assert exit_code == 1
     
-    @patch('main.register_signal_handlers')
-    @patch('main.configure_logging')
-    @patch('main.verify_root_privileges')
-    @patch('main.detect_execution_mode')
+    @patch('pi_netconfig.main.register_signal_handlers')
+    @patch('pi_netconfig.main.configure_logging')
+    @patch('pi_netconfig.main.verify_root_privileges')
+    @patch('pi_netconfig.main.detect_execution_mode')
     def test_main_runs_service_in_service_mode(self, mock_detect, mock_verify, mock_configure, mock_register):
         """TC-016: Verify main() runs service in service mode."""
         mock_detect.return_value = 'service'
@@ -246,7 +246,7 @@ class TestMainFunction:
             mock_register.assert_called_once()
             mock_asyncio_run.assert_called_once()
     
-    @patch('main.verify_root_privileges')
+    @patch('pi_netconfig.main.verify_root_privileges')
     def test_main_returns_one_without_root_privileges(self, mock_verify):
         """TC-017: Verify main() returns 1 without root privileges."""
         mock_verify.return_value = False

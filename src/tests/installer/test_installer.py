@@ -1,7 +1,7 @@
 """
-Unit tests for installer.py module
+Unit tests for pi_netconfig.installer.py module
 
-Test Specification: workspace/test/test-0002-installer.md
+Test Specification: workspace/test/test-0002-pi_netconfig.installer.md
 Requirements: FR-001 through FR-007
 Coverage Target: 80%
 """
@@ -16,7 +16,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
 
-from installer import (
+from pi_netconfig.installer import (
     InstallationDetector,
     SystemdInstaller,
     install,
@@ -159,38 +159,38 @@ class TestInstallFunction:
     
     def test_install_skips_when_already_installed(self):
         """Installation skipped if service already exists."""
-        with patch('installer.InstallationDetector.is_service_installed', return_value=True):
+        with patch('pi_netconfig.installer.InstallationDetector.is_service_installed', return_value=True):
             result = install()
             assert result is True
     
     def test_install_fails_without_root_privileges(self):
         """Installation fails for non-root user."""
-        with patch('installer.InstallationDetector.is_service_installed', return_value=False), \
-             patch('installer.SystemdInstaller.verify_root_privileges', side_effect=PrivilegeError("Need root")):
+        with patch('pi_netconfig.installer.InstallationDetector.is_service_installed', return_value=False), \
+             patch('pi_netconfig.installer.SystemdInstaller.verify_root_privileges', side_effect=PrivilegeError("Need root")):
             
             result = install()
             assert result is False
     
     def test_install_succeeds_with_all_steps(self):
         """Complete installation succeeds."""
-        with patch('installer.InstallationDetector.is_service_installed', return_value=False), \
-             patch('installer.SystemdInstaller.verify_root_privileges', return_value=True), \
-             patch('installer.SystemdInstaller.create_directories'), \
-             patch('installer.InstallationDetector.get_current_script_path', return_value=Path('/test')), \
-             patch('installer.SystemdInstaller.copy_application'), \
-             patch('installer.SystemdInstaller.generate_systemd_unit', return_value='unit content'), \
-             patch('installer.SystemdInstaller.install_systemd_unit'), \
-             patch('installer.SystemdInstaller.enable_and_start_service'):
+        with patch('pi_netconfig.installer.InstallationDetector.is_service_installed', return_value=False), \
+             patch('pi_netconfig.installer.SystemdInstaller.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.installer.SystemdInstaller.create_directories'), \
+             patch('pi_netconfig.installer.InstallationDetector.get_current_script_path', return_value=Path('/test')), \
+             patch('pi_netconfig.installer.SystemdInstaller.copy_application'), \
+             patch('pi_netconfig.installer.SystemdInstaller.generate_systemd_unit', return_value='unit content'), \
+             patch('pi_netconfig.installer.SystemdInstaller.install_systemd_unit'), \
+             patch('pi_netconfig.installer.SystemdInstaller.enable_and_start_service'):
             
             result = install()
             assert result is True
     
     def test_install_rolls_back_on_filesystem_error(self):
         """Installation rolls back on FileSystemError."""
-        with patch('installer.InstallationDetector.is_service_installed', return_value=False), \
-             patch('installer.SystemdInstaller.verify_root_privileges', return_value=True), \
-             patch('installer.SystemdInstaller.create_directories', side_effect=FileSystemError("Failed")), \
-             patch('installer.SystemdInstaller.rollback_installation') as mock_rollback:
+        with patch('pi_netconfig.installer.InstallationDetector.is_service_installed', return_value=False), \
+             patch('pi_netconfig.installer.SystemdInstaller.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.installer.SystemdInstaller.create_directories', side_effect=FileSystemError("Failed")), \
+             patch('pi_netconfig.installer.SystemdInstaller.rollback_installation') as mock_rollback:
             
             result = install()
             
@@ -199,14 +199,14 @@ class TestInstallFunction:
     
     def test_install_rolls_back_on_systemd_error(self):
         """Installation rolls back on SystemdError."""
-        with patch('installer.InstallationDetector.is_service_installed', return_value=False), \
-             patch('installer.SystemdInstaller.verify_root_privileges', return_value=True), \
-             patch('installer.SystemdInstaller.create_directories'), \
-             patch('installer.InstallationDetector.get_current_script_path', return_value=Path('/test')), \
-             patch('installer.SystemdInstaller.copy_application'), \
-             patch('installer.SystemdInstaller.generate_systemd_unit', return_value='unit content'), \
-             patch('installer.SystemdInstaller.install_systemd_unit', side_effect=SystemdError("Failed")), \
-             patch('installer.SystemdInstaller.rollback_installation') as mock_rollback:
+        with patch('pi_netconfig.installer.InstallationDetector.is_service_installed', return_value=False), \
+             patch('pi_netconfig.installer.SystemdInstaller.verify_root_privileges', return_value=True), \
+             patch('pi_netconfig.installer.SystemdInstaller.create_directories'), \
+             patch('pi_netconfig.installer.InstallationDetector.get_current_script_path', return_value=Path('/test')), \
+             patch('pi_netconfig.installer.SystemdInstaller.copy_application'), \
+             patch('pi_netconfig.installer.SystemdInstaller.generate_systemd_unit', return_value='unit content'), \
+             patch('pi_netconfig.installer.SystemdInstaller.install_systemd_unit', side_effect=SystemdError("Failed")), \
+             patch('pi_netconfig.installer.SystemdInstaller.rollback_installation') as mock_rollback:
             
             result = install()
             

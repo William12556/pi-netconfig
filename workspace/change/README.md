@@ -13,7 +13,7 @@ Change documents using T02 Change template.
 
 | ID | Title | Status | Priority | Related Issue |
 |----|-------|--------|----------|---------------|
-| [change-0012](change-0012-logging_configuration_enhancement.md) | Logging configuration enhancement | proposed | medium | issue-0012 |
+| [change-0012](change-0017-logging_configuration_enhancement.md) | Logging configuration enhancement | proposed | medium | issue-0012 |
 | [change-0013](change-0013-installer-venv-deployment.md) | Installer venv deployment | planned | critical | issue-0013 |
 
 ## Closed Changes
@@ -23,7 +23,7 @@ Change documents using T02 Change template.
 | [change-0001](closed/change-0001-connectionmanager-defect-corrections.md) | ConnectionManager defect corrections | implemented | high | issue-0001, issue-0002, issue-0003, issue-0004 |
 | [change-0002](closed/change-0002-documentation-consistency.md) | Documentation enhancement - type hint consistency | implemented | medium | audit-0001 |
 | [change-0006](closed/change-0006-apmanager-nmcli-parsing-correction.md) | APManager nmcli parsing correction | implemented | critical | issue-0006 |
-| [change-0007](closed/change-0007-statemonitor-async-test-timing-fix.md) | StateMonitor async test timing fix | implemented | medium | issue-0007 |
+| [change-0007](change-0007-statemonitor-async-test-timing-fix.md) | StateMonitor async test timing fix | implemented | medium | issue-0007 |
 | [change-0008](closed/change-0008-connectionmanager-thread-test-refactoring.md) | ConnectionManager thread-safety test refactoring | implemented | medium | issue-0008 |
 | [change-0009](closed/change-0009-webserver-handler-test-methodology.md) | WebServer handler test methodology update | implemented | high | issue-0009 |
 | [change-0010](closed/change-0010-servicecontroller-test-alignment.md) | ServiceController test alignment | implemented | high | issue-0010 |

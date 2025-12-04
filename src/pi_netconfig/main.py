@@ -23,8 +23,8 @@ import traceback
 from pathlib import Path
 from typing import Optional
 
-from installer import install, InstallationDetector
-from statemonitor import StateMonitor
+from pi_netconfig.installer import install, InstallationDetector
+from pi_netconfig.statemonitor import StateMonitor
 
 
 # Exception hierarchy

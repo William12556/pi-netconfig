@@ -15,7 +15,7 @@ Prompt documents using T04 Prompt template for Domain 2 (Claude Code) implementa
 | ID | Title | Status | Priority | Change Ref | Effort |
 |----|-------|--------|----------|------------|--------|
 | [prompt-0017](prompt-0017-logging_configuration_enhancement.md) | Logging configuration enhancement | ready | medium | change-0012 | TBD |
-| [prompt-0018](prompt-0018-installer-venv-refactor.md) | Installer venv deployment refactor | ready | critical | change-0013 | TBD |
+| [prompt-0018](prompt-0018-installer-venv-deployment.md) | Installer venv deployment refactor | ready | critical | change-0013 | TBD |
 
 ## Closed Prompts
 
