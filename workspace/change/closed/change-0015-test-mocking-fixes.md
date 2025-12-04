@@ -4,7 +4,7 @@ Created: 2025 November 26
 
 ```yaml
 change_info:
-  id: "change-0009"
+  id: "change-0015"
   title: "Fix test mocking infrastructure for APManager, StateMonitor, ConnectionManager, WebServer, and ServiceController modules"
   date: "2025-11-26"
   author: "Domain 1"

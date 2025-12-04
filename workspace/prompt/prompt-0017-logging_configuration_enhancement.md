@@ -4,7 +4,7 @@
 
 ```yaml
 prompt_info:
-  id: "prompt-0012"
+  id: "prompt-0017"
   task_type: "code_generation"
   source_ref: "change-0012"
   date: "2025-12-03"

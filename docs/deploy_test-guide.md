@@ -4,19 +4,19 @@ Created: 2025 December 03
 
 ## Table of Contents
 
-- [Quick Start](<#quick start>)
-- [Build and Deploy](<#build and deploy>)
-- [Service Operations](<#service operations>)
-- [Uninstallation](<#uninstallation>)
-- [Testing](<#testing>)
-- [Troubleshooting](<#troubleshooting>)
-- [Version History](<#version history>)
+- [1. Quick Start](<#1 quick start>)
+- [2. Build and Deploy](<#2 build and deploy>)
+- [3. Service Operations](<#3 service operations>)
+- [4. Uninstallation](<#4 uninstallation>)
+- [5. Testing](<#5 testing>)
+- [6. Troubleshooting](<#6 troubleshooting>)
+- [7. Version History](<#7 version history>)
 
 [Return to Table of Contents](<#table of contents>)
 
-## Quick Start
+## 1. Quick Start
 
-### Prerequisites Check
+### 1.1. Prerequisites Check
 
 **On development Mac:**
 ```bash
@@ -40,7 +40,7 @@ python3 --version  # Should be 3.9+
 nmcli device status | grep wifi
 ```
 
-### Build Package
+### 1.2. Build Package
 
 **Working directory: Project root on Mac**
 ```bash
@@ -56,7 +56,7 @@ python3 -m build
 ls -lh dist/  # Should show .whl file
 ```
 
-### Deploy to Pi
+### 1.3. Deploy to Pi
 
 **Working directory: Project root on Mac**
 ```bash
@@ -85,7 +85,7 @@ sudo systemctl enable pi-netconfig
 sudo systemctl start pi-netconfig
 ```
 
-### Verify Installation
+### 1.4. Verify Installation
 
 ```bash
 # Check service status
@@ -99,9 +99,9 @@ If no WiFi available, service creates AP `PiConfig-XXXX` (password: `piconfig123
 
 [Return to Table of Contents](<#table of contents>)
 
-## Build and Deploy
+## 2. Build and Deploy
 
-### Prerequisites
+### 2.1. Prerequisites
 
 **Development machine:**
 - Python 3.9+
@@ -117,7 +117,7 @@ If no WiFi available, service creates AP `PiConfig-XXXX` (password: `piconfig123
 - Root/sudo access
 - Sufficient disk space (100MB minimum)
 
-### Build Distribution
+### 2.2. Build Distribution
 
 **Working directory: Project root on Mac**
 ```bash
@@ -140,7 +140,7 @@ python3 -m build
 ls -lh dist/  # Should show: pi_netconfig-*.whl
 ```
 
-### Transfer to Pi
+### 2.3. Transfer to Pi
 
 **Working directory: Project root on Mac**
 ```bash
@@ -151,7 +151,7 @@ scp dist/pi_netconfig-*.whl admin@deb1:/tmp/
 ssh admin@deb1 'ls -lh /tmp/pi_netconfig-*.whl'
 ```
 
-### Install on Pi
+### 2.4. Install on Pi
 
 **Working directory: Any directory on Pi**
 ```bash
@@ -199,7 +199,7 @@ Service starts automatically. Successful installation shows:
 - State detection (CLIENT or AP_MODE) in logs
 - No error messages in journalctl output
 
-### Update Deployment
+### 2.5. Update Deployment
 
 **Working directory: Project root on Mac**
 ```bash
@@ -232,9 +232,9 @@ sudo journalctl -u pi-netconfig -n 50
 
 [Return to Table of Contents](<#table of contents>)
 
-## Service Operations
+## 3. Service Operations
 
-### Control Commands
+### 3.1. Control Commands
 
 ```bash
 # Status
@@ -250,7 +250,7 @@ sudo systemctl enable pi-netconfig
 sudo systemctl disable pi-netconfig
 ```
 
-### Log Access
+### 3.2. Log Access
 
 **Real-time monitoring:**
 ```bash
@@ -286,7 +286,7 @@ ssh pi@raspberry-pi 'sudo journalctl -u pi-netconfig --no-pager' > pi-netconfig.
 scp pi@raspberry-pi:~/pi-netconfig.log ./
 ```
 
-### Configuration Locations
+### 3.3. Configuration Locations
 
 - Service file: `/etc/systemd/system/pi-netconfig.service`
 - WiFi profiles: `/etc/NetworkManager/system-connections/`
@@ -294,9 +294,9 @@ scp pi@raspberry-pi:~/pi-netconfig.log ./
 
 [Return to Table of Contents](<#table of contents>)
 
-## Uninstallation
+## 4. Uninstallation
 
-### Prerequisites Check
+### 4.1. Prerequisites Check
 
 **Working directory: Any directory on Pi**
 ```bash
@@ -305,7 +305,7 @@ sudo systemctl status pi-netconfig  # Check if service exists
 ls -la /opt/pi-netconfig/  # Check if venv exists
 ```
 
-### Virtual Environment Removal (Recommended)
+### 4.2. Virtual Environment Removal (Recommended)
 
 **Working directory: Any directory on Pi**
 ```bash
@@ -330,7 +330,7 @@ sudo rm -f /etc/NetworkManager/system-connections/PiConfig-*
 rm -rf ~/.pi-netconfig
 ```
 
-### System-Wide Removal (Not Recommended)
+### 4.3. System-Wide Removal (Not Recommended)
 
 **Note:** Only use if package was installed system-wide. This violates Debian PEP 668 policy.
 
@@ -354,7 +354,7 @@ sudo rm -f /etc/NetworkManager/system-connections/PiConfig-*
 rm -rf ~/.pi-netconfig
 ```
 
-### Verification
+### 4.4. Verification
 
 **Working directory: Any directory on Pi**
 ```bash
@@ -382,9 +382,9 @@ ls ~/.pi-netconfig/  # Should show "No such file or directory"
 
 [Return to Table of Contents](<#table of contents>)
 
-## Testing
+## 5. Testing
 
-### Development Tests (Mac)
+### 5.1. Development Tests (Mac)
 
 **Working directory: Project root on Mac**
 ```bash
@@ -418,7 +418,7 @@ open htmlcov/index.html
 deactivate
 ```
 
-### Hardware Validation (Pi)
+### 5.2. Hardware Validation (Pi)
 
 **Prerequisites: Package deployed per [Build and Deploy](<#build and deploy>)**
 
@@ -519,7 +519,7 @@ sudo systemctl status pi-netconfig
 
 Expected: Service starts automatically, correct state detection
 
-### Validation Checklist
+### 5.3. Validation Checklist
 
 **Installation:**
 - [ ] Package installs without errors
@@ -552,9 +552,9 @@ Expected: Service starts automatically, correct state detection
 
 [Return to Table of Contents](<#table of contents>)
 
-## Troubleshooting
+## 6. Troubleshooting
 
-### Service Won't Start
+### 6.1. Service Won't Start
 
 **Check status:**
 ```bash
@@ -568,7 +568,7 @@ sudo journalctl -u pi-netconfig -n 50
 - Package not installed: `pip list | grep pi-netconfig`
 - Permission errors: Must run as root
 
-### Access Point Not Visible
+### 6.2. Access Point Not Visible
 
 **Verify AP activation:**
 ```bash
@@ -583,7 +583,7 @@ nmcli connection show | grep PiConfig
 - NetworkManager stopped: `sudo systemctl start NetworkManager`
 - Insufficient failures (requires 3 consecutive)
 
-### Web Interface Unreachable
+### 6.3. Web Interface Unreachable
 
 **Check web server:**
 ```bash
@@ -598,7 +598,7 @@ ip addr show
 - Wrong IP (should be 192.168.50.1)
 - Not connected to PiConfig AP
 
-### Connection Fails After Configuration
+### 6.4. Connection Fails After Configuration
 
 **Check logs:**
 ```bash
@@ -617,7 +617,7 @@ sudo cat /etc/NetworkManager/system-connections/<profile>
 - WPA3-only network (try WPA2)
 - Signal too weak
 
-### Import Errors After Install
+### 6.5. Import Errors After Install
 
 **Verify installation:**
 ```bash
@@ -630,7 +630,7 @@ python3 -c "import pi_netconfig; print(pi_netconfig.__version__)"
 sudo pip install --force-reinstall /tmp/pi_netconfig-0.2.0-py3-none-any.whl
 ```
 
-### Log Analysis Patterns
+### 6.6. Log Analysis Patterns
 
 **Find errors:**
 ```bash
@@ -654,10 +654,11 @@ sudo journalctl -u pi-netconfig | grep "nmcli"
 
 [Return to Table of Contents](<#table of contents>)
 
-## Version History
+## 7. Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2025-12-04 | Added section numbering |
 | 1.2 | 2025-12-03 | Added explicit working directory context and prerequisite checks throughout |
 | 1.1 | 2025-12-03 | Added uninstallation procedures |
 | 1.0 | 2025-12-03 | Consolidated deployment and testing guide |

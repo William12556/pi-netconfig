@@ -64,7 +64,7 @@
     - Claude Code: Performs direct file operations in src/ directory
     - Claude Code: Validates protocol compliance through direct file access
     - Claude Code: Coordinates multi-file implementations and dependencies
-    - Claude Code: Creates completion documents per T04 specifications
+
   - 1.1.8 Communication
     - Both Claude Desktop and Claude Code have MCP filesystem access to project
     - Communication uses filesystem-based message passing (semaphores)
@@ -72,20 +72,19 @@
     - Claude Desktop: Embeds complete Tier 3 component design specifications and schema within prompt documents
     - Claude Desktop: Ensures prompt documents are self-contained requiring no external file references
     - Claude Desktop: Saves T04 prompt to workspace/prompt/prompt-NNNN-\<name\>.md
-    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md
-    - Claude Desktop: Notifies human to initiate Claude Code
-    - Human: Invokes Claude Code with instruction document
+    - Claude Desktop: Provides ready-to-execute command in conversation after human approval
+    - Human: Executes provided command to invoke Claude Code with T04 prompt
     - Claude Code: Reads T04 prompt from workspace/prompt/
     - Claude Code: Analyzes project structure and existing code via MCP filesystem access
     - Claude Code: Generates code, saves directly to src/ per T04 specifications
-    - Claude Code: Creates completion document workspace/prompt/prompt-NNNN-completion.md
-    - Claude Desktop: Reads completion document, verifies SUCCESS status, proceeds with audit
+    - Human: Notifies Claude Desktop when code generation complete
+    - Claude Desktop: Reviews generated code, proceeds with audit
   - 1.1.9 Quality
     - Human review and approval of design, change and initiation of code generation is required
-    - Claude Desktop: Creates instruction document after human approval
+    - Claude Desktop: Provides ready-to-execute command after human approval
     - Human: Invokes Claude Code with provided command
     - Human: Notifies Claude Desktop when Claude Code completes
-    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
+    - Claude Desktop: Reviews generated code before proceeding
   - 1.1.10 Documents
     - Master documents have '0000' as a sequence number and are named as \<document class\>-0000-master_\<document name\>.md
     - Claude Desktop: Based on document class (design, change, issue, proposal, prompt, trace, test, result, audit) adds a sequentially contiguous \<sequence number\> starting at 0001 to all created documents
@@ -142,7 +141,7 @@
     - 1.1.13.3 Closure Criteria
       - Issue: Resolved and verified, corresponding change implemented and tested
       - Change: Implemented, tested, design updated, human accepted
-      - Prompt: Code generated successfully, completion document verified
+      - Prompt: Code generated successfully, human confirmed
       - Test: Executed with passing results, result document created
       - Result: Tests passed, no issues created, acceptance confirmed
       - Audit: All critical findings resolved, high-priority findings addressed or mitigated, human approved
@@ -195,6 +194,7 @@ coverage.xml
 test.txt
 **/tmp
 deprecated/
+workspace/admin/
 workspace/ai/
 workspace/proposal/
 workspace/proposal/closed
@@ -223,6 +223,7 @@ build/
         ├── venv/                     # Python virtual environment (excluded from git)
         ├── dist/                     # Python build artefacts (excluded from git)
         ├── workspace/                # Execution space
+        │   ├── admin/                # Administrative reports (excluded from git)
         │   ├── design/
         │   ├── change/
         │   │   └── closed/
@@ -684,24 +685,18 @@ pip install dist/*.whl
     - Claude Desktop: Iteration synchronization maintained through debug cycles
     - Claude Desktop: Verifies coupling before prompt creation
     - GitHub version control maintains complete revision history
-  - 1.10.3 Instruction Documents
-    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md after human approval
-    - Claude Desktop: Provides instruction document path to human
-    - Instruction document contains: Claude Code invocation command, T04 prompt location, expected output locations, completion document requirements
-  - 1.10.4 Completion Documents
-    - Claude Code: Creates completion document workspace/prompt/prompt-NNNN-completion.md
-    - Required fields: generation timestamp, files created with paths, status (SUCCESS/FAILURE), warnings/notes
-    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
-  - 1.10.5 Prompt Revision
+  - 1.10.3 Human Handoff
+    - Claude Desktop: After human approval of T04 prompt, provides ready-to-execute command in conversation
+    - Command format: `claude --print < /path/to/workspace/prompt/prompt-NNNN-<name>.md`
+    - Claude Desktop: Command must specify complete absolute path to T04 prompt document
+    - Claude Desktop: No separate instruction document files are created
+    - Human: Copies command from conversation and executes in terminal
+    - Human: Notifies Claude Desktop when Claude Code execution completes
+
+  - 1.10.4 Prompt Revision
     - Claude Desktop: Rewrites existing prompt documents when changes needed
     - Claude Desktop: Documents revision rationale in prompt version_history section
     - GitHub commits provide complete change tracking and rollback capability
-  - 1.10.6 Instruction Document Creation
-    - Claude Desktop: Creates instruction document workspace/prompt/prompt-NNNN-instructions.md after human approval
-    - Claude Desktop: Provides instruction document path to human
-    - Human: Invokes Claude Code with provided command
-    - Claude Desktop: Waits for human confirmation of Claude Code completion
-    - Claude Desktop: Verifies completion document exists and indicates SUCCESS before proceeding
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -2330,17 +2325,9 @@ testing:
 deliverable:
   format_requirements:
     - "Save generated code directly to specified paths"
-    - "Create completion document in workspace/prompt/"
   files:
     - path: "src/<component>/<file>.py"
       content: ""
-  completion_document:
-    path: "workspace/prompt/prompt-NNNN-completion.md"
-    required_fields:
-      - "timestamp"
-      - "files_created: [paths]"
-      - "status: SUCCESS or FAILURE"
-      - "notes: [any warnings]"
 
 success_criteria:
   - ""
@@ -3503,11 +3490,10 @@ flowchart TD
     H_Invoke --> D2_Read[Claude Code: Read T04]
     D2_Read --> D2_Generate[Claude Code: Generate code]
     D2_Generate --> D2_Save[Claude Code: Save to src/]
-    D2_Save --> D2_Complete[Claude Code: Create<br/>completion doc]
-    D2_Complete --> H_Notify[Human: Notify Claude Desktop]
-    H_Notify --> D1_Verify[Claude Desktop: Verify<br/>completion doc]
+    D2_Save --> H_Notify[Human: Notify Claude Desktop]
+    H_Notify --> D1_Review[Claude Desktop: Review<br/>generated code]
     
-    D1_Verify --> Trace2[Claude Desktop: Update<br/>traceability matrix P05]
+    D1_Review --> Trace2[Claude Desktop: Update<br/>traceability matrix P05]
     Trace2 --> D1_Audit[Claude Desktop: Config audit<br/>code vs baseline]
     D1_Audit --> D1_Test_Doc[Claude Desktop: Create test doc T05]
     
@@ -3595,6 +3581,7 @@ flowchart TD
 | 4.2 | 2025-11-30 | Enhanced P06 Test with progressive validation strategy (1.7.15), test type selection criteria (1.7.16), platform execution specifications (1.7.17); updated workflow flowchart to incorporate progressive validation phases and platform-specific testing requirements |
 | 4.3 | 2025-12-03 | Added workspace/proposal/ directory: Added proposal document class to P00 1.1.10; added workspace/proposal/ and workspace/proposal/closed/ to P01 1.2.6 folder structure; added proposal directories to P01 1.2.2 .gitignore |
 | 4.4 | 2025-12-03 | Added P00 1.1.14 Logging Standards: environment-based log level control, flat file format, rotation policy, test/production mode separation |
+| 4.5 | 2025-12-04 | Simplified human handoff mechanism: Replaced P00 1.1.8 and P00 1.1.9 instruction document creation with conversational command delivery; replaced P09 1.10.3 Instruction Documents with Human Handoff providing ready-to-execute commands directly in conversation; removed P09 1.10.5 Instruction Document Creation (now covered by 1.10.3); eliminates redundant prompt-NNNN-instructions.md files while maintaining domain separation |
 
 ---
 [Return to Table of Contents](<#table of contents>)

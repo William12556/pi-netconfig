@@ -4,35 +4,35 @@ Created: 2025 November 29
 
 ## Table of Contents
 
-- [Introduction](<#introduction>)
-- [Installation and Environment Setup](<#installation and environment setup>)
-  - [Development Environment](<#development environment>)
-  - [Running Tests](<#running tests>)
-- [Build and Deployment Procedures](<#build and deployment procedures>)
-  - [Creating Distribution Package](<#creating distribution package>)
-  - [Deployment to Raspberry Pi](<#deployment to raspberry pi>)
-  - [Post-Installation](<#post-installation>)
-- [Service Lifecycle Management](<#service lifecycle management>)
-  - [Service Status](<#service status>)
-  - [Service Control](<#service control>)
-  - [Log Viewing](<#log viewing>)
-- [Web Interface Operation](<#web interface operation>)
-  - [Accessing the Interface](<#accessing the interface>)
-  - [Network Configuration](<#network configuration>)
-- [Testing Execution](<#testing execution>)
-  - [Development Testing](<#development testing>)
-  - [Deployment Testing](<#deployment testing>)
-- [Architecture Description](<#architecture description>)
-  - [Operational Modes](<#operational modes>)
-  - [System Components](<#system components>)
-- [Troubleshooting Guidance](<#troubleshooting guidance>)
-  - [Service Not Starting](<#service not starting>)
-  - [Access Point Not Visible](<#access point not visible>)
-  - [Cannot Connect to Web Interface](<#cannot connect to web interface>)
-  - [WiFi Configuration Not Persisting](<#wifi configuration not persisting>)
-- [Version History](<#version history>)
+- [1. Introduction](<#1 introduction>)
+- [2. Installation and Environment Setup](<#2 installation and environment setup>)
+  - [2.1. Development Environment](<#2.1 development environment>)
+  - [2.2. Running Tests](<#2.2 running tests>)
+- [3. Build and Deployment Procedures](<#3 build and deployment procedures>)
+  - [3.1. Creating Distribution Package](<#3.1 creating distribution package>)
+  - [3.2. Deployment to Raspberry Pi](<#3.2 deployment to raspberry pi>)
+  - [3.3. Post-Installation](<#3.3 post-installation>)
+- [4. Service Lifecycle Management](<#4 service lifecycle management>)
+  - [4.1. Service Status](<#4.1 service status>)
+  - [4.2. Service Control](<#4.2 service control>)
+  - [4.3. Log Viewing](<#4.3 log viewing>)
+- [5. Web Interface Operation](<#5 web interface operation>)
+  - [5.1. Accessing the Interface](<#5.1 accessing the interface>)
+  - [5.2. Network Configuration](<#5.2 network configuration>)
+- [6. Testing Execution](<#6 testing execution>)
+  - [6.1. Development Testing](<#6.1 development testing>)
+  - [6.2. Deployment Testing](<#6.2 deployment testing>)
+- [7. Architecture Description](<#7 architecture description>)
+  - [7.1. Operational Modes](<#7.1 operational modes>)
+  - [7.2. System Components](<#7.2 system components>)
+- [8. Troubleshooting Guidance](<#8 troubleshooting guidance>)
+  - [8.1. Service Not Starting](<#8.1 service not starting>)
+  - [8.2. Access Point Not Visible](<#8.2 access point not visible>)
+  - [8.3. Cannot Connect to Web Interface](<#8.3 cannot connect to web interface>)
+  - [8.4. WiFi Configuration Not Persisting](<#8.4 wifi configuration not persisting>)
+- [9. Version History](<#9 version history>)
 
-## Introduction
+## 1. Introduction
 
 Pi Network Configuration Tool provides WiFi configuration management for Raspberry Pi and Debian-based systems with automatic fallback to access point mode when no connection is available. The tool operates as a systemd service, continuously monitoring network connectivity and providing a web-based configuration interface when needed.
 
@@ -56,9 +56,9 @@ The tool is designed for headless Raspberry Pi deployments where physical displa
 
 [Return to Table of Contents](<#table of contents>)
 
-## Installation and Environment Setup
+## 2. Installation and Environment Setup
 
-### Development Environment
+### 2.1. Development Environment
 
 For development work on the codebase, set up a Python virtual environment.
 
@@ -73,7 +73,7 @@ pip install -e ".[dev]"
 
 The editable installation (`-e` flag) allows imports to work during development without reinstalling after code changes.
 
-### Running Tests
+### 2.2. Running Tests
 
 Execute the test suite within the activated virtual environment:
 
@@ -84,9 +84,9 @@ pytest src/tests/
 
 [Return to Table of Contents](<#table of contents>)
 
-## Build and Deployment Procedures
+## 3. Build and Deployment Procedures
 
-### Creating Distribution Package
+### 3.1. Creating Distribution Package
 
 Build the wheel package on your development machine:
 
@@ -99,7 +99,7 @@ python -m build
 
 This creates `dist/pi_netconfig-0.2.0-py3-none-any.whl`
 
-### Deployment to Raspberry Pi
+### 3.2. Deployment to Raspberry Pi
 
 **Transfer wheel file to target system:**
 
@@ -120,7 +120,7 @@ sudo pip install /tmp/pi_netconfig-0.2.0-py3-none-any.whl
 sudo python3 -m pi_netconfig.main
 ```
 
-### Post-Installation
+### 3.3. Post-Installation
 
 The service starts automatically after installation. If no WiFi connection is available on startup:
 
@@ -131,9 +131,9 @@ The service starts automatically after installation. If no WiFi connection is av
 
 [Return to Table of Contents](<#table of contents>)
 
-## Service Lifecycle Management
+## 4. Service Lifecycle Management
 
-### Service Status
+### 4.1. Service Status
 
 Check current service status:
 
@@ -141,7 +141,7 @@ Check current service status:
 sudo systemctl status pi-netconfig
 ```
 
-### Service Control
+### 4.2. Service Control
 
 **Restart service:**
 
@@ -173,7 +173,7 @@ sudo systemctl disable pi-netconfig
 sudo systemctl enable pi-netconfig
 ```
 
-### Log Viewing
+### 4.3. Log Viewing
 
 View real-time service logs:
 
@@ -189,16 +189,16 @@ sudo journalctl -u pi-netconfig -n 100
 
 [Return to Table of Contents](<#table of contents>)
 
-## Web Interface Operation
+## 5. Web Interface Operation
 
-### Accessing the Interface
+### 5.1. Accessing the Interface
 
 When the system enters access point mode:
 
 1. Connect to WiFi network `PiConfig-XXXX` (password: `piconfig123`)
 2. Open browser and navigate to `http://192.168.50.1:8080`
 
-### Network Configuration
+### 5.2. Network Configuration
 
 The web interface provides:
 
@@ -211,9 +211,9 @@ After submitting configuration, the service attempts to connect to the specified
 
 [Return to Table of Contents](<#table of contents>)
 
-## Testing Execution
+## 6. Testing Execution
 
-### Development Testing
+### 6.1. Development Testing
 
 Run tests in development environment:
 
@@ -225,7 +225,7 @@ source venv/bin/activate
 pytest src/tests/
 ```
 
-### Deployment Testing
+### 6.2. Deployment Testing
 
 Test on Raspberry Pi after deployment:
 
@@ -238,9 +238,9 @@ pytest src/tests/
 
 [Return to Table of Contents](<#table of contents>)
 
-## Architecture Description
+## 7. Architecture Description
 
-### Operational Modes
+### 7.1. Operational Modes
 
 The system operates as a state machine with three distinct modes:
 
@@ -260,7 +260,7 @@ The system operates as a state machine with three distinct modes:
 - Allows network configuration via browser interface
 - Transitions to CLIENT mode upon successful configuration
 
-### System Components
+### 7.2. System Components
 
 **Installer:**
 - Self-bootstrapping systemd service setup
@@ -294,9 +294,9 @@ The system operates as a state machine with three distinct modes:
 
 [Return to Table of Contents](<#table of contents>)
 
-## Troubleshooting Guidance
+## 8. Troubleshooting Guidance
 
-### Service Not Starting
+### 8.1. Service Not Starting
 
 **Check service status:**
 
@@ -322,7 +322,7 @@ sudo journalctl -u pi-netconfig -n 50
 - Insufficient privileges
 - Configuration file permissions
 
-### Access Point Not Visible
+### 8.2. Access Point Not Visible
 
 **Verify AP mode activation:**
 
@@ -348,7 +348,7 @@ nmcli device status
 - Conflicting network configuration
 - Hardware compatibility issues
 
-### Cannot Connect to Web Interface
+### 8.3. Cannot Connect to Web Interface
 
 **Verify service is running:**
 
@@ -374,7 +374,7 @@ ip addr show
 - Web server component failed to start
 - Browser cache issues
 
-### WiFi Configuration Not Persisting
+### 8.4. WiFi Configuration Not Persisting
 
 **Check configuration file:**
 
@@ -402,10 +402,11 @@ sudo journalctl -u pi-netconfig | grep "config"
 
 [Return to Table of Contents](<#table of contents>)
 
-## Version History
+## 9. Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2025-12-04 | Added section numbering |
 | 1.0 | 2025-11-29 | Initial user guide creation |
 
 ---

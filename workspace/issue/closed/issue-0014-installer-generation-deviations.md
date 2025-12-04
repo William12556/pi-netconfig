@@ -4,7 +4,7 @@ Created: 2025 November 12
 
 ```yaml
 issue_info:
-  id: "issue-0001"
+  id: "issue-0014"
   title: "Domain 2 generated installer code deviations from design specification"
   date: "2025-11-12"
   reporter: "Domain 1"
