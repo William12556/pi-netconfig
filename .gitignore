@@ -10,6 +10,7 @@ coverage.xml
 test.txt
 **/tmp
 deprecated/
+workspace/admin/
 workspace/ai/
 workspace/proposal/
 workspace/proposal/closed/
