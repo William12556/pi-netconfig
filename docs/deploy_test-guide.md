@@ -77,7 +77,7 @@ cd /opt/pi-netconfig
 sudo python3 -m venv venv
 
 # Install package into venv
-sudo ./venv/bin/pip install /tmp/pi_netconfig-*.whl
+sudo python3 -m venv venv
 
 # Configure and start service
 sudo ./venv/bin/python -m pi_netconfig.installer --install --systemd-mode

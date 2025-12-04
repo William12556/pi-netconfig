@@ -2430,6 +2430,10 @@ properties:
         type: string
       integration:
         type: string
+      knowledge_references:
+        type: array
+        items:
+          type: string
       constraints:
         type: array
         items:
