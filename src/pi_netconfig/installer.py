@@ -161,7 +161,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart={venv_python} -m pi_netconfig.service_controller
+ExecStart={venv_python} -m pi_netconfig.main
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal

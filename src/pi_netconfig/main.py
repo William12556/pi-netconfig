@@ -25,6 +25,9 @@ from typing import Optional
 
 from pi_netconfig.installer import install, InstallationDetector
 from pi_netconfig.statemonitor import StateMonitor
+from pi_netconfig.connectionmanager import ConfigManager
+from pi_netconfig.apmanager import AccessPoint
+from pi_netconfig.webserver import WebServerManager
 
 
 # Exception hierarchy
@@ -124,7 +127,7 @@ def configure_logging(mode: str) -> None:
     """
     try:
         # Determine log filtering from environment
-        debug_mode = os.environ.get('PI_NETCONFIG_DEBUG', 'true').lower() == 'true'
+        debug_mode = os.environ.get('DEBUG_MODE', 'false').lower() == 'true'
         
         # Create log directory
         log_path = Path('/var/log/pi-netconfig.log')
@@ -132,7 +135,7 @@ def configure_logging(mode: str) -> None:
         
         # Configure root logger
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.INFO)
+        root_logger.setLevel(logging.DEBUG if debug_mode else logging.INFO)
         
         # Remove existing handlers
         for handler in root_logger.handlers[:]:
@@ -145,11 +148,8 @@ def configure_logging(mode: str) -> None:
             backupCount=3
         )
         
-        # Normal mode: INFO only; Debug mode: INFO and ERROR
-        if debug_mode:
-            file_handler.setLevel(logging.INFO)
-        else:
-            file_handler.addFilter(lambda record: record.levelno == logging.INFO)
+        # Set file handler level based on debug mode
+        file_handler.setLevel(logging.DEBUG if debug_mode else logging.INFO)
         
         file_formatter = logging.Formatter(
             '%(asctime)s %(levelname)s %(name)s %(message)s'
@@ -157,15 +157,12 @@ def configure_logging(mode: str) -> None:
         file_handler.setFormatter(file_formatter)
         root_logger.addHandler(file_handler)
         
-        logger.info(f"Logging configured: debug_mode={debug_mode}, level={logging.getLevelName(logging.INFO)}")
+        logger.info(f"Logging configured: debug_mode={debug_mode}, level={logging.getLevelName(root_logger.level)}")
         
         # Console handler (manual mode only)
         if mode == 'manual':
             console_handler = logging.StreamHandler(sys.stdout)
-            if debug_mode:
-                console_handler.setLevel(logging.INFO)
-            else:
-                console_handler.addFilter(lambda record: record.levelno == logging.INFO)
+            console_handler.setLevel(logging.DEBUG if debug_mode else logging.INFO)
             console_formatter = logging.Formatter(
                 '%(asctime)s %(levelname)s %(name)s %(message)s'
             )
@@ -282,13 +279,19 @@ async def run_service() -> None:
         shutdown_event = asyncio.Event()
         logger.debug("Shutdown event created")
         
+        # Initialize components
+        logger.debug("Initializing components")
+        config_manager = ConfigManager()
+        access_point = AccessPoint()
+        web_server_manager = WebServerManager(config_manager)
+        
         # Initialize StateMonitor
         logger.debug("Initializing StateMonitor")
-        state_monitor = StateMonitor()
+        state_monitor = StateMonitor(config_manager, access_point, web_server_manager)
         
         # Start StateMonitor
         logger.debug("Starting StateMonitor")
-        monitor_task = asyncio.create_task(state_monitor.run())
+        monitor_task = asyncio.create_task(state_monitor.monitoring_loop())
         
         # Wait for shutdown signal
         logger.info("Service running, waiting for shutdown signal")
