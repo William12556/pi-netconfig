@@ -58,7 +58,7 @@ Complete installation, deployment, and operational procedures are documented in:
 
 Additional technical documentation:
 
-- **[Design Documentation](governance/)** - Architecture specifications, change management, and governance
+- **[Design Documentation](ai/)** - Architecture specifications, change management, and governance
 
 ## Important Notice
 
