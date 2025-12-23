@@ -1,6 +1,6 @@
 [project]
 name = "pi-netconfig"
-version = "0.2.8"
+version = "0.2.9"
 description = "Automatic WiFi configuration tool for Raspberry Pi/Debian systems"
 readme = "README.md"
 authors = [{name = "William Watson"}]

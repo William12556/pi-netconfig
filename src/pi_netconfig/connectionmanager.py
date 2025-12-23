@@ -102,3 +102,85 @@ class ConfigManager:
                     config = json.load(f)
                 return config['configured_ssid']
             return None
+
+class ConnectionManager:
+    """Facade class providing unified interface to connection management.
+    
+    Coordinates ConnectionTester, NetworkScanner, and ConfigManager to provide
+    the interface expected by StateMonitor and other consumers.
+    """
+    
+    def __init__(self):
+        """Initialize ConnectionManager facade."""
+        self._tester = ConnectionTester()
+        self._scanner = NetworkScanner()
+        self._config = ConfigManager()
+        logger.debug('ConnectionManager initialized')
+    
+    async def test_connection(self) -> bool:
+        """Test active internet connectivity.
+        
+        Returns:
+            bool: True if internet connection is active
+            
+        Raises:
+            ConnectionManagerError: On critical connectivity test failure
+        """
+        try:
+            return self._tester.test_connection()
+        except Exception as e:
+            logger.error(f'Connection test failed: {e}', exc_info=True)
+            raise ConnectionManagerError('Connection test failed') from e
+    
+    async def scan_networks(self) -> List[NetworkInfo]:
+        """Scan for available WiFi networks.
+        
+        Returns:
+            List[NetworkInfo]: Available networks sorted by signal strength
+            
+        Raises:
+            NetworkScanError: On network scan failure
+        """
+        try:
+            return self._scanner.scan_networks()
+        except NetworkScanError:
+            raise
+        except Exception as e:
+            logger.error(f'Network scan failed: {e}', exc_info=True)
+            raise NetworkScanError('Network scan failed') from e
+    
+    async def configure_network(self, ssid: str, password: str) -> bool:
+        """Configure and activate WiFi connection.
+        
+        Args:
+            ssid: Target network SSID
+            password: Network password
+            
+        Returns:
+            bool: True if configuration successful
+            
+        Raises:
+            ConfigurationError: On validation or configuration failure
+        """
+        try:
+            return self._config.configure_network(ssid, password)
+        except ConfigurationError:
+            raise
+        except Exception as e:
+            logger.error(f'Network configuration failed: {e}', exc_info=True)
+            raise ConfigurationError('Network configuration failed') from e
+    
+    def load_configuration(self) -> Optional[str]:
+        """Load last configured network SSID.
+        
+        Returns:
+            Optional[str]: Configured SSID or None if not configured
+            
+        Raises:
+            ConnectionManagerError: On configuration load failure
+        """
+        try:
+            return self._config.load_configuration()
+        except Exception as e:
+            logger.error(f'Configuration load failed: {e}', exc_info=True)
+            raise ConnectionManagerError('Configuration load failed') from e
