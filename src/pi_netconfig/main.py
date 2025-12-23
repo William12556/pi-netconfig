@@ -283,7 +283,7 @@ async def run_service() -> None:
         logger.debug("Initializing components")
         connection_manager = ConnectionManager()
         access_point = AccessPoint()
-        web_server_manager = WebServerManager(connection_manager)
+        web_server_manager = WebServerManager()
         
         # Initialize StateMonitor
         logger.debug("Initializing StateMonitor")

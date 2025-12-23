@@ -173,8 +173,8 @@ class StateMonitor:
                 self.logger.info("Transitioning to CLIENT mode")
                 
                 if self.current_state == SystemState.AP_MODE:
-                    await self.ap_manager.deactivate_ap()
-                    await self.web_server.stop_server()
+                    self.ap_manager.deactivate_ap()
+                    self.web_server.stop_server()
                 
                 self.current_state = SystemState.CLIENT
                 self.failure_count = 0
@@ -198,8 +198,8 @@ class StateMonitor:
             try:
                 self.logger.info("Transitioning to AP_MODE")
                 
-                await self.ap_manager.activate_ap()
-                await self.web_server.start_server()
+                self.ap_manager.activate_ap()
+                self.web_server.start_server()
                 
                 self.current_state = SystemState.AP_MODE
                 self.logger.info("Successfully transitioned to AP_MODE")
@@ -255,8 +255,8 @@ class StateMonitor:
         # Deactivate components
         try:
             if self.current_state == SystemState.AP_MODE:
-                await self.ap_manager.deactivate_ap()
-                await self.web_server.stop_server()
+                self.ap_manager.deactivate_ap()
+                self.web_server.stop_server()
         except Exception as e:
             self.logger.warning("Component shutdown failed", exc_info=True)
         
