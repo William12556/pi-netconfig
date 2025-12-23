@@ -11,6 +11,7 @@ Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
 """
 
 import logging
+import subprocess
 import traceback
 from subprocess import check_output, CalledProcessError
 
@@ -81,6 +82,21 @@ class AccessPoint:
         """Format "PiConfig-{last_4_hex}" from MAC address."""
         return f"PiConfig-{self.mac_address[-4:]}"
 
+    def profile_exists(self) -> bool:
+        """Check if AP profile exists in NetworkManager.
+        
+        Returns:
+            bool: True if profile exists, False otherwise
+        """
+        try:
+            output = check_output(["nmcli", "con", "show", self.profile_name], 
+                                stderr=subprocess.DEVNULL).decode("utf-8")
+            logger.debug(f"AP profile '{self.profile_name}' exists")
+            return True
+        except CalledProcessError:
+            logger.debug(f"AP profile '{self.profile_name}' does not exist")
+            return False
+
     def create_ap_profile(self) -> None:
         """Execute nmcli commands to create AP profile with WPA2-PSK."""
         try:
@@ -103,11 +119,33 @@ class AccessPoint:
             raise APManagerError("Unexpected error") from e
 
     def activate_ap(self) -> bool:
-        """Execute 'nmcli con up id pi-netconfig-ap', set ap_active=True."""
+        """Ensure profile exists and activate access point.
+        
+        Checks if AP profile exists in NetworkManager. If not, creates it.
+        Then activates the profile and sets ap_active=True.
+        
+        Returns:
+            bool: True if activation successful
+            
+        Raises:
+            ProfileCreationError: If profile creation fails
+            APActivationError: If activation fails
+        """
         try:
+            # Check if profile exists, create if needed
+            if not self.profile_exists():
+                logger.info(f"AP profile '{self.profile_name}' not found, creating...")
+                self.create_ap_profile()
+            else:
+                logger.debug(f"AP profile '{self.profile_name}' already exists")
+            
+            # Activate the profile
             check_output(["nmcli", "con", "up", "id", self.profile_name])
             self.ap_active = True
             logger.info("Access point activated successfully")
+        except ProfileCreationError:
+            # Re-raise profile creation errors
+            raise
         except CalledProcessError as e:
             logger.error(f"Failed to activate access point: {e}")
             traceback.print_exc()
