@@ -288,24 +288,24 @@ async def run_service() -> None:
         # Initialize StateMonitor
         logger.debug("Initializing StateMonitor")
         state_monitor = StateMonitor(config_manager, access_point, web_server_manager)
-        
-        # Start StateMonitor
-        logger.debug("Starting StateMonitor")
-        monitor_task = asyncio.create_task(state_monitor.monitoring_loop())
-        
+        await state_monitor.initialize()
+
+        logger.debug("StateMonitor initialized and monitoring started")
+
         # Wait for shutdown signal
         logger.info("Service running, waiting for shutdown signal")
         await shutdown_event.wait()
-        
+
         # Graceful shutdown
         logger.info("Shutdown signal received")
         await graceful_shutdown()
-        
+
         # Wait for monitor task to complete
-        try:
-            await asyncio.wait_for(monitor_task, timeout=2.0)
-        except asyncio.TimeoutError:
-            logger.warning("StateMonitor task did not complete within timeout")
+        if state_monitor.monitoring_task:
+            try:
+                await asyncio.wait_for(state_monitor.monitoring_task, timeout=2.0)
+            except asyncio.TimeoutError:
+                logger.warning("StateMonitor task did not complete within timeout")
         
         logger.info("Service stopped")
     
