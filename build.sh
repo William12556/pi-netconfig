@@ -7,6 +7,20 @@ set -e  # Exit on error
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_ROOT"
 
+# Verify python3.11 is available
+if ! command -v python3.11 >/dev/null 2>&1; then
+    echo "ERROR: python3.11 not found"
+    echo "Install: brew install python@3.11"
+    exit 1
+fi
+
+# Verify build module is available
+if ! python3.11 -m build --version >/dev/null 2>&1; then
+    echo "ERROR: build module not found for python3.11"
+    echo "Install: python3.11 -m pip install build"
+    exit 1
+fi
+
 # Extract version from pyproject.toml
 VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
 
@@ -27,7 +41,7 @@ rm -rf dist/ build/ *.egg-info/ src/*.egg-info/
 
 # Build distribution
 echo "==> Building distribution..."
-python3 -m build
+python3.11 -m build
 
 # Verify wheel exists
 WHEEL="dist/pi_netconfig-${VERSION}-py3-none-any.whl"
