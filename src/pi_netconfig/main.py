@@ -25,7 +25,7 @@ from typing import Optional
 
 from pi_netconfig.installer import install, InstallationDetector
 from pi_netconfig.statemonitor import StateMonitor
-from pi_netconfig.connectionmanager import ConfigManager
+from pi_netconfig.connectionmanager import ConnectionManager
 from pi_netconfig.apmanager import AccessPoint
 from pi_netconfig.webserver import WebServerManager
 
@@ -119,8 +119,8 @@ def configure_logging(mode: str) -> None:
         mode: Execution mode ('bootstrap', 'service', 'manual')
     
     Configuration:
-        - Debug mode (PI_NETCONFIG_DEBUG=true): INFO and ERROR
-        - Normal mode (PI_NETCONFIG_DEBUG=false): INFO only
+        - Debug mode (DEBUG_MODE=true): DEBUG level
+        - Normal mode (DEBUG_MODE=false): INFO level
         - File: /var/log/pi-netconfig.log (10MB, 3 backups)
         - Console: Manual mode only, same level as file
         - Format: timestamp level logger message
@@ -141,7 +141,7 @@ def configure_logging(mode: str) -> None:
         for handler in root_logger.handlers[:]:
             root_logger.removeHandler(handler)
         
-        # File handler with rotation and filtering
+        # File handler with rotation
         file_handler = logging.handlers.RotatingFileHandler(
             log_path,
             maxBytes=10 * 1024 * 1024,  # 10MB
@@ -262,8 +262,8 @@ async def run_service() -> None:
     
     Behavior:
         1. Creates global shutdown event
-        2. Initializes StateMonitor
-        3. Starts StateMonitor.run()
+        2. Initializes components
+        3. Initializes StateMonitor (starts monitoring)
         4. Waits for shutdown signal
         5. Coordinates graceful shutdown
     
@@ -281,13 +281,13 @@ async def run_service() -> None:
         
         # Initialize components
         logger.debug("Initializing components")
-        config_manager = ConfigManager()
+        connection_manager = ConnectionManager()
         access_point = AccessPoint()
-        web_server_manager = WebServerManager(config_manager)
+        web_server_manager = WebServerManager(connection_manager)
         
         # Initialize StateMonitor
         logger.debug("Initializing StateMonitor")
-        state_monitor = StateMonitor(config_manager, access_point, web_server_manager)
+        state_monitor = StateMonitor(connection_manager, access_point, web_server_manager)
         await state_monitor.initialize()
 
         logger.debug("StateMonitor initialized and monitoring started")
