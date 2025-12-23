@@ -381,4 +381,4 @@ from module_name import ClassName, function_name
 
 ---
 
-Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.

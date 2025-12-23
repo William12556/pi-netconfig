@@ -191,4 +191,4 @@ async def monitoring_loop(self) -> None:  # ACTUAL METHOD
 
 ---
 
-Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.

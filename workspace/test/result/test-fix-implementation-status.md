@@ -207,4 +207,4 @@ def test_configure_logging_creates_file_handler(self):
 
 ---
 
-Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.

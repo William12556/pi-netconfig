@@ -235,4 +235,4 @@ Implements proposal-0001-logging_enhancement.md per human requirements.
 
 ---
 
-Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.

@@ -254,4 +254,4 @@ Functional requirements extracted from [design-0000-master.md](../design/design-
 
 ---
 
-Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.

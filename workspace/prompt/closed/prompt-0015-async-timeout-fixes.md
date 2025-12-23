@@ -105,6 +105,6 @@ Path: `workspace/prompt/prompt-0015-completion.md`
 ---
 
 **Metadata**:
-- Copyright: Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
+- Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
 - Template Version: 1.0
 - Schema Type: t04_prompt
