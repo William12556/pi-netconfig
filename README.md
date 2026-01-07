@@ -19,12 +19,39 @@ Tool manages WiFi connectivity with automatic fallback to access point mode when
 
 - Raspberry Pi running Raspbian Bookworm or Debian-based Linux
 - NetworkManager (standard in modern Raspbian)
-- Python 3.11 or higher
+- Python 3.9 or higher
 - Root privileges for installation and network operations
 
 ## Quick Start
 
-**Build distribution package:**
+**Download release package:**
+
+Download `pi_netconfig-1.0.0-py3-none-any.whl` from GitHub releases.
+
+**Deploy to Raspberry Pi:**
+
+```bash
+# Transfer package
+scp pi_netconfig-1.0.0-py3-none-any.whl admin@raspberry-pi:/tmp/
+
+# Install on Raspberry Pi
+ssh admin@raspberry-pi
+sudo pip install /tmp/pi_netconfig-1.0.0-py3-none-any.whl
+
+# Run installer (first execution triggers automatic installation)
+sudo pi-netconfig
+
+# Start service
+sudo systemctl start pi-netconfig
+```
+
+**Configure WiFi:**
+
+If no connection is available, the system creates access point `PiConfig-XXXX` (password: `piconfig123`). Connect and navigate to `http://192.168.50.1:8080` to configure network.
+
+## Building from Source
+
+For development or custom builds:
 
 ```bash
 cd /path/to/pi-netconfig
@@ -32,23 +59,7 @@ pip install build
 python -m build
 ```
 
-**Deploy to Raspberry Pi:**
-
-```bash
-# Transfer package
-scp dist/pi_netconfig-0.2.0-py3-none-any.whl admin@raspberry-pi:/tmp/
-
-# Install on Raspberry Pi
-ssh admin@raspberry-pi
-sudo pip install /tmp/pi_netconfig-0.2.0-py3-none-any.whl
-
-# Run installer (first execution only)
-sudo python3 -m pi_netconfig.main
-```
-
-**Configure WiFi:**
-
-If no connection is available, the system creates access point `PiConfig-XXXX` (password: `piconfig123`). Connect and navigate to `http://192.168.50.1:8080` to configure network.
+This creates `dist/pi_netconfig-1.0.0-py3-none-any.whl`
 
 ## Documentation
 
