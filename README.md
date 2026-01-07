@@ -62,9 +62,7 @@ Additional technical documentation:
 
 ## Important Notice
 
-This software is in early development stages. The implementation is experimental in nature, serving as a learning exercise in AI-assisted development workflows, protocol-driven project management, and cross-platform embedded systems development. **Actual fitness for purpose is not guaranteed.**
-
-This project represents a first attempt at AI-supported software development using Claude Desktop and Claude Code from anthropic.com. The objective is to establish a sort of AI orchestration framework to guide software development. A kind of AI wrangler if you will.
+**Actual fitness for purpose is not guaranteed.**
 
 ## License
 
