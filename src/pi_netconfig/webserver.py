@@ -300,8 +300,8 @@ class ConfigHTTPHandler(BaseHTTPRequestHandler):
         """Call ConnectionManager.scan_networks(), return JSON with CORS"""
         try:
             # Import here to avoid circular dependencies
-            from connection_manager import ConnectionManager
-            
+            from pi_netconfig.connectionmanager import ConnectionManager
+
             logger.info("Network scan requested")
             networks = ConnectionManager.scan_networks()
             self.send_json_response({"networks": networks})
@@ -314,9 +314,9 @@ class ConfigHTTPHandler(BaseHTTPRequestHandler):
         """Query StateMonitor/APManager, return JSON with CORS"""
         try:
             # Import here to avoid circular dependencies
-            from state_monitor import StateMonitor
-            from connection_manager import ConnectionManager
-            from ap_manager import APManager
+            from pi_netconfig.statemonitor import StateMonitor
+            from pi_netconfig.connectionmanager import ConnectionManager
+            from pi_netconfig.apmanager import APManager
             
             logger.debug("Status query requested")
             state = StateMonitor.get_current_state()
@@ -365,8 +365,8 @@ class ConfigHTTPHandler(BaseHTTPRequestHandler):
                 return
             
             # Import here to avoid circular dependencies
-            from connection_manager import ConnectionManager
-            
+            from pi_netconfig.connectionmanager import ConnectionManager
+
             logger.info(f"Configuration requested for SSID: {ssid}")
             ConnectionManager.configure_network(ssid, password)
             
