@@ -74,6 +74,14 @@ class StateMonitor:
         self._transition_lock: Optional[asyncio.Lock] = None
         self.logger = logging.getLogger('StateMonitor')
 
+    def get_current_state(self) -> str:
+        """Get current operational state as string.
+        
+        Returns:
+            str: Current state name ("CHECKING", "CLIENT", or "AP_MODE")
+        """
+        return self.current_state.name
+
     async def initialize(self) -> None:
         """Initialize state machine and component instances.
         

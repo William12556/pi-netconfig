@@ -41,6 +41,10 @@ class ConfigurationError(WebServerError):
 
 class ConfigHTTPHandler(BaseHTTPRequestHandler):
     """Handle HTTP requests with embedded resources"""
+    
+    # Class variables to hold component references
+    connection_manager = None
+    state_monitor = None
 
     def log_message(self, format: str, *args) -> None:
         """Override to use custom logger"""
@@ -297,13 +301,16 @@ class ConfigHTTPHandler(BaseHTTPRequestHandler):
         logger.debug("Served HTML configuration page")
 
     def handle_scan_request(self) -> None:
-        """Call ConnectionManager.scan_networks(), return JSON with CORS"""
+        """Call ConnectionManager instance scan_networks(), return JSON with CORS"""
         try:
-            # Import here to avoid circular dependencies
-            from pi_netconfig.connectionmanager import ConnectionManager
-
             logger.info("Network scan requested")
-            networks = ConnectionManager.scan_networks()
+            
+            if self.connection_manager is None:
+                logger.error("ConnectionManager not available")
+                self.send_error_response(500, "Connection manager not initialized")
+                return
+            
+            networks = self.connection_manager.scan_networks()
             self.send_json_response({"networks": networks})
             logger.info(f"Scan completed: {len(networks)} networks found")
         except Exception as e:
@@ -311,17 +318,18 @@ class ConfigHTTPHandler(BaseHTTPRequestHandler):
             self.send_error_response(500, "Network scan failed")
 
     def handle_status_request(self) -> None:
-        """Query StateMonitor/APManager, return JSON with CORS"""
+        """Query StateMonitor/ConnectionManager instances, return JSON with CORS"""
         try:
-            # Import here to avoid circular dependencies
-            from pi_netconfig.statemonitor import StateMonitor
-            from pi_netconfig.connectionmanager import ConnectionManager
-            from pi_netconfig.apmanager import APManager
-            
             logger.debug("Status query requested")
-            state = StateMonitor.get_current_state()
-            ssid = ConnectionManager.get_current_ssid()
-            ap_active = APManager.is_active()
+            
+            if self.state_monitor is None or self.connection_manager is None:
+                logger.error("Components not available")
+                self.send_error_response(500, "System components not initialized")
+                return
+            
+            state = self.state_monitor.get_current_state()
+            ssid = self.connection_manager.get_current_ssid()
+            ap_active = (state == "AP_MODE")
             
             response = {
                 "state": state,
@@ -335,7 +343,7 @@ class ConfigHTTPHandler(BaseHTTPRequestHandler):
             self.send_error_response(500, "Status query failed")
 
     def handle_configure_request(self) -> None:
-        """Parse JSON body, validate, call ConnectionManager.configure_network()"""
+        """Parse JSON body, validate, call ConnectionManager instance configure_network()"""
         try:
             content_length = int(self.headers.get('Content-Length', 0))
             if content_length == 0:
@@ -364,11 +372,16 @@ class ConfigHTTPHandler(BaseHTTPRequestHandler):
                 }, 400)
                 return
             
-            # Import here to avoid circular dependencies
-            from pi_netconfig.connectionmanager import ConnectionManager
+            if self.connection_manager is None:
+                logger.error("ConnectionManager not available")
+                self.send_json_response({
+                    "success": False,
+                    "message": "Connection manager not initialized"
+                }, 500)
+                return
 
             logger.info(f"Configuration requested for SSID: {ssid}")
-            ConnectionManager.configure_network(ssid, password)
+            self.connection_manager.configure_network(ssid, password)
             
             self.send_json_response({
                 "success": True,
@@ -417,12 +430,23 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 class WebServerManager:
     """Manage HTTP server lifecycle"""
 
-    def __init__(self, port: int = 8080):
-        """Initialize server on specified port"""
+    def __init__(self, port: int = 8080, connection_manager=None, state_monitor=None):
+        """
+        Initialize server on specified port with component references
+        
+        Args:
+            port: Port number (default 8080)
+            connection_manager: ConnectionManager instance for API operations
+            state_monitor: StateMonitor instance for status queries
+        """
         self.port = port
         self.server: Optional[ThreadedHTTPServer] = None
         self.server_thread: Optional[threading.Thread] = None
         self._lock = threading.Lock()
+        
+        # Set component references in handler class
+        ConfigHTTPHandler.connection_manager = connection_manager
+        ConfigHTTPHandler.state_monitor = state_monitor
 
     def start_server(self) -> None:
         """Start server in daemon thread"""
@@ -478,12 +502,14 @@ _server_manager: Optional[WebServerManager] = None
 _manager_lock = threading.Lock()
 
 
-def start_server(port: int = 8080) -> None:
+def start_server(port: int = 8080, connection_manager=None, state_monitor=None) -> None:
     """
     Public entry point to start server
     
     Args:
         port: Port number (default 8080)
+        connection_manager: ConnectionManager instance for API operations
+        state_monitor: StateMonitor instance for status queries
     
     Raises:
         PortInUseError: If port is unavailable or server already running
@@ -493,7 +519,7 @@ def start_server(port: int = 8080) -> None:
     
     with _manager_lock:
         if _server_manager is None:
-            _server_manager = WebServerManager(port)
+            _server_manager = WebServerManager(port, connection_manager, state_monitor)
         
         try:
             _server_manager.start_server()

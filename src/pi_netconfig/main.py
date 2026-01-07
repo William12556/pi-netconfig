@@ -262,7 +262,7 @@ async def run_service() -> None:
     
     Behavior:
         1. Creates global shutdown event
-        2. Initializes components
+        2. Initializes components with dependency injection
         3. Initializes StateMonitor (starts monitoring)
         4. Waits for shutdown signal
         5. Coordinates graceful shutdown
@@ -283,11 +283,19 @@ async def run_service() -> None:
         logger.debug("Initializing components")
         connection_manager = ConnectionManager()
         access_point = AccessPoint()
-        web_server_manager = WebServerManager()
+        
+        # Create WebServerManager with connection_manager reference
+        # StateMonitor reference will be set after StateMonitor is created
+        web_server_manager = WebServerManager(connection_manager=connection_manager)
         
         # Initialize StateMonitor
         logger.debug("Initializing StateMonitor")
         state_monitor = StateMonitor(connection_manager, access_point, web_server_manager)
+        
+        # Update WebServerManager with StateMonitor reference
+        from pi_netconfig.webserver import ConfigHTTPHandler
+        ConfigHTTPHandler.state_monitor = state_monitor
+        
         await state_monitor.initialize()
 
         logger.debug("StateMonitor initialized and monitoring started")
