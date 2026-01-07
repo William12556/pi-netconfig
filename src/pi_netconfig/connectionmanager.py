@@ -166,20 +166,65 @@ class ConfigManager:
 
     @staticmethod
     def configure_network(ssid: str, password: str) -> bool:
+        """Configure and activate WiFi connection.
+        
+        Deactivates AP mode if active, then configures client connection.
+        """
         with ConfigManager._lock:
             if not (1 <= len(ssid) <= 32) or any(c in ssid for c in ';,&|$`\\\'"'):
                 raise ConfigurationError('Invalid SSID')
             if not (8 <= len(password) <= 63):
                 raise ConfigurationError('Invalid password')
+            
             try:
+                # Deactivate AP mode if active (allows WiFi interface to switch to client mode)
+                logger.info("Deactivating AP mode for network configuration")
+                result = subprocess.run(
+                    ['nmcli', 'con', 'down', 'id', 'pi-netconfig-ap'],
+                    capture_output=True,
+                    text=True
+                )
+                if result.returncode == 0:
+                    logger.debug("AP mode deactivated successfully")
+                else:
+                    logger.debug(f"AP deactivation returned {result.returncode} (may not be active)")
+                
+                # Delete existing connection profile
+                logger.debug(f"Deleting existing connection profile for {ssid}")
                 subprocess.run(['nmcli', 'con', 'delete', 'id', ssid], check=False)
-                subprocess.run(['nmcli', 'con', 'add', 'type', 'wifi', 'ssid', ssid, 'wifi-sec.key-mgmt', 'wpa-psk', 'wifi-sec.psk', password], check=True)
-                subprocess.run(['nmcli', 'con', 'up', 'id', ssid], check=True)
+                
+                # Create new connection profile
+                logger.info(f"Creating connection profile for {ssid}")
+                result = subprocess.run(
+                    ['nmcli', 'con', 'add', 'type', 'wifi', 'ssid', ssid, 
+                     'wifi-sec.key-mgmt', 'wpa-psk', 'wifi-sec.psk', password],
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                logger.debug(f"Connection profile created: {result.stdout.strip()}")
+                
+                # Activate connection
+                logger.info(f"Activating connection to {ssid}")
+                result = subprocess.run(
+                    ['nmcli', 'con', 'up', 'id', ssid],
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                logger.info(f"Connection activated successfully: {result.stdout.strip()}")
+                
                 ConfigManager.persist_configuration(ssid)
                 return True
+                
             except subprocess.CalledProcessError as e:
-                logger.error(f'Failed to configure network: {e}', exc_info=True)
-                raise ConfigurationError('Failed to configure network') from e
+                error_msg = f"Command failed with exit code {e.returncode}"
+                if e.stdout:
+                    error_msg += f"\nStdout: {e.stdout}"
+                if e.stderr:
+                    error_msg += f"\nStderr: {e.stderr}"
+                logger.error(f'Failed to configure network: {error_msg}', exc_info=True)
+                raise ConfigurationError(f'Failed to configure network: {e.stderr if e.stderr else str(e)}') from e
 
     @staticmethod
     def persist_configuration(ssid: str):
