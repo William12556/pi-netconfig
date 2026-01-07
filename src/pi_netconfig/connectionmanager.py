@@ -16,7 +16,7 @@ import socket
 import json
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Dict
 import logging
 from datetime import datetime
 import threading
@@ -52,18 +52,67 @@ class ConnectionTester:
 
 class NetworkScanner:
     @staticmethod
-    def scan_networks() -> List[NetworkInfo]:
+    def scan_networks() -> List[Dict[str, str]]:
+        """Scan available WiFi networks.
+        
+        Returns:
+            List[Dict]: List of network dictionaries with ssid, signal, security
+        """
         try:
-            output = subprocess.check_output(['nmcli', '-t', '-f', 'SSID,SIGNAL,SECURITY,FREQ', 'dev', 'wifi', 'list'])
+            output = subprocess.check_output(
+                ['nmcli', '-t', '-f', 'SSID,SIGNAL,SECURITY', 'dev', 'wifi', 'list'],
+                stderr=subprocess.DEVNULL
+            )
             networks = []
+            seen_ssids = set()
+            
             for line in output.decode().splitlines():
-                ssid, signal_strength, security, frequency = line.strip().split(':')
-                networks.append(NetworkInfo(ssid, int(signal_strength), security, frequency))
-            networks = list({n.ssid: n for n in networks}.values())
-            return sorted(networks, key=lambda x: x.signal_strength, reverse=True)
+                parts = line.strip().split(':')
+                if len(parts) >= 3:
+                    ssid = parts[0]
+                    signal = parts[1]
+                    security = parts[2] if parts[2] else 'Open'
+                    
+                    # Skip duplicates and empty SSIDs
+                    if ssid and ssid not in seen_ssids:
+                        seen_ssids.add(ssid)
+                        networks.append({
+                            'ssid': ssid,
+                            'signal': signal,
+                            'security': security
+                        })
+            
+            # Sort by signal strength (descending)
+            networks.sort(key=lambda x: int(x['signal']), reverse=True)
+            return networks
+            
         except subprocess.CalledProcessError as e:
             logger.error(f'Failed to scan networks: {e}', exc_info=True)
             raise NetworkScanError('Failed to scan networks') from e
+    
+    @staticmethod
+    def get_current_ssid() -> Optional[str]:
+        """Get currently connected network SSID.
+        
+        Returns:
+            Optional[str]: Connected SSID or None if not connected
+        """
+        try:
+            output = subprocess.check_output(
+                ['nmcli', '-t', '-f', 'active,ssid', 'dev', 'wifi'],
+                stderr=subprocess.DEVNULL
+            )
+            
+            for line in output.decode().splitlines():
+                parts = line.strip().split(':')
+                if len(parts) >= 2 and parts[0] == 'yes':
+                    return parts[1]
+            
+            return None
+            
+        except subprocess.CalledProcessError as e:
+            logger.warning(f'Failed to get current SSID: {e}')
+            return None
 
 class ConfigManager:
     CONFIG_PATH = Path('/etc/pi-netconfig/config.json')
@@ -132,11 +181,11 @@ class ConnectionManager:
             logger.error(f'Connection test failed: {e}', exc_info=True)
             raise ConnectionManagerError('Connection test failed') from e
     
-    async def scan_networks(self) -> List[NetworkInfo]:
+    def scan_networks(self) -> List[Dict[str, str]]:
         """Scan for available WiFi networks.
         
         Returns:
-            List[NetworkInfo]: Available networks sorted by signal strength
+            List[Dict]: Available networks sorted by signal strength
             
         Raises:
             NetworkScanError: On network scan failure
@@ -149,7 +198,19 @@ class ConnectionManager:
             logger.error(f'Network scan failed: {e}', exc_info=True)
             raise NetworkScanError('Network scan failed') from e
     
-    async def configure_network(self, ssid: str, password: str) -> bool:
+    def get_current_ssid(self) -> Optional[str]:
+        """Get currently connected network SSID.
+        
+        Returns:
+            Optional[str]: Connected SSID or None if not connected
+        """
+        try:
+            return self._scanner.get_current_ssid()
+        except Exception as e:
+            logger.warning(f'Failed to get current SSID: {e}')
+            return None
+    
+    def configure_network(self, ssid: str, password: str) -> bool:
         """Configure and activate WiFi connection.
         
         Args:
