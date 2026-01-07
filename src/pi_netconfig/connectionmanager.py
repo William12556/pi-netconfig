@@ -20,6 +20,7 @@ from typing import List, Optional, Dict
 import logging
 from datetime import datetime
 import threading
+import time
 
 @dataclass
 class NetworkInfo:
@@ -59,35 +60,80 @@ class NetworkScanner:
             List[Dict]: List of network dictionaries with ssid, signal, security
         """
         try:
-            output = subprocess.check_output(
-                ['nmcli', '-t', '-f', 'SSID,SIGNAL,SECURITY', 'dev', 'wifi', 'list'],
+            # Trigger fresh scan
+            logger.debug("Triggering WiFi rescan")
+            subprocess.run(
+                ['nmcli', 'dev', 'wifi', 'rescan'],
+                check=False,  # Don't fail if rescan fails
                 stderr=subprocess.DEVNULL
             )
+            
+            # Wait briefly for scan to complete
+            time.sleep(1)
+            
+            # Get scan results
+            output = subprocess.check_output(
+                ['nmcli', '-t', '-f', 'SSID,SIGNAL,SECURITY', 'dev', 'wifi', 'list'],
+                stderr=subprocess.PIPE
+            )
+            
+            raw_output = output.decode()
+            logger.debug(f"Raw nmcli scan output:\n{raw_output}")
+            
             networks = []
             seen_ssids = set()
+            skipped_count = 0
             
-            for line in output.decode().splitlines():
+            for line in raw_output.splitlines():
                 parts = line.strip().split(':')
                 if len(parts) >= 3:
                     ssid = parts[0]
-                    signal = parts[1]
+                    signal_raw = parts[1]
                     security = parts[2] if parts[2] else 'Open'
                     
-                    # Skip duplicates and empty SSIDs
-                    if ssid and ssid not in seen_ssids:
-                        seen_ssids.add(ssid)
-                        networks.append({
-                            'ssid': ssid,
-                            'signal': signal,
-                            'security': security
-                        })
+                    # Skip empty SSIDs
+                    if not ssid:
+                        continue
+                    
+                    # Skip our own AP
+                    if ssid.startswith('PiConfig-') or ssid.startswith('pi-netconfig-'):
+                        logger.debug(f"Skipping own AP: {ssid}")
+                        skipped_count += 1
+                        continue
+                    
+                    # Skip duplicates
+                    if ssid in seen_ssids:
+                        continue
+                    
+                    # Parse signal strength - handle numeric and non-numeric values
+                    try:
+                        signal = int(signal_raw)
+                        if signal < 0 or signal > 100:
+                            logger.debug(f"Skipping network {ssid} with out-of-range signal: {signal_raw}")
+                            skipped_count += 1
+                            continue
+                    except ValueError:
+                        # Skip networks with invalid signal values
+                        logger.debug(f"Skipping network {ssid} with invalid signal: {signal_raw}")
+                        skipped_count += 1
+                        continue
+                    
+                    seen_ssids.add(ssid)
+                    networks.append({
+                        'ssid': ssid,
+                        'signal': str(signal),  # Keep as string for JSON
+                        'security': security
+                    })
+            
+            logger.info(f"Scan found {len(networks)} valid networks, skipped {skipped_count}")
             
             # Sort by signal strength (descending)
             networks.sort(key=lambda x: int(x['signal']), reverse=True)
             return networks
             
         except subprocess.CalledProcessError as e:
-            logger.error(f'Failed to scan networks: {e}', exc_info=True)
+            stderr_output = e.stderr.decode() if e.stderr else 'No stderr'
+            logger.error(f'Failed to scan networks: {e}\nStderr: {stderr_output}', exc_info=True)
             raise NetworkScanError('Failed to scan networks') from e
     
     @staticmethod
