@@ -1,3 +1,5 @@
+Created: 2025 December 23
+
 # AP Mode Testing Commands
 
 Quick reference for testing pi-netconfig AP mode transitions and web server functionality.
@@ -227,3 +229,15 @@ nmcli con show pi-netconfig-ap | grep autoconnect
 - Transition to CLIENT mode occurs on first successful connectivity check
 - Web server binds to 0.0.0.0:8080 (accessible from all interfaces)
 - AP network uses 192.168.50.0/24 subnet
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------||
+| 1.0 | 2025-12-23 | Initial command reference |
+
+---
+
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.

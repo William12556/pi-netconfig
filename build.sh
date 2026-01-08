@@ -7,17 +7,26 @@ set -e  # Exit on error
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_ROOT"
 
-# Verify python3.11 is available
-if ! command -v python3.11 >/dev/null 2>&1; then
-    echo "ERROR: python3.11 not found"
-    echo "Install: brew install python@3.11"
+# Verify python3 is available and meets minimum version
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "ERROR: python3 not found"
+    exit 1
+fi
+
+# Check Python version >= 3.9
+PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
+MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
+
+if [ "$MAJOR" -lt 3 ] || ([ "$MAJOR" -eq 3 ] && [ "$MINOR" -lt 9 ]); then
+    echo "ERROR: Python 3.9+ required, found $PYTHON_VERSION"
     exit 1
 fi
 
 # Verify build module is available
-if ! python3.11 -m build --version >/dev/null 2>&1; then
-    echo "ERROR: build module not found for python3.11"
-    echo "Install: python3.11 -m pip install build"
+if ! python3 -m build --version >/dev/null 2>&1; then
+    echo "ERROR: build module not found"
+    echo "Install: python3 -m pip install build"
     exit 1
 fi
 
@@ -41,7 +50,7 @@ rm -rf dist/ build/ *.egg-info/ src/*.egg-info/
 
 # Build distribution
 echo "==> Building distribution..."
-python3.11 -m build
+python3 -m build
 
 # Verify wheel exists
 WHEEL="dist/pi_netconfig-${VERSION}-py3-none-any.whl"

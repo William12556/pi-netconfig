@@ -51,7 +51,7 @@ The tool is designed for headless Raspberry Pi deployments where physical displa
 
 - Raspberry Pi running Raspbian Bookworm or Debian-based Linux
 - NetworkManager (standard in modern Raspbian)
-- Python 3.11 or higher
+- Python 3.9 or higher
 - Root privileges for installation and network operations
 
 [Return to Table of Contents](<#table of contents>)
@@ -97,14 +97,14 @@ pip install build
 python -m build
 ```
 
-This creates `dist/pi_netconfig-0.2.0-py3-none-any.whl`
+This creates `dist/pi_netconfig-1.0.0-py3-none-any.whl`
 
 ### 3.2. Deployment to Raspberry Pi
 
 **Transfer wheel file to target system:**
 
 ```bash
-scp dist/pi_netconfig-0.2.0-py3-none-any.whl admin@raspberry-pi:/tmp/
+scp dist/pi_netconfig-1.0.0-py3-none-any.whl admin@raspberry-pi:/tmp/
 ```
 
 **Install on Raspberry Pi:**
@@ -114,7 +114,7 @@ scp dist/pi_netconfig-0.2.0-py3-none-any.whl admin@raspberry-pi:/tmp/
 ssh admin@raspberry-pi
 
 # Install package
-sudo pip install /tmp/pi_netconfig-0.2.0-py3-none-any.whl
+sudo pip install /tmp/pi_netconfig-1.0.0-py3-none-any.whl
 
 # Run installer (first execution only - installs systemd service)
 sudo python3 -m pi_netconfig.main
@@ -317,7 +317,7 @@ sudo journalctl -u pi-netconfig -n 50
 ```
 
 **Common causes:**
-- Python version < 3.11
+- Python version < 3.9
 - NetworkManager not installed
 - Insufficient privileges
 - Configuration file permissions

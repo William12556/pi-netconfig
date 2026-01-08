@@ -53,7 +53,7 @@ rm -rf dist/ build/ *.egg-info/
 python3 -m build
 
 # Verify output
-ls -lh dist/  # Should show .whl file
+ls -lh dist/  # Should show: pi_netconfig-1.0.0-py3-none-any.whl
 ```
 
 ### 1.3. Deploy to Pi
@@ -137,7 +137,7 @@ rm -rf dist/ build/ *.egg-info/
 python3 -m build
 
 # Verify output
-ls -lh dist/  # Should show: pi_netconfig-*.whl
+ls -lh dist/  # Should show: pi_netconfig-1.0.0-py3-none-any.whl
 ```
 
 ### 2.3. Transfer to Pi
@@ -627,7 +627,7 @@ python3 -c "import pi_netconfig; print(pi_netconfig.__version__)"
 
 **Reinstall if needed:**
 ```bash
-sudo pip install --force-reinstall /tmp/pi_netconfig-0.2.0-py3-none-any.whl
+sudo pip install --force-reinstall /tmp/pi_netconfig-1.0.0-py3-none-any.whl
 ```
 
 ### 6.6. Log Analysis Patterns

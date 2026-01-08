@@ -24,6 +24,13 @@ sudo systemctl stop pi-netconfig || true
 echo "==> Cleaning existing installation..."
 sudo /opt/pi-netconfig/venv/bin/pip uninstall -y pi_netconfig 2>/dev/null || true
 
+# Verify venv exists
+if [ ! -d "/opt/pi-netconfig/venv" ]; then
+    echo "ERROR: Virtual environment not found at /opt/pi-netconfig/venv"
+    echo "For first-time installation, use deploy_test-guide.md procedures"
+    exit 1
+fi
+
 # Clear cache
 echo "==> Clearing package cache..."
 sudo rm -rf /opt/pi-netconfig/venv/lib/python*/site-packages/pi_netconfig*

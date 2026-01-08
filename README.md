@@ -36,13 +36,15 @@ scp pi_netconfig-1.0.0-py3-none-any.whl admin@raspberry-pi:/tmp/
 
 # Install on Raspberry Pi
 ssh admin@raspberry-pi
-sudo pip install /tmp/pi_netconfig-1.0.0-py3-none-any.whl
 
-# Run installer (first execution triggers automatic installation)
-sudo pi-netconfig
+# Create virtual environment (recommended)
+sudo mkdir -p /opt/pi-netconfig
+cd /opt/pi-netconfig
+sudo python3 -m venv venv
+sudo ./venv/bin/pip install /tmp/pi_netconfig-1.0.0-py3-none-any.whl
 
-# Start service
-sudo systemctl start pi-netconfig
+# Run installer (creates and starts systemd service)
+sudo ./venv/bin/python -m pi_netconfig.installer --install --systemd-mode
 ```
 
 **Configure WiFi:**
