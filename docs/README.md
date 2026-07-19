@@ -6,14 +6,14 @@ Technical documentation and reference materials for pi-netconfig.
 
 | Document | Description |
 |----------|-------------|
-| [user-guide.md](user-guide.md) | Installation, deployment, service management, architecture |
-| [deploy_test-guide.md](deploy_test-guide.md) | Build, deploy, and test procedures |
+| [user-guide.md](user-guide.md) | Installation, deployment, service management, web interface, troubleshooting |
+| [development.md](development.md) | Development environment, build from source, hardware validation testing, architecture |
 | [ap-mode-test-commands.md](ap-mode-test-commands.md) | AP mode testing command reference |
 
 ## Related Documentation
 
-- [README.md](../README.md) - Project overview and quick start
-- [ai/governance.md](../ai/governance.md) - Development governance framework
+- [README.md](../README.md) — Project overview and quick start
+- [ai/governance.md](../ai/governance.md) — Development governance framework
 
 ---
 

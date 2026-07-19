@@ -18,7 +18,7 @@ The e-Paper IP Display is a companion project deployed on the same Raspberry Pi 
 
 **Primary Function:** Display current IPv4 address or "No Network" status on physical e-paper screen.
 
-**Integration Status:** Deployed and operational on pi-netconfig test hardware (deb1.local, Debian 13 Trixie).
+**Integration Status:** Deployed and operational on pi-netconfig test hardware (solax-modbus.local, Debian 13 Trixie).
 
 [Return to Table of Contents](<#table of contents>)
 
@@ -58,7 +58,7 @@ The e-Paper display operates independently but provides complementary functional
 ### Shared Hardware Environment
 
 Both systems operate on:
-- Hostname: `deb1.local`
+- Hostname: `solax-modbus.local`
 - Platform: Debian GNU/Linux 13 (trixie)
 - Network interfaces: WiFi adapter managed by pi-netconfig
 
@@ -151,7 +151,7 @@ sudo systemctl restart epaper-ip-display.service
 - Product wiki: https://www.waveshare.com/wiki/2.13inch_Touch_e-Paper_HAT
 
 **Related pi-netconfig Documentation:**
-- Hardware validation: Raspberry Pi platform (deb1.local)
+- Hardware validation: Raspberry Pi platform (solax-modbus.local)
 - Test execution: CLIENT/AP mode validation
 
 [Return to Table of Contents](<#table of contents>)

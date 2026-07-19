@@ -5,13 +5,12 @@ Created: 2025 November 29
 ## Table of Contents
 
 - [1. Introduction](<#1 introduction>)
-- [2. Installation and Environment Setup](<#2 installation and environment setup>)
-  - [2.1. Development Environment](<#2.1 development environment>)
-  - [2.2. Running Tests](<#2.2 running tests>)
-- [3. Build and Deployment Procedures](<#3 build and deployment procedures>)
-  - [3.1. Creating Distribution Package](<#3.1 creating distribution package>)
-  - [3.2. Deployment to Raspberry Pi](<#3.2 deployment to raspberry pi>)
-  - [3.3. Post-Installation](<#3.3 post-installation>)
+- [2. Requirements](<#2 requirements>)
+- [3. Deployment](<#3 deployment>)
+  - [3.1. Installing from Release Package](<#3.1 installing from release package>)
+  - [3.2. Post-Installation](<#3.2 post-installation>)
+  - [3.3. Updating an Existing Installation](<#3.3 updating an existing installation>)
+  - [3.4. Uninstallation](<#3.4 uninstallation>)
 - [4. Service Lifecycle Management](<#4 service lifecycle management>)
   - [4.1. Service Status](<#4.1 service status>)
   - [4.2. Service Control](<#4.2 service control>)
@@ -19,18 +18,14 @@ Created: 2025 November 29
 - [5. Web Interface Operation](<#5 web interface operation>)
   - [5.1. Accessing the Interface](<#5.1 accessing the interface>)
   - [5.2. Network Configuration](<#5.2 network configuration>)
-- [6. Testing Execution](<#6 testing execution>)
-  - [6.1. Development Testing](<#6.1 development testing>)
-  - [6.2. Deployment Testing](<#6.2 deployment testing>)
-- [7. Architecture Description](<#7 architecture description>)
-  - [7.1. Operational Modes](<#7.1 operational modes>)
-  - [7.2. System Components](<#7.2 system components>)
-- [8. Troubleshooting Guidance](<#8 troubleshooting guidance>)
-  - [8.1. Service Not Starting](<#8.1 service not starting>)
-  - [8.2. Access Point Not Visible](<#8.2 access point not visible>)
-  - [8.3. Cannot Connect to Web Interface](<#8.3 cannot connect to web interface>)
-  - [8.4. WiFi Configuration Not Persisting](<#8.4 wifi configuration not persisting>)
-- [9. Version History](<#9 version history>)
+- [6. Troubleshooting](<#6 troubleshooting>)
+  - [6.1. Service Not Starting](<#6.1 service not starting>)
+  - [6.2. Access Point Not Visible](<#6.2 access point not visible>)
+  - [6.3. Cannot Connect to Web Interface](<#6.3 cannot connect to web interface>)
+  - [6.4. WiFi Configuration Not Persisting](<#6.4 wifi configuration not persisting>)
+  - [6.5. Connection Fails After Configuration](<#6.5 connection fails after configuration>)
+  - [6.6. Import Errors After Installation](<#6.6 import errors after installation>)
+- [7. Version History](<#7 version history>)
 
 ## 1. Introduction
 
@@ -47,80 +42,57 @@ Pi Network Configuration Tool provides WiFi configuration management for Raspber
 
 The tool is designed for headless Raspberry Pi deployments where physical display and keyboard access is not available, enabling WiFi configuration through the web interface without requiring direct system access.
 
-**System Requirements:**
+[Return to Table of Contents](<#table of contents>)
 
-- Raspberry Pi running Raspbian Bookworm or Debian-based Linux
+## 2. Requirements
+
+- Raspberry Pi running Debian-based Linux (validated on Debian 13 Trixie)
 - NetworkManager (standard in modern Raspbian)
 - Python 3.9 or higher
 - Root privileges for installation and network operations
 
 [Return to Table of Contents](<#table of contents>)
 
-## 2. Installation and Environment Setup
+## 3. Deployment
 
-### 2.1. Development Environment
-
-For development work on the codebase, set up a Python virtual environment.
-
-**Initial Setup (one-time):**
-
-```bash
-cd /path/to/pi-netconfig
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -e ".[dev]"
-```
-
-The editable installation (`-e` flag) allows imports to work during development without reinstalling after code changes.
-
-### 2.2. Running Tests
-
-Execute the test suite within the activated virtual environment:
-
-```bash
-# With virtual environment activated
-pytest src/tests/
-```
-
-[Return to Table of Contents](<#table of contents>)
-
-## 3. Build and Deployment Procedures
-
-### 3.1. Creating Distribution Package
-
-Build the wheel package on your development machine:
-
-```bash
-# On development machine (Mac/Linux)
-cd /path/to/pi-netconfig
-pip install build
-python -m build
-```
-
-This creates `dist/pi_netconfig-1.0.0-py3-none-any.whl`
-
-### 3.2. Deployment to Raspberry Pi
+### 3.1. Installing from Release Package
 
 **Transfer wheel file to target system:**
 
 ```bash
-scp dist/pi_netconfig-1.0.0-py3-none-any.whl admin@raspberry-pi:/tmp/
+scp pi_netconfig-1.0.0-py3-none-any.whl admin@solax-modbus.local:/tmp/
 ```
 
 **Install on Raspberry Pi:**
 
 ```bash
 # Connect to Raspberry Pi
-ssh admin@raspberry-pi
+ssh admin@solax-modbus.local
 
-# Install package
-sudo pip install /tmp/pi_netconfig-1.0.0-py3-none-any.whl
+# Create installation directory
+sudo mkdir -p /opt/pi-netconfig
+cd /opt/pi-netconfig
 
-# Run installer (first execution only - installs systemd service)
-sudo python3 -m pi_netconfig.main
+# Create virtual environment
+sudo python3 -m venv venv
+
+# Install package into venv
+sudo ./venv/bin/pip install /tmp/pi_netconfig-1.0.0-py3-none-any.whl
+
+# Verify installation
+./venv/bin/python -c "import pi_netconfig"
+
+# Run installer (creates systemd service)
+sudo ./venv/bin/python -m pi_netconfig.installer --install --systemd-mode
+
+# Enable and start service
+sudo systemctl enable pi-netconfig
+sudo systemctl start pi-netconfig
 ```
 
-### 3.3. Post-Installation
+[Return to Table of Contents](<#table of contents>)
+
+### 3.2. Post-Installation
 
 The service starts automatically after installation. If no WiFi connection is available on startup:
 
@@ -129,13 +101,85 @@ The service starts automatically after installation. If no WiFi connection is av
 3. Access web interface at `http://192.168.50.1:8080`
 4. Configure WiFi network through the browser interface
 
+**Verify installation:**
+
+```bash
+# Check service status
+sudo systemctl status pi-netconfig
+
+# Check service file created
+ls -l /etc/systemd/system/pi-netconfig.service
+
+# Monitor initial logs
+sudo journalctl -u pi-netconfig -n 50
+```
+
+Successful installation shows `Active: active (running)` in status, state detection (CLIENT or AP_MODE) in logs, and no error messages in journalctl output.
+
+[Return to Table of Contents](<#table of contents>)
+
+### 3.3. Updating an Existing Installation
+
+```bash
+# Connect to Pi
+ssh admin@solax-modbus.local
+
+# Stop service
+sudo systemctl stop pi-netconfig
+
+# Upgrade package in venv
+sudo /opt/pi-netconfig/venv/bin/pip install --upgrade /tmp/pi_netconfig-*.whl
+
+# Start service
+sudo systemctl start pi-netconfig
+
+# Verify upgrade
+sudo journalctl -u pi-netconfig -n 50
+```
+
+[Return to Table of Contents](<#table of contents>)
+
+### 3.4. Uninstallation
+
+**Virtual environment removal (recommended):**
+
+```bash
+# Stop and disable service
+sudo systemctl stop pi-netconfig
+sudo systemctl disable pi-netconfig
+
+# Remove systemd service file
+sudo rm -f /etc/systemd/system/pi-netconfig.service
+sudo systemctl daemon-reload
+
+# Remove entire venv directory
+sudo rm -rf /opt/pi-netconfig
+
+# Remove NetworkManager profiles (optional)
+sudo rm -f /etc/NetworkManager/system-connections/PiConfig-*
+
+# Remove user configuration (optional)
+rm -rf ~/.pi-netconfig
+```
+
+**Verification:**
+
+```bash
+# Confirm service removed
+sudo systemctl status pi-netconfig  # Should show "Unit pi-netconfig.service could not be found"
+
+# Confirm venv removed
+ls /opt/pi-netconfig/  # Should show "No such file or directory"
+
+# Confirm NetworkManager profiles cleaned
+nmcli connection show | grep PiConfig  # Should show nothing
+```
+
 [Return to Table of Contents](<#table of contents>)
 
 ## 4. Service Lifecycle Management
 
 ### 4.1. Service Status
-
-Check current service status:
 
 ```bash
 sudo systemctl status pi-netconfig
@@ -143,48 +187,36 @@ sudo systemctl status pi-netconfig
 
 ### 4.2. Service Control
 
-**Restart service:**
-
 ```bash
+# Restart
 sudo systemctl restart pi-netconfig
-```
 
-**Stop service:**
-
-```bash
+# Stop
 sudo systemctl stop pi-netconfig
-```
 
-**Start service:**
-
-```bash
+# Start
 sudo systemctl start pi-netconfig
-```
 
-**Disable service from auto-start:**
-
-```bash
+# Disable auto-start
 sudo systemctl disable pi-netconfig
-```
 
-**Enable service auto-start:**
-
-```bash
+# Enable auto-start
 sudo systemctl enable pi-netconfig
 ```
 
+[Return to Table of Contents](<#table of contents>)
+
 ### 4.3. Log Viewing
 
-View real-time service logs:
-
 ```bash
+# Real-time
 sudo journalctl -u pi-netconfig -f
-```
 
-View recent log entries:
-
-```bash
+# Recent entries
 sudo journalctl -u pi-netconfig -n 100
+
+# Time-based
+sudo journalctl -u pi-netconfig --since "1 hour ago"
 ```
 
 [Return to Table of Contents](<#table of contents>)
@@ -197,6 +229,8 @@ When the system enters access point mode:
 
 1. Connect to WiFi network `PiConfig-XXXX` (password: `piconfig123`)
 2. Open browser and navigate to `http://192.168.50.1:8080`
+
+[Return to Table of Contents](<#table of contents>)
 
 ### 5.2. Network Configuration
 
@@ -211,186 +245,60 @@ After submitting configuration, the service attempts to connect to the specified
 
 [Return to Table of Contents](<#table of contents>)
 
-## 6. Testing Execution
+## 6. Troubleshooting
 
-### 6.1. Development Testing
-
-Run tests in development environment:
-
-```bash
-# Activate virtual environment
-source venv/bin/activate
-
-# Execute test suite
-pytest src/tests/
-```
-
-### 6.2. Deployment Testing
-
-Test on Raspberry Pi after deployment:
-
-```bash
-# On Raspberry Pi with virtual environment activated
-cd /home/admin/pi-netconfig
-source pi-netconfig-venv/bin/activate
-pytest src/tests/
-```
-
-[Return to Table of Contents](<#table of contents>)
-
-## 7. Architecture Description
-
-### 7.1. Operational Modes
-
-The system operates as a state machine with three distinct modes:
-
-**CHECKING:**
-- Monitors connection status every 30 seconds
-- Verifies WiFi connectivity
-- Transitions to CLIENT or AP_MODE based on connection state
-
-**CLIENT:**
-- Connected to configured WiFi network
-- Normal operational mode
-- Continues periodic connectivity monitoring
-
-**AP_MODE:**
-- Creates access point when no connection available
-- Runs web server on port 8080
-- Allows network configuration via browser interface
-- Transitions to CLIENT mode upon successful configuration
-
-### 7.2. System Components
-
-**Installer:**
-- Self-bootstrapping systemd service setup
-- First-run installation of service configuration
-- Creates necessary system directories and files
-
-**StateMonitor:**
-- Operational state coordination
-- Manages state transitions
-- Coordinates component activation/deactivation
-
-**ConnectionManager:**
-- WiFi client operations
-- Network profile management
-- Connection establishment and monitoring
-
-**APManager:**
-- Access point creation and configuration
-- DHCP server management
-- Access point lifecycle control
-
-**WebServer:**
-- HTML configuration interface on port 8080
-- Network scanning endpoint
-- Configuration submission handling
-
-**ServiceController:**
-- Application lifecycle management
-- Component orchestration
-- Graceful shutdown handling
-
-[Return to Table of Contents](<#table of contents>)
-
-## 8. Troubleshooting Guidance
-
-### 8.1. Service Not Starting
-
-**Check service status:**
+### 6.1. Service Not Starting
 
 ```bash
 sudo systemctl status pi-netconfig
-```
-
-**Verify installation:**
-
-```bash
-python3 -m pi_netconfig.main --help
-```
-
-**Check logs for errors:**
-
-```bash
 sudo journalctl -u pi-netconfig -n 50
 ```
 
 **Common causes:**
+- NetworkManager not running: `sudo systemctl start NetworkManager`
 - Python version < 3.9
-- NetworkManager not installed
-- Insufficient privileges
-- Configuration file permissions
+- Package not installed
+- Insufficient privileges (must run as root)
 
-### 8.2. Access Point Not Visible
+[Return to Table of Contents](<#table of contents>)
 
-**Verify AP mode activation:**
+### 6.2. Access Point Not Visible
 
 ```bash
 sudo journalctl -u pi-netconfig | grep "AP_MODE"
-```
-
-**Check NetworkManager status:**
-
-```bash
-sudo systemctl status NetworkManager
-```
-
-**Verify wireless interface availability:**
-
-```bash
 nmcli device status
+nmcli connection show | grep PiConfig
 ```
 
 **Common causes:**
-- Wireless interface disabled
+- Service in CLIENT mode (WiFi already connected)
+- Wireless interface disabled: `nmcli radio wifi on`
 - NetworkManager not running
-- Conflicting network configuration
-- Hardware compatibility issues
+- Insufficient failures recorded (requires 3 consecutive)
 
-### 8.3. Cannot Connect to Web Interface
+[Return to Table of Contents](<#table of contents>)
 
-**Verify service is running:**
-
-```bash
-sudo systemctl status pi-netconfig
-```
-
-**Check web server logs:**
+### 6.3. Cannot Connect to Web Interface
 
 ```bash
 sudo journalctl -u pi-netconfig | grep "WebServer"
-```
-
-**Verify IP configuration:**
-
-```bash
+sudo netstat -tlnp | grep 8080
 ip addr show
 ```
 
 **Common causes:**
+- Service not in AP_MODE
 - Port 8080 blocked by firewall
 - Incorrect IP address (should be 192.168.50.1)
-- Web server component failed to start
-- Browser cache issues
+- Not connected to the PiConfig access point
 
-### 8.4. WiFi Configuration Not Persisting
+[Return to Table of Contents](<#table of contents>)
 
-**Check configuration file:**
+### 6.4. WiFi Configuration Not Persisting
 
 ```bash
 cat ~/.pi-netconfig/network_config.json
-```
-
-**Verify file permissions:**
-
-```bash
 ls -la ~/.pi-netconfig/
-```
-
-**Check logs for storage errors:**
-
-```bash
 sudo journalctl -u pi-netconfig | grep "config"
 ```
 
@@ -402,10 +310,41 @@ sudo journalctl -u pi-netconfig | grep "config"
 
 [Return to Table of Contents](<#table of contents>)
 
-## 9. Version History
+### 6.5. Connection Fails After Configuration
+
+```bash
+sudo journalctl -u pi-netconfig | grep -A 20 "Configuration received"
+nmcli connection show
+```
+
+**Common causes:**
+- Incorrect password
+- Hidden SSID not specified correctly
+- WPA3-only network (try WPA2)
+- Signal too weak
+
+[Return to Table of Contents](<#table of contents>)
+
+### 6.6. Import Errors After Installation
+
+```bash
+/opt/pi-netconfig/venv/bin/pip list | grep pi-netconfig
+/opt/pi-netconfig/venv/bin/python -c "import pi_netconfig; print(pi_netconfig.__version__)"
+```
+
+**Reinstall if needed:**
+
+```bash
+sudo /opt/pi-netconfig/venv/bin/pip install --force-reinstall /tmp/pi_netconfig-1.0.0-py3-none-any.whl
+```
+
+[Return to Table of Contents](<#table of contents>)
+
+## 7. Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.0 | 2026-07-01 | Restructured as user-facing only: removed development environment, testing, and architecture sections (relocated to docs/development.md); merged deployment, uninstallation, and troubleshooting content from docs/deploy_test-guide.md (deleted); reconciled duplicate service control and troubleshooting entries; corrected OS reference to Debian 13 Trixie |
 | 1.1 | 2025-12-04 | Added section numbering |
 | 1.0 | 2025-11-29 | Initial user guide creation |
 

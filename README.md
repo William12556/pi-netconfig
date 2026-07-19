@@ -2,11 +2,26 @@
 
 WiFi configuration management for Raspberry Pi/Debian systems with automatic access point fallback.
 
-## Overview
+## Table of Contents
+
+- [1. Overview](<#1 overview>)
+- [2. Features](<#2 features>)
+- [3. Requirements](<#3 requirements>)
+- [4. Quick Start](<#4 quick start>)
+  - [4.1. Install via Script](<#4.1 install via script>)
+  - [4.2. Manual Installation](<#4.2 manual installation>)
+  - [4.3. Configure WiFi](<#4.3 configure wifi>)
+- [5. Documentation](<#5 documentation>)
+- [6. License](<#6 license>)
+- [Version History](<#version history>)
+
+## 1. Overview
 
 Tool manages WiFi connectivity with automatic fallback to access point mode when no connection is available. Designed for headless Raspberry Pi systems without attached displays or keyboards. The system operates as a self-installing systemd service, providing continuous network monitoring and a web-based configuration interface when needed.
 
-## Features
+[Return to Table of Contents](<#table of contents>)
+
+## 2. Features
 
 - Self-installing systemd service (runs on first execution)
 - Automatic WiFi connectivity monitoring
@@ -15,20 +30,33 @@ Tool manages WiFi connectivity with automatic fallback to access point mode when
 - Single network profile persistence
 - State-based operation (CHECKING → CLIENT ↔ AP_MODE)
 
-## Requirements
+[Return to Table of Contents](<#table of contents>)
 
-- Raspberry Pi running Raspbian Bookworm or Debian-based Linux
+## 3. Requirements
+
+- Raspberry Pi running Debian-based Linux (validated on Debian 13 Trixie)
 - NetworkManager (standard in modern Raspbian)
 - Python 3.9 or higher
 - Root privileges for installation and network operations
 
-## Quick Start
+[Return to Table of Contents](<#table of contents>)
 
-**Download release package:**
+## 4. Quick Start
 
-Download `pi_netconfig-1.0.0-py3-none-any.whl` from GitHub releases.
+### 4.1. Install via Script
 
-**Deploy to Raspberry Pi:**
+Run on the Raspberry Pi. Fetches the latest release, creates the virtual environment, and registers the systemd service:
+
+```bash
+curl -fsSL https://github.com/William12556/pi-netconfig/releases/latest/download/install.sh -o install.sh
+chmod +x install.sh && ./install.sh
+```
+
+Re-running the same command on an existing installation performs an upgrade.
+
+### 4.2. Manual Installation
+
+Alternative for offline installs or a specific local wheel file.
 
 ```bash
 # Transfer package
@@ -37,7 +65,7 @@ scp pi_netconfig-1.0.0-py3-none-any.whl admin@raspberry-pi:/tmp/
 # Install on Raspberry Pi
 ssh admin@raspberry-pi
 
-# Create virtual environment (recommended)
+# Create virtual environment
 sudo mkdir -p /opt/pi-netconfig
 cd /opt/pi-netconfig
 sudo python3 -m venv venv
@@ -47,36 +75,36 @@ sudo ./venv/bin/pip install /tmp/pi_netconfig-1.0.0-py3-none-any.whl
 sudo ./venv/bin/python -m pi_netconfig.installer --install --systemd-mode
 ```
 
-**Configure WiFi:**
+### 4.3. Configure WiFi
 
 If no connection is available, the system creates access point `PiConfig-XXXX` (password: `piconfig123`). Connect and navigate to `http://192.168.50.1:8080` to configure network.
 
-## Building from Source
+[Return to Table of Contents](<#table of contents>)
 
-For development or custom builds:
+## 5. Documentation
 
-```bash
-cd /path/to/pi-netconfig
-pip install build
-python -m build
-```
+- **[User Guide](docs/user-guide.md)** — Installation, deployment, service management, web interface, troubleshooting
 
-This creates `dist/pi_netconfig-1.0.0-py3-none-any.whl`
+For development, build, testing, and governance documentation, see **[Development Guide](docs/development.md)**.
 
-## Documentation
+[Return to Table of Contents](<#table of contents>)
 
-Complete installation, deployment, and operational procedures are documented in:
+## 6. License
 
-- **[User Guide](docs/user-guide.md)** - Installation, deployment, service management, testing, architecture, and troubleshooting
+Copyright (c) 2025 William Watson. This work is licensed under the MIT License.
 
-Additional technical documentation:
+[Return to Table of Contents](<#table of contents>)
 
-- **[Design Documentation](ai/)** - Architecture specifications, change management, and governance
+---
 
-## Important Notice
+## Version History
 
-**Actual fitness for purpose is not guaranteed.**
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.1 | 2026-07-01 | Added script-based installation (bin/install.sh via curl) as primary Quick Start method; retained manual wheel installation as alternative |
+| 2.0 | 2026-07-01 | Restructured as user-facing only; removed build-from-source and ai/ governance references; corrected OS reference to Debian 13 Trixie; added Development Guide pointer |
+| 1.0 | 2025-12-05 | Initial README |
 
-## License
+---
 
 Copyright (c) 2025 William Watson. This work is licensed under the MIT License.

@@ -4,7 +4,7 @@
 
 set -e  # Exit on error
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 # Verify python3 is available and meets minimum version
@@ -63,4 +63,5 @@ echo ""
 echo "✓ Build successful: version $VERSION"
 ls -lh "$WHEEL"
 echo ""
-echo "Transfer to Pi: scp dist/pi_netconfig-${VERSION}-py3-none-any.whl admin@deb1:/tmp/"
+echo "Transfer to Pi:   scp dist/pi_netconfig-${VERSION}-py3-none-any.whl bin/install.sh admin@solax-modbus.local:/tmp/"
+echo "Publish release:  ./bin/release.sh"

@@ -23,8 +23,8 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/USER/pi-netconfig"
-Issues = "https://github.com/USER/pi-netconfig/issues"
+Repository = "https://github.com/William12556/pi-netconfig"
+Issues = "https://github.com/William12556/pi-netconfig/issues"
 
 [project.optional-dependencies]
 dev = [
