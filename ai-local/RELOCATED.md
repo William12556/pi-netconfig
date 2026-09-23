@@ -18,3 +18,5 @@ Files moved or copied out of ai/ by LLM-G&O bin/propagate.sh (governance P10.6).
 | 2026-09-23 | ai/templates/T04-prompt.md | ai-local/templates/T04-prompt.md | retired framework file |  |
 | 2026-09-23 | ai/profiles/claude.md | ai-local/profiles/claude.md | retired framework file |  |
 | 2026-09-23 | ai/instructions.md | ai-local/instructions.md | project content |  |
+
+Reviewed 2026-09-23: 10 files deleted — all 'retired framework file' rows, plus empty ael/tests/__init__.py and the stale ai/README.md stub where present. Remaining files await a decision. Deleted files remain in git history.
